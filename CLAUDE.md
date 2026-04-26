@@ -1,5 +1,14 @@
 # Game — Project Reference
 
+> **Session start:** Read `ADR.md` for full architectural context and history.
+
+## Where We Are
+- **Last completed:** M1 — SpriteFrames resource (`res://GameAssets/Player Character/player_sprites.tres`)
+- **Next up:** M2 — Player scene (CharacterBody2D + CollisionShape2D + AnimatedSprite2D, no scripts)
+- **Open decisions:** None
+
+---
+
 ## Quick Facts
 - **Engine**: Godot 4.6.2-stable, Forward+, D3D12 (Windows)
 - **Project path**: `C:/Users/erikc/Dev/Game/game/`

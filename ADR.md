@@ -13,7 +13,7 @@
 | Godot MCP Pro 1.12.0 | Scene building, tilemap setup, script wiring |
 | Filesystem MCP | Asset organization, file movement |
 | PixelLab MCP Pro | Asset generation, character iteration |
-| GitHub MCP | Version control (not yet initialized) |
+| GitHub (`gh` CLI) | Version control — repo at github.com/erikchvac-byte/Game |
 | Aseprite | Manual touch-ups only — no automation |
 
 Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprites
@@ -91,8 +91,8 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 ## Stage 1 — Milestones
 | # | Milestone | Status |
 |---|-----------|--------|
-| M0 | Project settings + asset copy | Pending |
-| M1 | SpriteFrames resource | Pending |
+| M0 | Project settings + asset copy | ✅ Done |
+| M1 | SpriteFrames resource | ✅ Done |
 | M2 | Player scene (no script) | Pending |
 | M3 | player.gd movement script | Pending |
 | M4 | player_animation.gd | Pending |
@@ -101,13 +101,24 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-007: Animation FPS — Idle 6 / Walk 8 / Run 12
+**Status:** Accepted
+**Date:** 2026-04-25
+**Context:** SpriteFrames resource needed frame rates for each animation tier.
+**Decision:** Idle = 6fps, Walk = 8fps, Run = 12fps. All 9 animations loop continuously.
+**Rationale:** Snappy without jitter at 320×180. Standard pixel-art game feel hierarchy — idle slower, run fastest.
+**Consequences:** Revisit if walk feels too slow or run too frantic during playtesting.
+
+---
+
 ## Testing Results
-_None yet — Stage 1 not started._
+- M0: Project settings verified via `get_project_info` — 320×180 viewport, 1280×720 window confirmed.
+- M1: SpriteFrames created via `execute_editor_script` — all 9 animations loaded and saved with correct frame counts.
 
 ---
 
 ## Known Issues
-- None active. MCP server config corrected; verify tools load on next session start.
+- None active.
 
 ---
 
@@ -120,7 +131,7 @@ _None yet — Stage 1 not started._
 - Run animation (6f) — wire after walk is confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
 - Audio: no tool in stack yet — deferred
-- GitHub MCP: version control not initialized
+- GitHub MCP: not installed — using `gh` CLI directly (sufficient for now)
 
 ---
 
@@ -131,3 +142,8 @@ _None yet — Stage 1 not started._
 | 2026-04-25 | MCP config corrected — using Godot MCP Pro Node.js bridge server. |
 | 2026-04-25 | Built custom MCP bridge (mcp-bridge/index.js) — original binary was missing. |
 | 2026-04-25 | Asset folder renamed from "SSEF Valley 1.1.2" to "GameAssets". |
+| 2026-04-25 | M0 complete — project settings applied, GameAssets copied into res://. |
+| 2026-04-25 | M1 complete — SpriteFrames resource built (9 anims, 42 total frames). ADR-007 added. |
+| 2026-04-25 | GitHub repo initialized — github.com/erikchvac-byte/Game (private). Initial commit pushed. |
+| 2026-04-25 | Permission allowlist added to .claude/settings.json (49 MCP + PowerShell entries). |
+| 2026-04-25 | CLAUDE.md created with project reference (MCP params, asset layout, frame counts). |
