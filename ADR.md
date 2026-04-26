@@ -93,11 +93,21 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 |---|-----------|--------|
 | M0 | Project settings + asset copy | ✅ Done |
 | M1 | SpriteFrames resource | ✅ Done |
-| M2 | Player scene (no script) | Pending |
-| M3 | player.gd movement script | Pending |
+| M2 | Player scene (no script) | ✅ Done |
+| M3 | player.gd movement script | ✅ Done |
 | M4 | player_animation.gd | Pending |
 | M5 | World scene + TileMapLayer | Pending |
 | M6 | Main scene + camera limits | Pending |
+
+---
+
+## ADR-008: Player Movement Speeds — Walk 60 / Run 110 px/s
+**Status:** Accepted
+**Date:** 2026-04-25
+**Context:** player.gd needed concrete speed values for walk and run at 320×180 (16×16 tiles).
+**Decision:** `WALK_SPEED = 60.0`, `RUN_SPEED = 110.0` px/s. Run triggered by Shift key (`run` input action).
+**Rationale:** 60px/s ≈ 3.75 tiles/s walk; 110px/s ≈ 6.875 tiles/s run. Feels natural for top-down oblique at this resolution. Values are tunable — exposed as constants at top of script.
+**Consequences:** Revisit during playtesting. `facing_left` bool on player root lets animation script drive `flip_h` without duplicating direction logic.
 
 ---
 
@@ -114,6 +124,8 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 ## Testing Results
 - M0: Project settings verified via `get_project_info` — 320×180 viewport, 1280×720 window confirmed.
 - M1: SpriteFrames created via `execute_editor_script` — all 9 animations loaded and saved with correct frame counts.
+- M2: Player scene created — CharacterBody2D root, CollisionShape2D (CapsuleShape2D r=4 h=12), AnimatedSprite2D with SpriteFrames attached. `motion_mode = MOTION_MODE_FLOATING` confirmed.
+- M3: player.gd validates clean. Script attached to Player root. `run` input action registered (Shift key).
 
 ---
 
@@ -147,3 +159,5 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-25 | GitHub repo initialized — github.com/erikchvac-byte/Game (private). Initial commit pushed. |
 | 2026-04-25 | Permission allowlist added to .claude/settings.json (49 MCP + PowerShell entries). |
 | 2026-04-25 | CLAUDE.md created with project reference (MCP params, asset layout, frame counts). |
+| 2026-04-25 | M2 complete — Player scene built (CharacterBody2D + CollisionShape2D + AnimatedSprite2D). |
+| 2026-04-25 | M3 complete — player.gd movement script written, validated, attached. ADR-008 added. |

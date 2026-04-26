@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://dyesovrngsuel"]
+
+[ext_resource type="Script" uid="uid://4x4ple146p0l" path="res://Player/player.gd" id="1_4ntmi"]
+[ext_resource type="SpriteFrames" uid="uid://dij0rbv2wbs80" path="res://GameAssets/Player Character/player_sprites.tres" id="1_l8h54"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4ntmi"]
+radius = 4.0
+height = 12.0
+
+[node name="Player" type="CharacterBody2D" unique_id=610381412]
+motion_mode = 1
+script = ExtResource("1_4ntmi")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1649858267]
+shape = SubResource("CapsuleShape2D_4ntmi")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1104767735]
+texture_filter = 1
+sprite_frames = ExtResource("1_l8h54")
+animation = &"idle_down"

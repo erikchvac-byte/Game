@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** M1 — SpriteFrames resource (`res://GameAssets/Player Character/player_sprites.tres`)
-- **Next up:** M2 — Player scene (CharacterBody2D + CollisionShape2D + AnimatedSprite2D, no scripts)
+- **Last completed:** M3 — player.gd movement script (`res://Player/player.gd`)
+- **Next up:** M4 — player_animation.gd
 - **Open decisions:** None
 
 ---
@@ -20,6 +20,7 @@
 - `set_project_setting`: params are `key` (string) and `value` — NOT `setting`
 - `get_project_settings`: use `key` param for a single setting lookup
 - `execute_editor_script`: param is `code` (GDScript string). Use `_mcp_print()` not `print()` to capture output. No `await` — runs synchronously.
+- `add_node`: params are `type` and `name` (NOT `node_type`/`node_name`). Scene must be opened with `open_scene` first.
 - All Godot MCP tools use `additionalProperties: true` schema — always load via ToolSearch before first call in a session
 - Bridge server: `C:/Users/erikc/Dev/Game/mcp-bridge/index.js` — Godot editor must be open with MCP Pro plugin active
 
@@ -51,8 +52,8 @@
 |---|-----------|--------|
 | M0 | Project settings + asset copy | ✅ Done |
 | M1 | SpriteFrames resource | ✅ Done |
-| M2 | Player scene (no script) | Pending |
-| M3 | player.gd movement script | Pending |
+| M2 | Player scene (no script) | ✅ Done |
+| M3 | player.gd movement script | ✅ Done |
 | M4 | player_animation.gd | Pending |
 | M5 | World scene + TileMapLayer | Pending |
 | M6 | Main scene + camera limits | Pending |
