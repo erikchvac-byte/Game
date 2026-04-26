@@ -51,6 +51,16 @@
 - `TileSet` as standalone `.tres` resource
 - One `TileMapLayer` node per z-layer
 
+## Tile.png Atlas Layout (15×12, 16×16 tiles)
+- **(9,1)** — solid seamless interior grass (perfectly uniform edges, no marks)
+- **(6,0)** top-left corner, **(8,0)** top edge, **(10,0)** top-right corner
+- **(6,1)** left edge, **(10,1)** right edge
+- **(6,2)-(10,2)** grass-to-dirt cliff transition (bottom edge)
+- **(6,3)-(10,3)** pure dirt tiles
+- Cols 0–4 rows 0–5: decorative objects (rocks, mushrooms, crops)
+- Cols 0–6 rows 4–7: water tiles
+- **Do NOT mix bordered tiles for interior ground** — corner marks create T-mark artifacts at seams
+
 ## Stage 1 Milestones
 | # | Milestone | Status |
 |---|-----------|--------|

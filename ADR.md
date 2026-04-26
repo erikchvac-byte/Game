@@ -139,6 +139,7 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 - M4: player_animation.gd validates clean. Attached to AnimatedSprite2D. Fix required: explicit `var anim: String` annotation — Godot 4 type inference can't resolve string concat through an untyped parent reference.
 - M5: World scene built — Node2D root, TileMapLayer (Ground), TileSet from Tile.png (240×192, 15×12 atlas at 16×16). 20×12 starter ground painted at atlas (0,0). `update_property` does not resolve resource paths — used `execute_editor_script` + `PackedScene.pack()` + `ResourceSaver.save()` pattern instead.
 - M6: Main scene built — Node2D root instancing World + Player. Camera2D added to Player (child), limits (0,0,320,192), smoothing 8.0. Runtime verified: 240 tiles, idle_down playing, camera tracking. Stray Ground node removed from player.tscn. `PackedScene.pack()` unreliable for instanced scenes — write .tscn directly with minimal instance format instead.
+- Post-M6 fixes: (1) Side sprite faces left by default → `flip_h = not player.facing_left`. (2) Tile atlas ground layout — Tile.png (15×12) uses cliff-edge bordered tiles for grass; only tile (9,1) is a seamlessly-tiling solid interior; bordered ground uses (6,0)/(8,0)/(10,0) top edge, (6,1)/(10,1) side edges, (9,1) interior. Pixel hashing via Python/PIL used to identify tiles.
 
 ---
 
@@ -177,3 +178,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-25 | M4 complete — player_animation.gd written, validated, attached to AnimatedSprite2D. |
 | 2026-04-25 | M5 complete — World scene + TileMapLayer built. TileSet from Tile.png (15×12 atlas). 20×12 ground painted. |
 | 2026-04-26 | M6 complete — Main scene + Camera2D. ADR-009 added (minimal .tscn instance format). |
+| 2026-04-26 | Post-M6: fixed flip_h direction, fixed grass tiles (solid interior 9,1 + bordered edges). |
