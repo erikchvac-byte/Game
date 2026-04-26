@@ -1,0 +1,12 @@
+# Godot
+game/.godot/
+*.import
+*.translation
+export_presets.cfg
+
+# Node / MCP bridge
+mcp-bridge/node_modules/
+
+# OS
+.DS_Store
+Thumbs.db

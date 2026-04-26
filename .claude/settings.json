@@ -1,0 +1,62 @@
+{
+  "mcpServers": {
+    "godot-mcp-pro": {
+      "command": "node",
+      "args": ["C:/Users/erikc/Dev/Game/mcp-bridge/index.js"]
+    }
+  },
+  "permissions": {
+    "allow": [
+      "PowerShell(robocopy *)",
+      "PowerShell(Add-Type *)",
+      "mcp__godot-mcp-pro__execute_editor_script",
+      "mcp__godot-mcp-pro__set_project_setting",
+      "mcp__godot-mcp-pro__get_project_info",
+      "mcp__godot-mcp-pro__get_project_settings",
+      "mcp__godot-mcp-pro__get_filesystem_tree",
+      "mcp__godot-mcp-pro__get_scene_tree",
+      "mcp__godot-mcp-pro__get_game_scene_tree",
+      "mcp__godot-mcp-pro__get_scene_file_content",
+      "mcp__godot-mcp-pro__get_node_properties",
+      "mcp__godot-mcp-pro__get_game_node_properties",
+      "mcp__godot-mcp-pro__get_editor_errors",
+      "mcp__godot-mcp-pro__get_editor_screenshot",
+      "mcp__godot-mcp-pro__get_game_screenshot",
+      "mcp__godot-mcp-pro__get_output_log",
+      "mcp__godot-mcp-pro__read_script",
+      "mcp__godot-mcp-pro__read_resource",
+      "mcp__godot-mcp-pro__list_scripts",
+      "mcp__godot-mcp-pro__validate_script",
+      "mcp__godot-mcp-pro__open_scene",
+      "mcp__godot-mcp-pro__save_scene",
+      "mcp__godot-mcp-pro__create_scene",
+      "mcp__godot-mcp-pro__delete_scene",
+      "mcp__godot-mcp-pro__play_scene",
+      "mcp__godot-mcp-pro__stop_scene",
+      "mcp__godot-mcp-pro__reload_project",
+      "mcp__godot-mcp-pro__add_node",
+      "mcp__godot-mcp-pro__create_script",
+      "mcp__godot-mcp-pro__attach_script",
+      "mcp__godot-mcp-pro__wait_for_node",
+      "mcp__godot-mcp-pro__clear_output",
+      "mcp__godot-mcp-pro__simulate_key",
+      "mcp__godot-mcp-pro__simulate_sequence",
+      "mcp__godot-mcp-pro__tilemap_set_cell",
+      "mcp__godot-mcp-pro__tilemap_fill_rect",
+      "mcp__godot-mcp-pro__tilemap_get_used_cells",
+      "mcp__godot-mcp-pro__project_path_to_uid",
+      "mcp__filesystem__read_text_file",
+      "mcp__filesystem__write_file",
+      "mcp__filesystem__create_directory",
+      "mcp__filesystem__move_file",
+      "mcp__filesystem__directory_tree",
+      "mcp__filesystem__list_allowed_directories",
+      "mcp__pixellab__get_balance",
+      "mcp__pixellab__generate_image_pixflux",
+      "mcp__pixellab__get_tiles_pro",
+      "mcp__pixellab__create_tiles_pro",
+      "mcp__pixellab__create_map_object",
+      "mcp__pixellab__get_map_object"
+    ]
+  }
+}
