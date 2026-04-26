@@ -21,6 +21,10 @@
 - `get_project_settings`: use `key` param for a single setting lookup
 - `execute_editor_script`: param is `code` (GDScript string). Use `_mcp_print()` not `print()` to capture output. No `await` — runs synchronously.
 - `add_node`: params are `type` and `name` (NOT `node_type`/`node_name`). Scene must be opened with `open_scene` first.
+- `update_property`: does NOT resolve resource paths — use `execute_editor_script` with `load()` to assign resources.
+- `save_scene`: saves the currently active editor scene, not necessarily the one you last modified. Always call `open_scene` before `save_scene`.
+- `tilemap_fill_rect`: params unreliable — use `execute_editor_script` with a `set_cell()` loop instead.
+- Scene write pattern: `PackedScene.new()` → `pack(root)` → `ResourceSaver.save(packed, path)` inside `execute_editor_script`.
 - All Godot MCP tools use `additionalProperties: true` schema — always load via ToolSearch before first call in a session
 - Bridge server: `C:/Users/erikc/Dev/Game/mcp-bridge/index.js` — Godot editor must be open with MCP Pro plugin active
 
