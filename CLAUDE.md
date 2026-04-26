@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** M3 — player.gd movement script (`res://Player/player.gd`)
-- **Next up:** M4 — player_animation.gd
+- **Last completed:** M4 — player_animation.gd (`res://Player/player_animation.gd`)
+- **Next up:** M5 — World scene + TileMapLayer
 - **Open decisions:** None
 
 ---
@@ -54,6 +54,6 @@
 | M1 | SpriteFrames resource | ✅ Done |
 | M2 | Player scene (no script) | ✅ Done |
 | M3 | player.gd movement script | ✅ Done |
-| M4 | player_animation.gd | Pending |
+| M4 | player_animation.gd | ✅ Done |
 | M5 | World scene + TileMapLayer | Pending |
 | M6 | Main scene + camera limits | Pending |

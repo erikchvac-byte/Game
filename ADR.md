@@ -95,7 +95,7 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | M1 | SpriteFrames resource | ✅ Done |
 | M2 | Player scene (no script) | ✅ Done |
 | M3 | player.gd movement script | ✅ Done |
-| M4 | player_animation.gd | Pending |
+| M4 | player_animation.gd | ✅ Done |
 | M5 | World scene + TileMapLayer | Pending |
 | M6 | Main scene + camera limits | Pending |
 
@@ -126,6 +126,7 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 - M1: SpriteFrames created via `execute_editor_script` — all 9 animations loaded and saved with correct frame counts.
 - M2: Player scene created — CharacterBody2D root, CollisionShape2D (CapsuleShape2D r=4 h=12), AnimatedSprite2D with SpriteFrames attached. `motion_mode = MOTION_MODE_FLOATING` confirmed.
 - M3: player.gd validates clean. Script attached to Player root. `run` input action registered (Shift key).
+- M4: player_animation.gd validates clean. Attached to AnimatedSprite2D. Fix required: explicit `var anim: String` annotation — Godot 4 type inference can't resolve string concat through an untyped parent reference.
 
 ---
 
@@ -161,3 +162,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-25 | CLAUDE.md created with project reference (MCP params, asset layout, frame counts). |
 | 2026-04-25 | M2 complete — Player scene built (CharacterBody2D + CollisionShape2D + AnimatedSprite2D). |
 | 2026-04-25 | M3 complete — player.gd movement script written, validated, attached. ADR-008 added. |
+| 2026-04-25 | M4 complete — player_animation.gd written, validated, attached to AnimatedSprite2D. |

@@ -2,6 +2,7 @@
 
 [ext_resource type="Script" uid="uid://4x4ple146p0l" path="res://Player/player.gd" id="1_4ntmi"]
 [ext_resource type="SpriteFrames" uid="uid://dij0rbv2wbs80" path="res://GameAssets/Player Character/player_sprites.tres" id="1_l8h54"]
+[ext_resource type="Script" uid="uid://kuqmgkfk44xu" path="res://Player/player_animation.gd" id="3_btcbx"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4ntmi"]
 radius = 4.0
@@ -18,3 +19,4 @@ shape = SubResource("CapsuleShape2D_4ntmi")
 texture_filter = 1
 sprite_frames = ExtResource("1_l8h54")
 animation = &"idle_down"
+script = ExtResource("3_btcbx")
