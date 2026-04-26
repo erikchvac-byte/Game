@@ -96,7 +96,7 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | M2 | Player scene (no script) | ✅ Done |
 | M3 | player.gd movement script | ✅ Done |
 | M4 | player_animation.gd | ✅ Done |
-| M5 | World scene + TileMapLayer | Pending |
+| M5 | World scene + TileMapLayer | ✅ Done |
 | M6 | Main scene + camera limits | Pending |
 
 ---
@@ -127,6 +127,7 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 - M2: Player scene created — CharacterBody2D root, CollisionShape2D (CapsuleShape2D r=4 h=12), AnimatedSprite2D with SpriteFrames attached. `motion_mode = MOTION_MODE_FLOATING` confirmed.
 - M3: player.gd validates clean. Script attached to Player root. `run` input action registered (Shift key).
 - M4: player_animation.gd validates clean. Attached to AnimatedSprite2D. Fix required: explicit `var anim: String` annotation — Godot 4 type inference can't resolve string concat through an untyped parent reference.
+- M5: World scene built — Node2D root, TileMapLayer (Ground), TileSet from Tile.png (240×192, 15×12 atlas at 16×16). 20×12 starter ground painted at atlas (0,0). `update_property` does not resolve resource paths — used `execute_editor_script` + `PackedScene.pack()` + `ResourceSaver.save()` pattern instead.
 
 ---
 
@@ -163,3 +164,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-25 | M2 complete — Player scene built (CharacterBody2D + CollisionShape2D + AnimatedSprite2D). |
 | 2026-04-25 | M3 complete — player.gd movement script written, validated, attached. ADR-008 added. |
 | 2026-04-25 | M4 complete — player_animation.gd written, validated, attached to AnimatedSprite2D. |
+| 2026-04-25 | M5 complete — World scene + TileMapLayer built. TileSet from Tile.png (15×12 atlas). 20×12 ground painted. |
