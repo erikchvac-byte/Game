@@ -20,3 +20,11 @@ texture_filter = 1
 sprite_frames = ExtResource("1_l8h54")
 animation = &"idle_down"
 script = ExtResource("3_btcbx")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=879633460]
+limit_left = 0
+limit_top = 0
+limit_right = 320
+limit_bottom = 192
+position_smoothing_enabled = true
+position_smoothing_speed = 8.0

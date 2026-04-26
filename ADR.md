@@ -88,6 +88,16 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-009: Main Scene Structure — Minimal Instance Format
+**Status:** Accepted
+**Date:** 2026-04-26
+**Context:** M6 needed a Main scene composing World + Player. Using `execute_editor_script` with `PackedScene.pack()` expanded instanced scenes inline, duplicating tile data and breaking unique_ids — Player didn't appear at runtime.
+**Decision:** Write `main.tscn` directly using the minimal Godot scene instance format: `instance=ExtResource(...)` with no child node overrides.
+**Rationale:** The minimal format keeps each scene self-contained. Child nodes and their properties stay in their own `.tscn` files; main.tscn only stores the instance references and top-level property overrides (e.g. `position`).
+**Consequences:** Future changes to world.tscn or player.tscn are automatically reflected in main.tscn with no re-save needed.
+
+---
+
 ## Stage 1 — Milestones
 | # | Milestone | Status |
 |---|-----------|--------|
@@ -97,7 +107,7 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | M3 | player.gd movement script | ✅ Done |
 | M4 | player_animation.gd | ✅ Done |
 | M5 | World scene + TileMapLayer | ✅ Done |
-| M6 | Main scene + camera limits | Pending |
+| M6 | Main scene + camera limits | ✅ Done |
 
 ---
 
@@ -128,6 +138,7 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 - M3: player.gd validates clean. Script attached to Player root. `run` input action registered (Shift key).
 - M4: player_animation.gd validates clean. Attached to AnimatedSprite2D. Fix required: explicit `var anim: String` annotation — Godot 4 type inference can't resolve string concat through an untyped parent reference.
 - M5: World scene built — Node2D root, TileMapLayer (Ground), TileSet from Tile.png (240×192, 15×12 atlas at 16×16). 20×12 starter ground painted at atlas (0,0). `update_property` does not resolve resource paths — used `execute_editor_script` + `PackedScene.pack()` + `ResourceSaver.save()` pattern instead.
+- M6: Main scene built — Node2D root instancing World + Player. Camera2D added to Player (child), limits (0,0,320,192), smoothing 8.0. Runtime verified: 240 tiles, idle_down playing, camera tracking. Stray Ground node removed from player.tscn. `PackedScene.pack()` unreliable for instanced scenes — write .tscn directly with minimal instance format instead.
 
 ---
 
@@ -165,3 +176,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-25 | M3 complete — player.gd movement script written, validated, attached. ADR-008 added. |
 | 2026-04-25 | M4 complete — player_animation.gd written, validated, attached to AnimatedSprite2D. |
 | 2026-04-25 | M5 complete — World scene + TileMapLayer built. TileSet from Tile.png (15×12 atlas). 20×12 ground painted. |
+| 2026-04-26 | M6 complete — Main scene + Camera2D. ADR-009 added (minimal .tscn instance format). |

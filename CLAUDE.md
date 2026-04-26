@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** M5 — World scene + TileMapLayer (`res://World/world.tscn`)
-- **Next up:** M6 — Main scene + camera limits
+- **Last completed:** M6 — Main scene + camera limits (`res://main.tscn`)
+- **Next up:** Stage 1 complete — awaiting Stage 2 planning
 - **Open decisions:** None
 
 ---
@@ -24,7 +24,7 @@
 - `update_property`: does NOT resolve resource paths — use `execute_editor_script` with `load()` to assign resources.
 - `save_scene`: saves the currently active editor scene, not necessarily the one you last modified. Always call `open_scene` before `save_scene`.
 - `tilemap_fill_rect`: params unreliable — use `execute_editor_script` with a `set_cell()` loop instead.
-- Scene write pattern: `PackedScene.new()` → `pack(root)` → `ResourceSaver.save(packed, path)` inside `execute_editor_script`.
+- Scene write pattern: `PackedScene.new()` → `pack(root)` → `ResourceSaver.save(packed, path)` inside `execute_editor_script`. **Do NOT use this for scenes that instance other scenes** — `pack()` expands instances inline and breaks unique_ids. Write `.tscn` directly via the Write tool using minimal instance format (`instance=ExtResource(...)`) instead.
 - All Godot MCP tools use `additionalProperties: true` schema — always load via ToolSearch before first call in a session
 - Bridge server: `C:/Users/erikc/Dev/Game/mcp-bridge/index.js` — Godot editor must be open with MCP Pro plugin active
 
@@ -60,4 +60,4 @@
 | M3 | player.gd movement script | ✅ Done |
 | M4 | player_animation.gd | ✅ Done |
 | M5 | World scene + TileMapLayer | ✅ Done |
-| M6 | Main scene + camera limits | Pending |
+| M6 | Main scene + camera limits | ✅ Done |
