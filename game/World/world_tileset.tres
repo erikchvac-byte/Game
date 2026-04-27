@@ -1,9 +1,6 @@
 [gd_resource type="TileSet" format=3 uid="uid://nk6run28bicj"]
 
-[ext_resource type="Texture2D" uid="uid://btj2sb51y3f4" path="res://GameAssets/Tiles/Tile.png" id="1_omaeh"]
-
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wr8cr"]
-texture = ExtResource("1_omaeh")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0

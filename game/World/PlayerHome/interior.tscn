@@ -1,0 +1,66 @@
+[gd_scene format=4 uid="uid://interiortscn1"]
+
+[ext_resource type="PackedScene" uid="uid://dyesovrngsuel" path="res://Player/player.tscn" id="1_player"]
+[ext_resource type="Script" uid="uid://interiorgd001" path="res://World/PlayerHome/interior.gd" id="2_script"]
+
+[sub_resource type="RectangleShape2D" id="NorthWall"]
+size = Vector2(160, 16)
+
+[sub_resource type="RectangleShape2D" id="SouthLeft"]
+size = Vector2(64, 16)
+
+[sub_resource type="RectangleShape2D" id="SouthRight"]
+size = Vector2(64, 16)
+
+[sub_resource type="RectangleShape2D" id="WestWall"]
+size = Vector2(16, 96)
+
+[sub_resource type="RectangleShape2D" id="EastWall"]
+size = Vector2(16, 96)
+
+[sub_resource type="RectangleShape2D" id="ExitShape"]
+size = Vector2(30, 12)
+
+[node name="Interior" type="Node2D" unique_id=3100000001]
+script = ExtResource("2_script")
+
+[node name="WallBg" type="Polygon2D" parent="." unique_id=3100000011]
+color = Color(0.25, 0.15, 0.08, 1)
+polygon = PackedVector2Array(0, 0, 160, 0, 160, 128, 0, 128)
+z_index = -1
+
+[node name="FloorBg" type="Polygon2D" parent="." unique_id=3100000012]
+color = Color(0.6, 0.42, 0.22, 1)
+polygon = PackedVector2Array(16, 16, 144, 16, 144, 112, 16, 112)
+z_index = -1
+
+[node name="Walls" type="StaticBody2D" parent="." unique_id=3100000002]
+
+[node name="North" type="CollisionShape2D" parent="Walls" unique_id=3100000003]
+position = Vector2(80, 8)
+shape = SubResource("NorthWall")
+
+[node name="SouthLeft" type="CollisionShape2D" parent="Walls" unique_id=3100000004]
+position = Vector2(32, 120)
+shape = SubResource("SouthLeft")
+
+[node name="SouthRight" type="CollisionShape2D" parent="Walls" unique_id=3100000005]
+position = Vector2(128, 120)
+shape = SubResource("SouthRight")
+
+[node name="West" type="CollisionShape2D" parent="Walls" unique_id=3100000006]
+position = Vector2(8, 64)
+shape = SubResource("WestWall")
+
+[node name="East" type="CollisionShape2D" parent="Walls" unique_id=3100000007]
+position = Vector2(152, 64)
+shape = SubResource("EastWall")
+
+[node name="ExitDoor" type="Area2D" parent="." unique_id=3100000009]
+position = Vector2(80, 124)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor" unique_id=3100000010]
+shape = SubResource("ExitShape")
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector2(80, 64)
