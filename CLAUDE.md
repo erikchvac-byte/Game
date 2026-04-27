@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** M6 — Main scene + camera limits (`res://main.tscn`)
-- **Next up:** Stage 1 complete — awaiting Stage 2 planning
+- **Last completed:** Player home door + interior scene (session 4, commit `9508969`)
+- **Next up:** Interior tileset (replace Polygon2D floor with proper tiles from `GameAssets/interior/`), then Stage 2 planning
 - **Open decisions:** None
 
 ---
@@ -61,6 +61,27 @@
 - Cols 0–6 rows 4–7: water tiles
 - **Do NOT mix bordered tiles for interior ground** — corner marks create T-mark artifacts at seams
 
+## Scene Transition Notes (ADR-010)
+- `get_tree().change_scene_to_file(path)` works from any node
+- Cross-scene state: `Engine.set_meta("key", value)` / `Engine.get_meta("key")` / `Engine.remove_meta("key")`
+- **DO NOT** use autoloads added at runtime — they don't become globally visible to scripts until editor restart
+- Interior scene is self-contained with its own Player instance; camera limits overridden in `_ready()`
+- Add `await get_tree().create_timer(0.4).timeout` before connecting ExitDoor signal to prevent spawn-trigger
+- Interior: `res://World/PlayerHome/interior.tscn` — 160×128 room, Polygon2D floor/wall, exit at south-center
+- Exterior door: `DoorEntrance` Area2D at world (112, 141); house collision is 3-shape (upper block + left/right lower flanking a 58px door gap)
+- `Engine.set_meta("spawn_position", Vector2(112, 168))` set on interior exit → consumed in `main.gd._ready()`
+
+## Interior Assets Available
+- `res://GameAssets/interior/` — bed, carpet, furniture, kitchen, decorations, stairs
+- `res://GameAssets/interior/tiles.PNG` (321×80) — floor/wall tile options for future interior tileset
+- `res://GameAssets/Village/Door Animation/Door1-4.png` (29×19 each) — door open animation frames
+
+## MCP / Editor Gotchas (session 4)
+- Godot auto-corrects invented UIDs in `.tscn` to match `.gd.uid` files — expect UID rewrites on editor save
+- `enabled = false` / `visible = false` can be accidentally set on nodes via editor UI during MCP sessions — verify after complex execute_editor_script runs
+- `class_name Foo` conflicts with any autoload also named `Foo` — never reuse autoload names for class_name
+- `Polygon2D` with `z_index = -1` works correctly as a colored background in Node2D scenes
+
 ## Stage 1 Milestones
 | # | Milestone | Status |
 |---|-----------|--------|
@@ -71,3 +92,4 @@
 | M4 | player_animation.gd | ✅ Done |
 | M5 | World scene + TileMapLayer | ✅ Done |
 | M6 | Main scene + camera limits | ✅ Done |
+| Post | Player home door + interior | ✅ Done |

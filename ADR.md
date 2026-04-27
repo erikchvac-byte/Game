@@ -153,9 +153,44 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-010: Scene Transitions — get_tree().change_scene_to_file()
+**Status:** Accepted
+**Date:** 2026-04-27
+**Context:** Player home needs bidirectional interior/exterior transitions.
+**Decision:** `get_tree().change_scene_to_file(path)` for transitions. Cross-scene state (spawn position) passed via `Engine.set_meta()` / `Engine.get_meta()`. Interior is a self-contained scene with its own Player instance.
+**Rationale:** `change_scene_to_file` works from any node in the tree. `Engine.set_meta()` is a built-in global that persists across scene changes without requiring an autoload — avoids the autoload-registration-at-runtime problem (new autoloads don't become globally visible to scripts until the next editor restart).
+**Consequences:** Each location scene must have its own Player instance. Interior camera limits overridden at runtime in `_ready()`. A 0.4s delay before connecting `ExitDoor.body_entered` prevents immediate re-trigger on spawn.
+
+---
+
+## ADR-011: Interior Room Visuals — Polygon2D Background
+**Status:** Accepted
+**Date:** 2026-04-27
+**Context:** Interior scene needed floor + wall visuals without a new tileset.
+**Decision:** Two `Polygon2D` nodes at `z_index = -1`: dark brown wall rectangle (160×128), warm brown floor rectangle (128×96) inset 16px on all sides. The door gap in the south wall shows the dark wall color, reading as a doorway opening.
+**Rationale:** `Polygon2D` renders correctly in world space within a Node2D scene. Avoids creating a new TileSet and painting tiles at this stage. Easy to replace with proper tiles later.
+**Consequences:** Floor color is a placeholder. Proper interior tileset (from `GameAssets/interior/tiles.PNG`) deferred to later session.
+
+---
+
+## Known Issues
+- TileSet atlas creates ~1200 duplicate-tile errors in editor log on each project reload. These are from the M5 setup scripts running `create_tile()` for all 180 positions; tiles are already saved in `.tres`. Harmless — tilemap renders correctly.
+- `class_name` conflicts with autoload names of the same string — avoid naming a class the same as any registered autoload.
+- Godot auto-corrects invented UIDs in `.tscn` ext_resource entries to match what it assigns from `.gd.uid` files. Always use Godot-assigned UIDs or accept that Godot will correct them on next editor write.
+- Editor UI interactions (Toggle Visible, Set enabled) during MCP sessions can accidentally set `enabled = false` / `visible = false` on nodes. Check .tscn files after execute_editor_script sessions that involve scene manipulation.
+
+---
+
+## Open Questions
+- Interior floor tiles: replace Polygon2D with proper tileset once user finalizes grass tiles.
+- Exterior house has no collision on the "enter" path from west/east — camera/world limits naturally prevent this for now.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation (6f) — wire after walk is confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
+- Interior tileset: `GameAssets/interior/` has bed, furniture, carpet, kitchen assets ready to use
 - Audio: no tool in stack yet — deferred
 - GitHub MCP: not installed — using `gh` CLI directly (sufficient for now)
 
@@ -179,3 +214,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-25 | M5 complete — World scene + TileMapLayer built. TileSet from Tile.png (15×12 atlas). 20×12 ground painted. |
 | 2026-04-26 | M6 complete — Main scene + Camera2D. ADR-009 added (minimal .tscn instance format). |
 | 2026-04-26 | Post-M6: fixed flip_h direction, fixed grass tiles (solid interior 9,1 + bordered edges). |
+| 2026-04-27 | Player home door + interior scene. ADR-010/011 added. House collision corrected (3-shape door gap). |
