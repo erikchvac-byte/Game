@@ -173,6 +173,17 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-012: Ground Tileset Variety — FiveGrass + MabeyFive (10 tiles)
+**Status:** Accepted
+**Date:** 2026-04-28
+**Context:** Initial ground used Tile.png and grass_stone_dirt.png tiles which looked uniform. A 32×32 Grasses.aseprite decoration overlay was tried but rejected (mixed plant/animal sprites with solid backgrounds). Two Aseprite files — FiveGrass.aseprite and MabeyFive.aseprite — each provide 5 clean 16×16 grass tile variants.
+**Decision:** Replace all 960 ground cells with random tiles from FiveGrass (source 2, 5 variants) and MabeyFive (source 3, 5 variants). Each tile gets a random flip_h/flip_v alternative to break visual repetition. Removed decoration_tileset.tres and grasses_sheet.png.
+**Rationale:** 10 base tiles × 4 transform alternatives = 40 effective visual variants. Pure random scatter with seed 77 produces natural-looking ground without checkerboard artifacts. No 32×32 sprites — all tiles are clean 16×16 ground textures.
+**Consequences:** world_tileset.tres now has 3 sources (0=Tile.png, 1=grass_stone_dirt.png, 2=fivegrass.png, 3=mabeyfive.png). Tile.png and grass_stone_dirt.png are still referenced but no longer used for ground cells — available for other uses (paths, dirt, cliff edges).
+**Testing:** Verified in-game — smooth organic green ground, no blank tiles, no checkerboard.
+
+---
+
 ## Known Issues
 - TileSet atlas creates ~1200 duplicate-tile errors in editor log on each project reload. These are from the M5 setup scripts running `create_tile()` for all 180 positions; tiles are already saved in `.tres`. Harmless — tilemap renders correctly.
 - `class_name` conflicts with autoload names of the same string — avoid naming a class the same as any registered autoload.
@@ -215,3 +226,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-26 | M6 complete — Main scene + Camera2D. ADR-009 added (minimal .tscn instance format). |
 | 2026-04-26 | Post-M6: fixed flip_h direction, fixed grass tiles (solid interior 9,1 + bordered edges). |
 | 2026-04-27 | Player home door + interior scene. ADR-010/011 added. House collision corrected (3-shape door gap). |
+| 2026-04-28 | Ground variety: FiveGrass + MabeyFive (10 tiles, 4 flip alternatives each). ADR-012 added. Removed 32×32 overlay. |

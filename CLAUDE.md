@@ -3,7 +3,7 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Player home door + interior scene (session 4, commit `9508969`)
+- **Last completed:** Ground tileset variety — FiveGrass + MabeyFive (10 tiles × 4 flip alts), all 960 ground cells covered (session 5)
 - **Next up:** Interior tileset (replace Polygon2D floor with proper tiles from `GameAssets/interior/`), then Stage 2 planning
 - **Open decisions:** None
 
@@ -75,6 +75,19 @@
 - `res://GameAssets/interior/` — bed, carpet, furniture, kitchen, decorations, stairs
 - `res://GameAssets/interior/tiles.PNG` (321×80) — floor/wall tile options for future interior tileset
 - `res://GameAssets/Village/Door Animation/Door1-4.png` (29×19 each) — door open animation frames
+
+## Ground Tileset (ADR-012, session 5)
+- Sources: 0=Tile.png, 1=grass_stone_dirt.png, 2=fivegrass.png (5 tiles), 3=mabeyfive.png (5 tiles)
+- All 960 ground cells use sources 2/3 with random variant (0–4) and flip alt (0–3)
+- Flip alternatives added via `TileSetAtlasSource.create_alternative_tile()` + `TileData.flip_h/flip_v`
+- Asset files: `res://GameAssets/Tiles/fivegrass.png` and `res://GameAssets/Tiles/mabeyfive.png`
+- `get_game_screenshot` supports `save_path` param — use it to avoid base64 token overflow
+
+## MCP / Editor Gotchas (session 5)
+- **Direct .tres edits are overwritten** — Godot editor rewrites tileset on reload. Always use `execute_editor_script` for tileset changes, never the Write/Edit tools.
+- **Textures must be imported before `load()`** — copy PNG into project, call `EditorInterface.get_resource_filesystem().scan()`, verify `.import` file exists, then run script.
+- `TileSet.add_source(src, desired_id)` — second param forces the source ID (avoids getting unexpected ID).
+- `TileSet.remove_source(id)` before re-adding ensures clean state when replacing a broken source.
 
 ## MCP / Editor Gotchas (session 4)
 - Godot auto-corrects invented UIDs in `.tscn` to match `.gd.uid` files — expect UID rewrites on editor save

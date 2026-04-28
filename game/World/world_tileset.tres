@@ -1,6 +1,12 @@
 [gd_resource type="TileSet" format=3 uid="uid://nk6run28bicj"]
 
+[ext_resource type="Texture2D" uid="uid://btj2sb51y3f4" path="res://GameAssets/Tiles/Tile.png" id="1_wr8cr"]
+[ext_resource type="Texture2D" uid="uid://cft6bbvv44dxv" path="res://GameAssets/Tiles/grass_stone_dirt.png" id="2_xb6uu"]
+[ext_resource type="Texture2D" uid="uid://dobwmh1v4d057" path="res://GameAssets/Tiles/fivegrass.png" id="3_5060s"]
+[ext_resource type="Texture2D" uid="uid://dauc6r0c5p8p7" path="res://GameAssets/Tiles/mabeyfive.png" id="4_ajjhx"]
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_wr8cr"]
+texture = ExtResource("1_wr8cr")
 0:0/0 = 0
 1:0/0 = 0
 2:0/0 = 0
@@ -182,5 +188,124 @@
 13:11/0 = 0
 14:11/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_s5wxl"]
+texture = ExtResource("2_xb6uu")
+1:0/next_alternative_id = 3
+1:0/0 = 0
+1:0/1 = 1
+1:0/2 = 2
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+8:0/0 = 0
+9:0/0 = 0
+10:0/0 = 0
+11:0/0 = 0
+12:0/0 = 0
+13:0/0 = 0
+17:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_c0le5"]
+texture = ExtResource("3_5060s")
+0:0/next_alternative_id = 4
+0:0/0 = 0
+0:0/1 = 1
+0:0/1/flip_h = true
+0:0/2 = 2
+0:0/2/flip_v = true
+0:0/3 = 3
+0:0/3/flip_h = true
+0:0/3/flip_v = true
+1:0/next_alternative_id = 4
+1:0/0 = 0
+1:0/1 = 1
+1:0/1/flip_h = true
+1:0/2 = 2
+1:0/2/flip_v = true
+1:0/3 = 3
+1:0/3/flip_h = true
+1:0/3/flip_v = true
+2:0/next_alternative_id = 4
+2:0/0 = 0
+2:0/1 = 1
+2:0/1/flip_h = true
+2:0/2 = 2
+2:0/2/flip_v = true
+2:0/3 = 3
+2:0/3/flip_h = true
+2:0/3/flip_v = true
+3:0/next_alternative_id = 4
+3:0/0 = 0
+3:0/1 = 1
+3:0/1/flip_h = true
+3:0/2 = 2
+3:0/2/flip_v = true
+3:0/3 = 3
+3:0/3/flip_h = true
+3:0/3/flip_v = true
+4:0/next_alternative_id = 4
+4:0/0 = 0
+4:0/1 = 1
+4:0/1/flip_h = true
+4:0/2 = 2
+4:0/2/flip_v = true
+4:0/3 = 3
+4:0/3/flip_h = true
+4:0/3/flip_v = true
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_2lak7"]
+texture = ExtResource("4_ajjhx")
+0:0/next_alternative_id = 4
+0:0/0 = 0
+0:0/1 = 1
+0:0/1/flip_h = true
+0:0/2 = 2
+0:0/2/flip_v = true
+0:0/3 = 3
+0:0/3/flip_h = true
+0:0/3/flip_v = true
+1:0/next_alternative_id = 4
+1:0/0 = 0
+1:0/1 = 1
+1:0/1/flip_h = true
+1:0/2 = 2
+1:0/2/flip_v = true
+1:0/3 = 3
+1:0/3/flip_h = true
+1:0/3/flip_v = true
+2:0/next_alternative_id = 4
+2:0/0 = 0
+2:0/1 = 1
+2:0/1/flip_h = true
+2:0/2 = 2
+2:0/2/flip_v = true
+2:0/3 = 3
+2:0/3/flip_h = true
+2:0/3/flip_v = true
+3:0/next_alternative_id = 4
+3:0/0 = 0
+3:0/1 = 1
+3:0/1/flip_h = true
+3:0/2 = 2
+3:0/2/flip_v = true
+3:0/3 = 3
+3:0/3/flip_h = true
+3:0/3/flip_v = true
+4:0/next_alternative_id = 4
+4:0/0 = 0
+4:0/1 = 1
+4:0/1/flip_h = true
+4:0/2 = 2
+4:0/2/flip_v = true
+4:0/3 = 3
+4:0/3/flip_h = true
+4:0/3/flip_v = true
+
 [resource]
 sources/0 = SubResource("TileSetAtlasSource_wr8cr")
+sources/1 = SubResource("TileSetAtlasSource_s5wxl")
+sources/2 = SubResource("TileSetAtlasSource_c0le5")
+sources/3 = SubResource("TileSetAtlasSource_2lak7")
