@@ -8,13 +8,19 @@
 [ext_resource type="Texture2D" uid="uid://bk14kws33pxke" path="res://GameAssets/ErikPlayer/walk_south_2.png" id="6_cu6bu"]
 [ext_resource type="Texture2D" uid="uid://cgjje7hbdi22x" path="res://GameAssets/ErikPlayer/walk_south_3.png" id="7_fhv7u"]
 [ext_resource type="Texture2D" uid="uid://c583qsw35vsff" path="res://GameAssets/ErikPlayer/walk_east_0.png" id="8_a3gnj"]
+[ext_resource type="Texture2D" uid="uid://cmi258r0xcrpu" path="res://GameAssets/ErikPlayer/walk_south_4.png" id="8_fhv7u"]
 [ext_resource type="Texture2D" uid="uid://c4ge6x7qp21rf" path="res://GameAssets/ErikPlayer/walk_east_1.png" id="9_7mrog"]
+[ext_resource type="Texture2D" uid="uid://b3d2wjpoiku1t" path="res://GameAssets/ErikPlayer/walk_south_5.png" id="9_a3gnj"]
 [ext_resource type="Texture2D" uid="uid://ime7iqeueipi" path="res://GameAssets/ErikPlayer/walk_east_2.png" id="10_hlct5"]
 [ext_resource type="Texture2D" uid="uid://bylnwe7ymgrfa" path="res://GameAssets/ErikPlayer/walk_east_3.png" id="11_f7i16"]
 [ext_resource type="Texture2D" uid="uid://hom4pv8ucsba" path="res://GameAssets/ErikPlayer/walk_north_0.png" id="12_fg4ry"]
 [ext_resource type="Texture2D" uid="uid://blo4y66ldb5jr" path="res://GameAssets/ErikPlayer/walk_north_1.png" id="13_43jhj"]
+[ext_resource type="Texture2D" uid="uid://cmelj0mx4y5a" path="res://GameAssets/ErikPlayer/walk_east_4.png" id="14_7mrog"]
 [ext_resource type="Texture2D" uid="uid://dxhduf3vsm3qp" path="res://GameAssets/ErikPlayer/walk_north_2.png" id="14_a1eih"]
 [ext_resource type="Texture2D" uid="uid://csbv2konifaam" path="res://GameAssets/ErikPlayer/walk_north_3.png" id="15_5xyti"]
+[ext_resource type="Texture2D" uid="uid://bbs4el8ua10ft" path="res://GameAssets/ErikPlayer/walk_east_5.png" id="15_hlct5"]
+[ext_resource type="Texture2D" uid="uid://gq0xbtp6yhq7" path="res://GameAssets/ErikPlayer/walk_north_4.png" id="20_f7i16"]
+[ext_resource type="Texture2D" uid="uid://u8id51fyjnjk" path="res://GameAssets/ErikPlayer/walk_north_5.png" id="21_fg4ry"]
 
 [resource]
 animations = [{
@@ -24,7 +30,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle_down",
-"speed": 6.0
+"speed": 4.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -32,7 +38,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle_side",
-"speed": 6.0
+"speed": 4.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -40,7 +46,7 @@ animations = [{
 }],
 "loop": true,
 "name": &"idle_up",
-"speed": 6.0
+"speed": 4.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -54,6 +60,12 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("7_fhv7u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_fhv7u")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_a3gnj")
 }],
 "loop": true,
 "name": &"walk_down",
@@ -71,6 +83,12 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("11_f7i16")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_7mrog")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_hlct5")
 }],
 "loop": true,
 "name": &"walk_side",
@@ -88,6 +106,12 @@ animations = [{
 }, {
 "duration": 1.0,
 "texture": ExtResource("15_5xyti")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_f7i16")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_fg4ry")
 }],
 "loop": true,
 "name": &"walk_up",

@@ -1,7 +1,8 @@
-[gd_scene format=4 uid="uid://interiortscn1"]
+[gd_scene format=4 uid="uid://w0nleuapek5i"]
 
 [ext_resource type="PackedScene" uid="uid://dyesovrngsuel" path="res://Player/player.tscn" id="1_player"]
-[ext_resource type="Script" uid="uid://interiorgd001" path="res://World/PlayerHome/interior.gd" id="2_script"]
+[ext_resource type="Script" uid="uid://w0nleuabyaii" path="res://World/PlayerHome/interior.gd" id="2_script"]
+[ext_resource type="TileSet" uid="uid://c1tcob13w2fpk" path="res://World/PlayerHome/interior_tileset.tres" id="3_tileset"]
 
 [sub_resource type="RectangleShape2D" id="NorthWall"]
 size = Vector2(160, 16)
@@ -21,46 +22,46 @@ size = Vector2(16, 96)
 [sub_resource type="RectangleShape2D" id="ExitShape"]
 size = Vector2(30, 12)
 
-[node name="Interior" type="Node2D" unique_id=3100000001]
+[node name="Interior" type="Node2D" unique_id=-1194967295]
 script = ExtResource("2_script")
 
-[node name="WallBg" type="Polygon2D" parent="." unique_id=3100000011]
-color = Color(0.25, 0.15, 0.08, 1)
-polygon = PackedVector2Array(0, 0, 160, 0, 160, 128, 0, 128)
+[node name="FloorLayer" type="TileMapLayer" parent="." unique_id=-1194967283]
+z_index = -2
+tile_map_data = PackedByteArray("AAABAAEAAAAEAAAAAAACAAEAAAAEAAAAAAADAAEAAAAEAAAAAAAEAAEAAAAEAAAAAAAFAAEAAAAEAAAAAAAGAAEAAAAEAAAAAAAHAAEAAAAEAAAAAAAIAAEAAAAEAAAAAAABAAIAAAAEAAAAAAACAAIAAAAEAAAAAAADAAIAAAAEAAAAAAAEAAIAAAAEAAAAAAAFAAIAAAAEAAAAAAAGAAIAAAAEAAAAAAAHAAIAAAAEAAAAAAAIAAIAAAAEAAAAAAABAAMAAAAEAAAAAAACAAMAAAAEAAAAAAADAAMAAAAEAAAAAAAEAAMAAAAEAAAAAAAFAAMAAAAEAAAAAAAGAAMAAAAEAAAAAAAHAAMAAAAEAAAAAAAIAAMAAAAEAAAAAAABAAQAAAAEAAAAAAACAAQAAAAEAAAAAAADAAQAAAAEAAAAAAAEAAQAAAAEAAAAAAAFAAQAAAAEAAAAAAAGAAQAAAAEAAAAAAAHAAQAAAAEAAAAAAAIAAQAAAAEAAAAAAABAAUAAAAEAAAAAAACAAUAAAAEAAAAAAADAAUAAAAEAAAAAAAEAAUAAAAEAAAAAAAFAAUAAAAEAAAAAAAGAAUAAAAEAAAAAAAHAAUAAAAEAAAAAAAIAAUAAAAEAAAAAAABAAYAAAAEAAAAAAACAAYAAAAEAAAAAAADAAYAAAAEAAAAAAAEAAYAAAAEAAAAAAAFAAYAAAAEAAAAAAAGAAYAAAAEAAAAAAAHAAYAAAAEAAAAAAAIAAYAAAAEAAAAAAA=")
+tile_set = ExtResource("3_tileset")
+
+[node name="WallLayer" type="TileMapLayer" parent="." unique_id=-1194967282]
 z_index = -1
+tile_map_data = PackedByteArray("AAAAAAAAAAAJAAIAAAABAAAAAAAJAAIAAAACAAAAAAAJAAIAAAADAAAAAAAJAAIAAAAEAAAAAAAJAAIAAAAFAAAAAAAJAAIAAAAGAAAAAAAJAAIAAAAHAAAAAAAJAAIAAAAIAAAAAAAJAAIAAAAJAAAAAAAJAAIAAAAAAAEAAAAJAAIAAAAAAAIAAAAJAAIAAAAAAAMAAAAJAAIAAAAAAAQAAAAJAAIAAAAAAAUAAAAJAAIAAAAAAAYAAAAJAAIAAAAJAAEAAAAJAAIAAAAJAAIAAAAJAAIAAAAJAAMAAAAJAAIAAAAJAAQAAAAJAAIAAAAJAAUAAAAJAAIAAAAJAAYAAAAJAAIAAAAAAAcAAAAJAAIAAAABAAcAAAAJAAIAAAACAAcAAAAJAAIAAAADAAcAAAAJAAIAAAAGAAcAAAAJAAIAAAAHAAcAAAAJAAIAAAAIAAcAAAAJAAIAAAAJAAcAAAAJAAIAAAA=")
+tile_set = ExtResource("3_tileset")
 
-[node name="FloorBg" type="Polygon2D" parent="." unique_id=3100000012]
-color = Color(0.6, 0.42, 0.22, 1)
-polygon = PackedVector2Array(16, 16, 144, 16, 144, 112, 16, 112)
-z_index = -1
+[node name="Walls" type="StaticBody2D" parent="." unique_id=-1194967294]
 
-[node name="Walls" type="StaticBody2D" parent="." unique_id=3100000002]
-
-[node name="North" type="CollisionShape2D" parent="Walls" unique_id=3100000003]
+[node name="North" type="CollisionShape2D" parent="Walls" unique_id=-1194967293]
 position = Vector2(80, 8)
 shape = SubResource("NorthWall")
 
-[node name="SouthLeft" type="CollisionShape2D" parent="Walls" unique_id=3100000004]
+[node name="SouthLeft" type="CollisionShape2D" parent="Walls" unique_id=-1194967292]
 position = Vector2(32, 120)
 shape = SubResource("SouthLeft")
 
-[node name="SouthRight" type="CollisionShape2D" parent="Walls" unique_id=3100000005]
+[node name="SouthRight" type="CollisionShape2D" parent="Walls" unique_id=-1194967291]
 position = Vector2(128, 120)
 shape = SubResource("SouthRight")
 
-[node name="West" type="CollisionShape2D" parent="Walls" unique_id=3100000006]
+[node name="West" type="CollisionShape2D" parent="Walls" unique_id=-1194967290]
 position = Vector2(8, 64)
 shape = SubResource("WestWall")
 
-[node name="East" type="CollisionShape2D" parent="Walls" unique_id=3100000007]
+[node name="East" type="CollisionShape2D" parent="Walls" unique_id=-1194967289]
 position = Vector2(152, 64)
 shape = SubResource("EastWall")
 
-[node name="ExitDoor" type="Area2D" parent="." unique_id=3100000009]
+[node name="ExitDoor" type="Area2D" parent="." unique_id=-1194967287]
 position = Vector2(80, 124)
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor" unique_id=3100000010]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ExitDoor" unique_id=-1194967286]
 shape = SubResource("ExitShape")
 
-[node name="Player" parent="." instance=ExtResource("1_player")]
+[node name="Player" parent="." unique_id=422071633 instance=ExtResource("1_player")]
 position = Vector2(80, 64)

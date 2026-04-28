@@ -5,6 +5,7 @@
 [ext_resource type="Script" uid="uid://oa1n61k237qq" path="res://main.gd" id="3_maingd"]
 
 [node name="Main" type="Node2D" unique_id=1407496713]
+y_sort_enabled = true
 script = ExtResource("3_maingd")
 
 [node name="World" parent="." unique_id=1661554884 instance=ExtResource("1_world")]
