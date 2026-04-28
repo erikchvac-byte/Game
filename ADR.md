@@ -193,13 +193,23 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 ---
 
 ## Open Questions
-- Interior floor tiles: replace Polygon2D with proper tileset once user finalizes grass tiles.
 - Exterior house has no collision on the "enter" path from west/east — camera/world limits naturally prevent this for now.
+- Erik walk animations (PixelLab-generated) have not been playtested — quality may need iteration.
+
+---
+
+## ADR-013: Player Character — Erik (custom pixel art, 8-directional static + walk)
+**Status:** Accepted
+**Date:** 2026-04-28
+**Context:** Original player used a generic asset-pack character (59×49 px, 9 animations). User provided a custom character "Erik" — 8 directional static sprites at 68×68 px. Diagonals dropped; 4 directions kept (N/S/E/W). Walk animations generated via PixelLab `animate_with_text` from resized 64×64 reference frames.
+**Decision:** AnimatedSprite2D at scale=0.5. SpriteFrames `erik_sprites.tres` has 6 animations: idle_down/up/side + walk_down/up/side. Side animations use `flip_h` for left-facing. Walk frames: 4 per direction @ 8fps. Idle: 1 frame @ 6fps.
+**Rationale:** Keeps existing player.gd architecture unchanged. Only player_animation.gd and player.tscn updated. `var dir: String` annotation required (Godot 4 can't infer type through untyped parent).
+**Consequences:** Walk animations are AI-generated — quality may need refinement. Run animation deferred. All 16 walk frames + 4 idle frames live in `res://GameAssets/ErikPlayer/`.
 
 ---
 
 ## Future Considerations (Post Stage 1)
-- Run animation (6f) — wire after walk is confirmed
+- Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
 - Interior tileset: `GameAssets/interior/` has bed, furniture, carpet, kitchen assets ready to use
 - Audio: no tool in stack yet — deferred
@@ -227,3 +237,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-26 | Post-M6: fixed flip_h direction, fixed grass tiles (solid interior 9,1 + bordered edges). |
 | 2026-04-27 | Player home door + interior scene. ADR-010/011 added. House collision corrected (3-shape door gap). |
 | 2026-04-28 | Ground variety: FiveGrass + MabeyFive (10 tiles, 4 flip alternatives each). ADR-012 added. Removed 32×32 overlay. |
+| 2026-04-28 | Player replaced with Erik — custom 68×68 pixel art, scaled 0.5, 4-direction walk generated via PixelLab. ADR-013 added. |

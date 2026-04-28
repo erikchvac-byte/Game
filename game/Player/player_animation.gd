@@ -5,18 +5,14 @@ var _current_anim := ""
 func _process(_delta: float) -> void:
 	var player := get_parent()
 
-	var tier: String
-	if not player.is_moving:
-		tier = "idle"
-	elif player.is_running:
-		tier = "run"
+	var dir: String = player.facing
+	var anim: String
+	if player.is_moving:
+		anim = "walk_" + dir
 	else:
-		tier = "walk"
+		anim = "idle_" + dir
 
-	var anim: String = tier + "_" + player.facing
-
-	if player.facing == "side":
-		flip_h = not player.facing_left
+	flip_h = (dir == "side" and player.facing_left)
 
 	if anim != _current_anim:
 		_current_anim = anim

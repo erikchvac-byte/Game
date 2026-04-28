@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Ground tileset variety — FiveGrass + MabeyFive (10 tiles × 4 flip alts), all 960 ground cells covered (session 5)
-- **Next up:** Interior tileset (replace Polygon2D floor with proper tiles from `GameAssets/interior/`), then Stage 2 planning
+- **Last completed:** Erik player character — 4-direction walk animations (PixelLab), scaled 0.5, AnimatedSprite2D (session 5)
+- **Next up:** Playtest Erik walk quality; run animation; interior tileset; Stage 2 planning
 - **Open decisions:** None
 
 ---
@@ -31,20 +31,21 @@
 ## Asset Layout
 - Source assets: `C:/Users/erikc/Dev/Game/GameAssets/` (~800 PNGs)
 - In-project assets: `res://GameAssets/` (same tree, copied into `game/`)
-- Player sprites: `res://GameAssets/Player Character/{Idle,Walk,Run}/{Down,Side,Up}.png`
-  - Frame size: **59×49 px** per frame
-  - Idle: **4 frames** (236px wide)
-  - Walk: **4 frames** (236px wide)
-  - Run: **6 frames** (354px wide)
-  - Left = Side + `flip_h = true` (no separate asset)
+- **Erik player sprites**: `res://GameAssets/ErikPlayer/` — 64×64 px
+  - Idle: `idle_south/north/east.png` (1 frame each)
+  - Walk: `walk_south/north/east/west_0-3.png` (4 frames each, PixelLab generated)
+  - SpriteFrames: `erik_sprites.tres`
+  - Scale: `0.5` on AnimatedSprite2D node
 - Ground tiles: `res://GameAssets/Tiles/` — 16×16 px
 
-## Player Scene Architecture (ADR-002, ADR-003)
+## Player Scene Architecture (ADR-002, ADR-003, ADR-013)
 - Root: `CharacterBody2D`, `motion_mode = MOTION_MODE_FLOATING`
 - Child: `CollisionShape2D` (CapsuleShape2D, ~8×12px)
-- Child: `AnimatedSprite2D` — script: `player_animation.gd`
-- Root script: `player.gd` — exposes `velocity`, `facing`, `is_moving`
-- Animation names: `idle_down`, `idle_side`, `idle_up`, `walk_down`, `walk_side`, `walk_up`, `run_down`, `run_side`, `run_up`
+- Child: `AnimatedSprite2D` scale=0.5 — script: `player_animation.gd`
+- Root script: `player.gd` — exposes `velocity`, `facing`, `is_moving`, `facing_left`
+- Animation names: `idle_down`, `idle_up`, `idle_side`, `walk_down`, `walk_up`, `walk_side`
+- Left-facing: `flip_h = true` on AnimatedSprite2D (no separate left animation)
+- `var dir: String = player.facing` — explicit type annotation required (Godot 4 inference limitation)
 
 ## TileMap (ADR-004)
 - Use `TileMapLayer` node (not deprecated `TileMap`)
