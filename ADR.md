@@ -208,6 +208,27 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-014: Scene Transitions — TransitionManager Autoload + Door Animation
+**Status:** Accepted
+**Date:** 2026-04-28
+**Context:** Instant scene switches (no effect) felt jarring. Wanted a door-open animation before entering the house and a fade-to-black around all scene changes.
+**Decision:** `TransitionManager` static autoload (`res://autoload/TransitionManager.gd`) owns a persistent `CanvasLayer` (layer=100) + `ColorRect`. Provides `await`-able `fade_to_black(duration)` and `fade_from_black(duration)`. `PlayerHomeDoor` upgraded from `Sprite2D` to `AnimatedSprite2D` with a 4-frame `open` animation (Door1-4.png, 8fps). Sequence: door animates (~0.5s) → fade to black (0.4s) → scene changes → fade from black in new scene.
+**Rationale:** CanvasLayer autoload survives `change_scene_to_file()` — the only reliable way to keep an overlay across scene changes. Static autoload (declared in project.godot) differs from runtime `add_autoload` — it becomes globally visible immediately after project reload without editor restart. `set_physics_process(false)` on the player during the sequence prevents movement during the door/fade window. Signal disconnected before the first `await` to guard against double-trigger.
+**Consequences:** All scene entry points must call `TransitionManager.fade_from_black()` (without await in `_ready()` so it fires in background). Fresh game start calls `fade_from_black(0.0)` as a safety no-op.
+
+---
+
+## ADR-015: Depth Sorting — Y-Sort on World + Overhead Layer
+**Status:** Accepted
+**Date:** 2026-04-28
+**Context:** Player was rendering on top of the house roof when walking beside it at roof height (y < 126). The house and player were siblings under `Main` with `y_sort_enabled = true`, but `World` (containing the house) and `Player` are siblings — y-sort only works between direct siblings, not across subtrees. The entire `World` subtree always rendered before `Player` regardless of y-position.
+**Decision:** Move `Player` into `world.tscn` as a direct sibling of `PlayerHome`. Enable `y_sort_enabled = true` on the `World` root node. Set `y_sort_offset = 30` on `PlayerHome` (sort y = 126, the eave line) and `y_sort_offset = -13` on `PlayerHomeDoor` (same sort y = 126). Keep a separate `Overhead` Node2D in `main.tscn` at `z_index = 2` with a `PlayerHomeRoof` sprite overlay.
+**Rationale:** Y-sort sorts siblings by their effective Y position. With Player and house as siblings, the house renders after the player when `player.y < 126` (house in front = player behind roof) and the player renders after the house when `player.y > 126` (player in front = player approaching from south). Sort threshold at y=126 (eave line) feels correct — player begins going behind the building at the overhang, not at the door. The z=2 `Overhead` node in `Main` renders above everything and handles any remaining edge cases.
+**Consequences:** Player must always be a child of `World`, not `Main`. `main.gd` accesses player via `$World/Player`. `world.gd` accesses player via `$Player`. Every future building in `world.tscn` must set `y_sort_offset` so its sort Y is at the "walkable in front" threshold (bottom of visible wall face). `Main` no longer needs `y_sort_enabled` — removed. Player default spawn position changed to (112, 200) (south of door).
+**Testing:** Verified: player at y=170 appears in front of house; player at y=80 appears behind house. Door transition unaffected. UpperBlock replaced with WallCenter (58×30) sealing only the front wall gap between columns — roof zone (y:6–122) now fully walkable. Player at (112, 70) stays in position with physics active, hidden behind house sprite.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
@@ -238,3 +259,6 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-27 | Player home door + interior scene. ADR-010/011 added. House collision corrected (3-shape door gap). |
 | 2026-04-28 | Ground variety: FiveGrass + MabeyFive (10 tiles, 4 flip alternatives each). ADR-012 added. Removed 32×32 overlay. |
 | 2026-04-28 | Player replaced with Erik — custom 68×68 pixel art, scaled 0.5, 4-direction walk generated via PixelLab. ADR-013 added. |
+| 2026-04-28 | Scene transitions: TransitionManager autoload + door open animation + fade-to-black. ADR-014 added. Player spawns at door facing north. |
+| 2026-04-28 | Depth sorting fixed: y_sort on World, Player moved into world.tscn, Overhead overlay in main.tscn. ADR-015 added. |
+| 2026-04-28 | House collision fixed: UpperBlock (entire roof zone) replaced with WallCenter (front wall gap only) — roof area now walkable. |

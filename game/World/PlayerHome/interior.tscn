@@ -64,4 +64,4 @@ position = Vector2(80, 124)
 shape = SubResource("ExitShape")
 
 [node name="Player" parent="." unique_id=422071633 instance=ExtResource("1_player")]
-position = Vector2(80, 64)
+position = Vector2(80, 108)

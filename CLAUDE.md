@@ -3,7 +3,7 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Erik player character — 4-direction walk animations (PixelLab), scaled 0.5, AnimatedSprite2D (session 5)
+- **Last completed:** Depth sorting fixed — player goes behind house roof when at roof height (session 7)
 - **Next up:** Playtest Erik walk quality; run animation; interior tileset; Stage 2 planning
 - **Open decisions:** None
 
@@ -62,14 +62,30 @@
 - Cols 0–6 rows 4–7: water tiles
 - **Do NOT mix bordered tiles for interior ground** — corner marks create T-mark artifacts at seams
 
-## Scene Transition Notes (ADR-010)
+## Depth Sorting Pattern (ADR-015)
+- `World` node has `y_sort_enabled = true` — all world objects and Player are siblings
+- Player lives in `world.tscn`, NOT `main.tscn` — `main.gd` accesses it via `$World/Player`
+- Buildings need `y_sort_offset` set so sort_y = bottom of visible wall face (the "walkable in front" line)
+  - `PlayerHome`: position y=96, `y_sort_offset=30` → sort y=126 (eave line)
+  - `PlayerHomeDoor`: position y=139, `y_sort_offset=-13` → sort y=126
+- Rule: `player.y < sort_y` → player behind building; `player.y > sort_y` → player in front
+- `Overhead` Node2D in `main.tscn` at `z_index=2` holds roof overlay sprites — renders above everything
+- Adding new buildings: add to `world.tscn`, set `y_sort_offset`, add roof sprite to `Overhead` in `main.tscn`
+
+## Scene Transition Notes (ADR-010, ADR-014)
 - `get_tree().change_scene_to_file(path)` works from any node
 - Cross-scene state: `Engine.set_meta("key", value)` / `Engine.get_meta("key")` / `Engine.remove_meta("key")`
+- **Static autoloads** (declared in project.godot) are globally visible after project reload — fine to use
 - **DO NOT** use autoloads added at runtime — they don't become globally visible to scripts until editor restart
 - Interior scene is self-contained with its own Player instance; camera limits overridden in `_ready()`
-- Add `await get_tree().create_timer(0.4).timeout` before connecting ExitDoor signal to prevent spawn-trigger
-- Interior: `res://World/PlayerHome/interior.tscn` — 160×128 room, Polygon2D floor/wall, exit at south-center
-- Exterior door: `DoorEntrance` Area2D at world (112, 141); house collision is 3-shape (upper block + left/right lower flanking a 58px door gap)
+- `TransitionManager` autoload at `res://autoload/TransitionManager.gd` — persistent fade overlay (CanvasLayer layer=100)
+  - Call `await TransitionManager.fade_to_black(0.4)` before `change_scene_to_file`
+  - Call `TransitionManager.fade_from_black(0.4)` (no await) at top of destination scene's `_ready()`
+  - Disconnect Area2D signal before first `await` to prevent double-trigger
+  - `player.set_physics_process(false)` to freeze player during the sequence
+- Interior: `res://World/PlayerHome/interior.tscn` — 160×128 room, exit at south-center (80, 124)
+  - Player spawns at (80, 108) facing "up" (north) — set via `$Player.facing = "up"` in interior.gd `_ready()`
+- Exterior door: `DoorEntrance` Area2D at world (112, 141); `PlayerHomeDoor` is AnimatedSprite2D with 4-frame "open" anim (Door1-4.png, 8fps)
 - `Engine.set_meta("spawn_position", Vector2(112, 168))` set on interior exit → consumed in `main.gd._ready()`
 
 ## Interior Assets Available

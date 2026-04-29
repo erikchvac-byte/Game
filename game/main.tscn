@@ -1,14 +1,23 @@
 [gd_scene format=3 uid="uid://b0edelq78t3rx"]
 
 [ext_resource type="PackedScene" uid="uid://dn5yyumw6kj3j" path="res://World/world.tscn" id="1_world"]
-[ext_resource type="PackedScene" uid="uid://dyesovrngsuel" path="res://Player/player.tscn" id="2_player"]
 [ext_resource type="Script" uid="uid://oa1n61k237qq" path="res://main.gd" id="3_maingd"]
+[ext_resource type="Texture2D" uid="uid://c1lnxtrmtdvhd" path="res://GameAssets/Village/Houses/3_1.png" id="4_house"]
 
 [node name="Main" type="Node2D" unique_id=1407496713]
-y_sort_enabled = true
 script = ExtResource("3_maingd")
 
 [node name="World" parent="." unique_id=1661554884 instance=ExtResource("1_world")]
 
-[node name="Player" parent="." unique_id=1585494497 instance=ExtResource("2_player")]
-position = Vector2(160, 90)
+[node name="Overhead" type="Node2D" parent="." unique_id=1892340001]
+z_index = 2
+
+[node name="PlayerHomeRoof" type="Sprite2D" parent="Overhead" unique_id=1892340002]
+texture_filter = 1
+position = Vector2(112, 66)
+scale = Vector2(2, 2)
+z_index = 2
+z_as_relative = false
+texture = ExtResource("4_house")
+region_enabled = true
+region_rect = Rect2(0, 0, 80, 60)
