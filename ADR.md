@@ -229,6 +229,16 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-016: Terrain Plugins — Better Terrain + TileBitTools
+**Status:** Accepted
+**Date:** 2026-05-03
+**Context:** Manual tile placement for grass/dirt/water transitions requires placing corner/edge/center variants by hand. Wanted autotiling so painting a terrain type auto-selects the correct neighbor-aware tile.
+**Decision:** Install [Better Terrain](https://github.com/Portponky/better-terrain) (Portponky) and [TileBitTools](https://github.com/dandeliondino/tile_bit_tools) (dandeliondino) as editor plugins. Both installed to `game/addons/`. Better Terrain folder must be `better-terrain` (hyphen) — plugin hardcodes that path for its autoload. Enabled in `project.godot` editor_plugins array. `BetterTerrain` autoload registered at `uid://0o8uu4vfmty7`.
+**Rationale:** Better Terrain replaces Godot 4's built-in terrain system (slow, awkward API) with cleaner match-tiles/match-vertices modes and a bottom-panel Terrain dock. TileBitTools provides template-based bulk assignment of terrain peering bits — avoids clicking each tile variant individually in the editor.
+**Consequences:** Editor restart required after first enable to register BetterTerrain autoload. Terrain bits still need to be assigned to `Tile.png` atlas tiles before autotiling works — next step is using TileBitTools to assign bits. `tile_bit_tools` folder contains a nested `tile_bit_tools/` subfolder (it's how the GitHub archive unpacked — harmless, plugin resolves from root `plugin.cfg`).
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
@@ -262,3 +272,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-28 | Scene transitions: TransitionManager autoload + door open animation + fade-to-black. ADR-014 added. Player spawns at door facing north. |
 | 2026-04-28 | Depth sorting fixed: y_sort on World, Player moved into world.tscn, Overhead overlay in main.tscn. ADR-015 added. |
 | 2026-04-28 | House collision fixed: UpperBlock (entire roof zone) replaced with WallCenter (front wall gap only) — roof area now walkable. |
+| 2026-05-03 | Better Terrain + TileBitTools plugins installed. ADR-016 added. Terrain bits not yet assigned. |

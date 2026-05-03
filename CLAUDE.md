@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Depth sorting fixed — player goes behind house roof when at roof height (session 7)
-- **Next up:** Playtest Erik walk quality; run animation; interior tileset; Stage 2 planning
+- **Last completed:** Better Terrain + TileBitTools plugins installed and enabled (session 8)
+- **Next up:** Assign terrain peering bits to Tile.png atlas via TileBitTools; define terrain set in Better Terrain; repaint world with terrain brush
 - **Open decisions:** None
 
 ---
