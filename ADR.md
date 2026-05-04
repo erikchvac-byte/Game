@@ -239,6 +239,26 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-018: Well Animation — Player-Triggered Reverse Playback
+**Status:** Accepted
+**Date:** 2026-05-04
+**Context:** Static tile_025 well needed animation that activates only when player is nearby, plays in reverse, and blocks the player from walking through it.
+**Decision:** Replaced Tile025 Sprite2D with WellWater AnimatedSprite2D (15 frames, 4 fps, loop). Added WellCollider StaticBody2D (CircleShape2D r=18) and WellArea Area2D (CircleShape2D r=26). Signals in world.gd: `body_entered` → `play_backwards("default")`, `body_exited` → `stop() + frame=0`. Moved entirely to world.tscn for y_sort depth sorting. y_sort_offset=24 so sort point is at well bottom.
+**Rationale:** Well in world.tscn participates in y_sort with player. Area2D proximity is simpler than raycast. Reverse playback on approach gives a "drawing water" feel without a forward loop running at all times.
+**Consequences:** Player cannot walk behind the well top. Animation only plays while player is in the 26px radius zone.
+
+---
+
+## ADR-019: PurplePunchOne Plant Animation
+**Status:** Accepted
+**Date:** 2026-05-04
+**Context:** Static Tile024 Sprite2D (potted plant, 48×48) at (270, 95) needed replacing with the PurplePunchOne growth-to-bloom animation.
+**Decision:** Replaced Tile024 Sprite2D with PurplePlant AnimatedSprite2D. 17 frames (Purple1, Purple2, Purple19–33) sourced from `GameAssets/PlantsGrow/PurplePunchOne/`. Speed set to 1.5 fps (very slow), loop=true, autoplay="default".
+**Rationale:** Low speed (1.5 fps) gives a gentle ambient growth feel rather than a snappy animation. Looping the full growth-to-bloom cycle keeps the plant alive visually.
+**Consequences:** Animation always plays (no proximity trigger). tile_024.png ext_resource removed from world.tscn; PNG file remains on disk but is unreferenced.
+
+---
+
 ## ADR-017: Better Terrain Setup — 6 Terrain Types via Script
 **Status:** Accepted
 **Date:** 2026-05-03
@@ -289,3 +309,5 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-04-28 | Depth sorting fixed: y_sort on World, Player moved into world.tscn, Overhead overlay in main.tscn. ADR-015 added. |
 | 2026-04-28 | House collision fixed: UpperBlock (entire roof zone) replaced with WallCenter (front wall gap only) — roof area now walkable. |
 | 2026-05-03 | Better Terrain + TileBitTools plugins installed. ADR-016 added. Terrain bits not yet assigned. |
+| 2026-05-04 | Well animation — player-triggered reverse playback, moved to world.tscn, collision blocker added. ADR-018 added. |
+| 2026-05-04 | PurplePunchOne plant animation added at (270,95); replaced static Tile024 Sprite2D. ADR-019 added. |
