@@ -3,21 +3,96 @@
 [ext_resource type="PackedScene" uid="uid://dn5yyumw6kj3j" path="res://World/world.tscn" id="1_world"]
 [ext_resource type="Script" uid="uid://oa1n61k237qq" path="res://main.gd" id="3_maingd"]
 [ext_resource type="Texture2D" uid="uid://c1lnxtrmtdvhd" path="res://GameAssets/Village/Houses/3_1.png" id="4_house"]
+[ext_resource type="Texture2D" uid="uid://b8iyfgg5pkv8y" path="res://GameAssets/WellWater/WellWater1.png" id="ww_1"]
+[ext_resource type="Texture2D" uid="uid://nh0y02mr1kmo" path="res://GameAssets/WellWater/WellWater2.png" id="ww_2"]
+[ext_resource type="Texture2D" uid="uid://b8qgraorufudo" path="res://GameAssets/WellWater/WellWater3.png" id="ww_3"]
+[ext_resource type="Texture2D" uid="uid://bii36le8l6htl" path="res://GameAssets/WellWater/WellWater4.png" id="ww_4"]
+[ext_resource type="Texture2D" uid="uid://60xq7t55sdpe" path="res://GameAssets/WellWater/WellWater5.png" id="ww_5"]
+[ext_resource type="Texture2D" uid="uid://d15hycssgvg2f" path="res://GameAssets/WellWater/WellWater6.png" id="ww_6"]
+[ext_resource type="Texture2D" uid="uid://btxn26vbv3nfh" path="res://GameAssets/WellWater/WellWater7.png" id="ww_7"]
+[ext_resource type="Texture2D" uid="uid://c0r2l4maqibm7" path="res://GameAssets/WellWater/WellWater8.png" id="ww_8"]
+[ext_resource type="Texture2D" uid="uid://bju3w2w13ston" path="res://GameAssets/WellWater/WellWater9.png" id="ww_9"]
+[ext_resource type="Texture2D" uid="uid://d06qpyrs7v4sm" path="res://GameAssets/WellWater/WellWater10.png" id="ww_10"]
+[ext_resource type="Texture2D" uid="uid://ka1mfgnsyp1i" path="res://GameAssets/WellWater/WellWater11.png" id="ww_11"]
+[ext_resource type="Texture2D" uid="uid://laoegslkqqyl" path="res://GameAssets/WellWater/WellWater12.png" id="ww_12"]
+[ext_resource type="Texture2D" uid="uid://bxtsyxjfppeae" path="res://GameAssets/WellWater/WellWater13.png" id="ww_13"]
+[ext_resource type="Texture2D" uid="uid://dnvqenub4r8ah" path="res://GameAssets/WellWater/WellWater14.png" id="ww_14"]
+[ext_resource type="Texture2D" uid="uid://c2cwfjbngykrt" path="res://GameAssets/WellWater/WellWater15.png" id="ww_15"]
+
+[sub_resource type="SpriteFrames" id="WellWaterFrames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("ww_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_10")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_11")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_12")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_13")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_14")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ww_15")
+}],
+"loop": true,
+"name": &"default",
+"speed": 8.0
+}]
 
 [node name="Main" type="Node2D" unique_id=1407496713]
 script = ExtResource("3_maingd")
 
 [node name="World" parent="." unique_id=1661554884 instance=ExtResource("1_world")]
+position = Vector2(195, 88)
+metadata/_edit_group_ = true
 
 [node name="Overhead" type="Node2D" parent="." unique_id=1892340001]
 z_index = 2
 
 [node name="PlayerHomeRoof" type="Sprite2D" parent="Overhead" unique_id=1892340002]
-texture_filter = 1
-position = Vector2(112, 66)
-scale = Vector2(2, 2)
 z_index = 2
 z_as_relative = false
+texture_filter = 1
+position = Vector2(307, 154)
+scale = Vector2(2, 2)
 texture = ExtResource("4_house")
 region_enabled = true
 region_rect = Rect2(0, 0, 80, 60)
+
+[node name="WellWater" type="AnimatedSprite2D" parent="." unique_id=736249051]
+position = Vector2(428, 214)
+sprite_frames = SubResource("WellWaterFrames")
+autoplay = "default"
