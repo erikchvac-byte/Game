@@ -239,6 +239,22 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-017: Better Terrain Setup — 6 Terrain Types via Script
+**Status:** Accepted
+**Date:** 2026-05-03
+**Context:** Better Terrain and TileBitTools were installed but terrain peering bits were unassigned. Needed to configure terrains programmatically to avoid slow UI workflow.
+**Decision:** Configured all terrains via `execute_editor_script` using Better Terrain's GDScript API (`add_terrain`, `set_tile_terrain_type`, `add_tile_peering_type`). Added `Beach/Tiles/Tiles.png` as tileset source 4. Six terrains total:
+- **0 Grass** — sources 2 (fivegrass, 20 tiles) + 3 (mabeyfive, 20 tiles) + Tile.png (9,1). All 8 peerings = grass. Plus 12 edge/corner tiles on Tile.png for grass↔dirt transitions.
+- **1 Dirt** — Tile.png source 0, cols 6–10 row 3 (5 tiles). All peerings = dirt.
+- **2 Water** — grass_stone_dirt source 1, cols 30–33 (4 blue tiles). All peerings = water.
+- **3 Sand** — Beach/Tiles source 4, cols 6–11 rows 0–4 (30 tiles, light gray + orange). All peerings = sand.
+- **4 Stone** — Beach/Tiles source 4, cols 0–2 rows 0–5 (18 tiles, blue-gray) + grass_stone_dirt cols 26–29 (4 gray tiles). All peerings = stone.
+- **5 Cave** — Beach/Tiles source 4, cols 3–5 rows 0–5 (18 tiles, charcoal). All peerings = cave.
+**Rationale:** Peering bit values for square MATCH_TILES: `[0, 3, 4, 7, 8, 11, 12, 15]` = RIGHT, BR_CORNER, BOTTOM, BL_CORNER, LEFT, TL_CORNER, TOP, TR_CORNER. All-peerings-same = center/fill tile. Grass edge tiles assigned with partial peering sets to drive autotile at grass↔dirt boundaries. Other terrain edges deferred — fill-only for now.
+**Consequences:** Water/sand/stone/cave have no edge tiles yet — transitions between them will be abrupt (hard cut). Grass↔dirt has 12 edge/corner tiles giving smooth autotile transitions. TileBitTools Retiler not yet used — may revisit to re-tile existing map cells.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
