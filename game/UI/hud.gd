@@ -11,7 +11,7 @@ var energy_max: int = 10
 var currency: int = 0
 var selected_slot: int = 0
 
-var _water_fill: ColorRect
+var _water_tp: TextureProgressBar
 var _energy_fill: ColorRect
 var _currency_label: Label
 var _slots: Array = []
@@ -47,9 +47,27 @@ func _build_top_bar() -> void:
 	# Water (left)
 	var w_sec := _hbox(Control.SIZE_EXPAND_FILL, BoxContainer.ALIGNMENT_BEGIN, 2)
 	hbox.add_child(w_sec)
-	var w_icon := _color_dot(Color(0.24, 0.54, 1.0))
-	w_sec.add_child(w_icon)
-	_water_fill = _build_bar(w_sec, 48.0, Color(0.14, 0.20, 0.36), Color(0.24, 0.54, 1.0))
+	var w_gem := TextureRect.new()
+	w_gem.texture = load("res://GameAssets/UI/WaterGem.png")
+	w_gem.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	w_gem.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	w_gem.custom_minimum_size = Vector2(10.0, 10.0)
+	w_gem.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	w_sec.add_child(w_gem)
+	_water_tp = TextureProgressBar.new()
+	_water_tp.custom_minimum_size = Vector2(48.0, 8.0)
+	_water_tp.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	_water_tp.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	_water_tp.min_value = 0.0
+	_water_tp.max_value = 1.0
+	_water_tp.value = 1.0
+	_water_tp.fill_mode = TextureProgressBar.FILL_LEFT_TO_RIGHT
+	var _bar_tex: Texture2D = load("res://GameAssets/UI/WaterMeterBar.png")
+	_water_tp.texture_under = _bar_tex
+	_water_tp.texture_progress = _bar_tex
+	_water_tp.tint_under = Color(0.08, 0.15, 0.30)
+	_water_tp.tint_progress = Color(0.24, 0.54, 1.0)
+	w_sec.add_child(_water_tp)
 
 	# Currency (center)
 	var c_sec := _hbox(Control.SIZE_EXPAND_FILL, BoxContainer.ALIGNMENT_CENTER, 2)
@@ -245,12 +263,9 @@ func show_toast(message: String, duration: float = 2.0) -> void:
 # ── Private ───────────────────────────────────────────────────────────────────
 
 func _refresh_water_bar() -> void:
-	if not _water_fill:
+	if not _water_tp:
 		return
-	var ratio := 0.0 if water_max == 0 else float(water) / float(water_max)
-	(_water_fill.get_parent() as Control).size = Vector2(48.0, 6.0)
-	_water_fill.anchor_right = ratio
-	_water_fill.offset_right = 0.0
+	_water_tp.value = 0.0 if water_max == 0 else float(water) / float(water_max)
 
 
 func _refresh_energy_bar() -> void:
