@@ -291,6 +291,26 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-021: HUD Architecture — Persistent Autoload CanvasLayers
+**Status:** Accepted
+**Date:** 2026-05-05
+**Context:** Needed a permanent HUD (top bar + hotbar + toast) that survives scene changes (exterior ↔ interior). Previous approach was a HUDLayer node inside world.tscn, which disappeared on scene change.
+**Decision:** Three static autoloads declared in project.godot: `HUD` (layer 10), `Inventory` (layer 20), `Shop` (layer 20). Each extends CanvasLayer and builds its UI tree programmatically in `_ready()`. Pattern follows existing TransitionManager autoload. `world.gd` accesses HUD via `get_node_or_null("/root/HUD")` at `_ready()` into an untyped `_hud` var — required because newly added autoloads aren't recognized by the GDScript parser until full editor restart; dynamic dispatch via untyped var resolves at runtime with no compile errors.
+**Rationale:** Autoload CanvasLayer is the only pattern that persists across `change_scene_to_file()`. Programmatic node building (no .tscn) keeps the autoload self-contained. Untyped var + `get_node_or_null` avoids the editor restart requirement while keeping the code safe (null check guards every call).
+**Consequences:** Editor will show stale parse errors for world.gd until restarted — ignore them, `validate_script` confirms clean compile. All future HUD calls from any scene use the same `/root/HUD` path.
+
+---
+
+## ADR-022: UI Component Design — Placeholder Colors, Asset-Ready Structure
+**Status:** Accepted
+**Date:** 2026-05-05
+**Context:** User is producing assets separately and will supply them. UI needs to be functional and correct before assets arrive.
+**Decision:** All placeholder visuals use `StyleBoxFlat` / `ColorRect` with solid colors. Top bar: water (blue dot + ColorRect fill bar), currency (gold dot + Label), energy (ColorRect fill bar + green dot). Hotbar: 12 Panel slots with StyleBoxFlat borders; selected slot highlighted gold. Toast: Panel + Label, fades via Tween. Inventory: 36-slot 6×6 GridContainer in a centered panel. Shop: two-panel HBoxContainer skeleton. Slot icons are `TextureRect` nodes — swap in textures via `HUD.set_slot_texture(slot, tex)`.
+**Rationale:** ColorRect fill bars give pixel-perfect control over fill ratio (anchor_right = ratio). ProgressBar's default theme adds unwanted padding at 6px height. Programmatic construction means no .tscn dependency — assets drop in without scene edits.
+**Consequences:** Font is Godot default (not pixel art) until user provides bitmap font. Bar fill uses anchor manipulation (`fill.anchor_right = ratio`) which requires the parent container to have a known size — may need adjustment if layout reflows.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
@@ -328,3 +348,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-05-04 | Well animation — player-triggered reverse playback, moved to world.tscn, collision blocker added. ADR-018 added. |
 | 2026-05-04 | PurplePunchOne plant animation added at (270,95); replaced static Tile024 Sprite2D. ADR-019 added. |
 | 2026-05-05 | Water collection + plant growth loop implemented. Bucket walk animations (E/W/N/S), HUD icons, well fill timer, manual plant frame stepping. ADR-020 added. |
+| 2026-05-05 | Full UI built — HUD (top bar + hotbar + toast), Inventory overlay, Shop skeleton. HUDLayer removed from world.tscn. ADR-021/022 added. |

@@ -7,8 +7,10 @@ var _near_plant := false
 var _plant_stage := 0
 var _growing := false
 var _collecting := false
+var _hud = null
 
 func _ready() -> void:
+	_hud = get_node_or_null("/root/HUD")
 	$DoorEntrance.body_entered.connect(_on_door_entered)
 	$WellArea.body_entered.connect(_on_well_area_entered)
 	$WellArea.body_exited.connect(_on_well_area_exited)
@@ -38,7 +40,9 @@ func _collect_water() -> void:
 	$WellWater.frame = 0
 	_collecting = false
 	($Player as CharacterBody2D).carrying_water = true
-	$HUDLayer/BucketIcon.texture = load("res://GameAssets/UI/bucket_full.png")
+	if _hud:
+		_hud.set_carrying_water(true)
+		_hud.show_toast("Water collected!")
 	if _near_well:
 		$WellPrompt.visible = true
 
@@ -51,7 +55,9 @@ func _water_plant() -> void:
 	if _plant_stage >= PLANT_STAGES.size() - 1:
 		return
 	player.carrying_water = false
-	$HUDLayer/BucketIcon.texture = load("res://GameAssets/UI/bucket_empty.png")
+	if _hud:
+		_hud.set_carrying_water(false)
+		_hud.show_toast("Plant watered!")
 	_growing = true
 	var prev_stage := _plant_stage
 	_plant_stage += 1

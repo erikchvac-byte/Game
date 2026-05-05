@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Better Terrain + TileBitTools plugins installed and enabled (session 8)
-- **Next up:** Assign terrain peering bits to Tile.png atlas via TileBitTools; define terrain set in Better Terrain; repaint world with terrain brush
+- **Last completed:** Full UI build — HUD autoload (top bar + hotbar + toast), Inventory overlay, Shop skeleton (session 10)
+- **Next up:** Drop in UI assets when ready; wire pixel bitmap font; terrain peering bits (deferred from session 8)
 - **Open decisions:** None
 
 ---

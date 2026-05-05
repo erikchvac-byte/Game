@@ -9,7 +9,6 @@
 [ext_resource type="Texture2D" uid="uid://fitlincaemk2" path="res://GameAssets/Village/Door Animation/Door4.png" id="7_door4"]
 [ext_resource type="PackedScene" uid="uid://dyesovrngsuel" path="res://Player/player.tscn" id="8_player"]
 [ext_resource type="Texture2D" uid="uid://587lmkrd0dfs" path="res://GameAssets/UI/key_e.png" id="41_s5cut"]
-[ext_resource type="Texture2D" uid="uid://ien603wttfmr" path="res://GameAssets/UI/bucket_empty.png" id="42_it66m"]
 [ext_resource type="Texture2D" uid="uid://djoxl7d08dcfs" path="res://GameAssets/PlantsGrow/PurplePunchOne/Purple1.png" id="pp_1"]
 [ext_resource type="Texture2D" uid="uid://bkmyp74q1hcjo" path="res://GameAssets/PlantsGrow/PurplePunchOne/Purple2.png" id="pp_2"]
 [ext_resource type="Texture2D" uid="uid://num8cty6qsu" path="res://GameAssets/PlantsGrow/PurplePunchOne/Purple19.png" id="pp_3"]
@@ -290,10 +289,3 @@ position = Vector2(270, 77)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("41_s5cut")
 
-[node name="HUDLayer" type="CanvasLayer" parent="." unique_id=1005055543]
-layer = 10
-
-[node name="BucketIcon" type="Sprite2D" parent="HUDLayer" unique_id=2122753214]
-position = Vector2(20, 20)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("42_it66m")
