@@ -7,6 +7,7 @@ var facing := "down"
 var is_moving := false
 var is_running := false
 var facing_left := false
+var carrying_water := false
 
 func _physics_process(_delta: float) -> void:
 	var dir := Vector2(

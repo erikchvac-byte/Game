@@ -275,6 +275,22 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-020: Water Collection & Plant Growth Gameplay Loop
+**Status:** Accepted
+**Date:** 2026-05-05
+**Context:** Needed first gameplay loop: player collects water from well, carries it to plant, waters plant one stage per trip, repeats 3 times to reach full growth.
+**Decision:**
+- `player.gd`: added `var carrying_water := false` flag
+- `player_animation.gd`: appends `_bucket` suffix to animation name when `carrying_water` is true, switching to 6 bucket animations (walk_down/up/side_bucket, idle_down/up/side_bucket)
+- `world.gd`: E key ("interact" action) triggers `_collect_water()` when near well, `_water_plant()` when near plant. Well uses timer-based fill (frame_count/fps seconds) not `await animation_finished` (doesn't fire on loop=true). Plant growth manually steps frames via `create_timer(1/fps)` per frame to avoid `play()` restarting from frame 0. `_collecting` and `_growing` flags prevent re-triggering mid-animation.
+- `world.tscn`: added PlantArea (Area2D, 32px radius), PlantCollider (StaticBody2D, 6px radius — plant is solid), WellPrompt + PlantPrompt (Sprite2D key_e.png, hidden until in range), HUDLayer/BucketIcon (CanvasLayer showing full/empty bucket)
+- Plant stages: frames [0, 5, 10, 16] — 3 waterings to full growth. Fully grown plant hides prompt permanently.
+- Assets: east/west bucket walk = GIF frames 13-15 (3 frames, 8fps); north bucket walk = GIF frames 0-11 (12 frames, 8fps); south bucket walk = GIF frames 4-9 (6 frames, 8fps); south idle bucket = GIF frame 5 (1 frame). HUD icons from BucketFull PixelLab export. E key icon generated via PixelLab (32×32).
+**Rationale:** Timer-based well fill is reliable regardless of animation loop setting. Manual frame stepping for plant avoids AnimatedSprite2D `play()` resetting to frame 0. PlantCollider added from the start per project rule (all objects need collision on placement). WellArea already existed and was reused.
+**Consequences:** South walk bucket is a 6-frame cycle rather than a seamless loop — acceptable for now. Run animation still deferred. Bucket animations not save-persistent (reset on restart). No sound effects yet.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
@@ -311,3 +327,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-05-03 | Better Terrain + TileBitTools plugins installed. ADR-016 added. Terrain bits not yet assigned. |
 | 2026-05-04 | Well animation — player-triggered reverse playback, moved to world.tscn, collision blocker added. ADR-018 added. |
 | 2026-05-04 | PurplePunchOne plant animation added at (270,95); replaced static Tile024 Sprite2D. ADR-019 added. |
+| 2026-05-05 | Water collection + plant growth loop implemented. Bucket walk animations (E/W/N/S), HUD icons, well fill timer, manual plant frame stepping. ADR-020 added. |

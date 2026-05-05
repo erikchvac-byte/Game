@@ -6,11 +6,12 @@ func _process(_delta: float) -> void:
 	var player := get_parent()
 
 	var dir: String = player.facing
+	var suffix := "_bucket" if player.carrying_water else ""
 	var anim: String
 	if player.is_moving:
-		anim = "walk_" + dir
+		anim = "walk_" + dir + suffix
 	else:
-		anim = "idle_" + dir
+		anim = "idle_" + dir + suffix
 
 	flip_h = (dir == "side" and player.facing_left)
 
