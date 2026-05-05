@@ -41,6 +41,8 @@
 [ext_resource type="Texture2D" uid="uid://bxtsyxjfppeae" path="res://GameAssets/WellWater/WellWater13.png" id="ww_13"]
 [ext_resource type="Texture2D" uid="uid://dnvqenub4r8ah" path="res://GameAssets/WellWater/WellWater14.png" id="ww_14"]
 [ext_resource type="Texture2D" uid="uid://c2cwfjbngykrt" path="res://GameAssets/WellWater/WellWater15.png" id="ww_15"]
+[ext_resource type="Script" path="res://Interactables/well.gd" id="well_script"]
+[ext_resource type="Script" path="res://Plants/plant.gd" id="plant_script"]
 
 [sub_resource type="SpriteFrames" id="DoorFrames"]
 animations = [{
@@ -244,48 +246,52 @@ shape = SubResource("DoorArea")
 [node name="Player" parent="." unique_id=1585494498 instance=ExtResource("8_player")]
 position = Vector2(112, 200)
 
-[node name="WellWater" type="AnimatedSprite2D" parent="." unique_id=770063336]
+[node name="Well" type="Node2D" parent="." unique_id=770000001]
 position = Vector2(200, 126)
+y_sort_offset = 24
+script = ExtResource("well_script")
+
+[node name="WellWater" type="AnimatedSprite2D" parent="Well" unique_id=770063336]
 sprite_frames = SubResource("WellWaterFrames")
 
-[node name="WellCollider" type="StaticBody2D" parent="." unique_id=770063337]
-position = Vector2(200, 126)
+[node name="WellCollider" type="StaticBody2D" parent="Well" unique_id=770063337]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WellCollider" unique_id=770063338]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Well/WellCollider" unique_id=770063338]
 shape = SubResource("WellBlockShape")
 
-[node name="WellArea" type="Area2D" parent="." unique_id=770063339]
-position = Vector2(200, 126)
+[node name="WellArea" type="Area2D" parent="Well" unique_id=770063339]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WellArea" unique_id=770063340]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Well/WellArea" unique_id=770063340]
 shape = SubResource("WellAreaShape")
 
-[node name="PurplePlant" type="AnimatedSprite2D" parent="." unique_id=285786784]
-position = Vector2(270, 95)
-sprite_frames = SubResource("PurplePlantFrames")
-autoplay = "default"
-
-[node name="PlantArea" type="Area2D" parent="." unique_id=1092721803]
-position = Vector2(270, 95)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlantArea" unique_id=1699770768]
-shape = SubResource("CircleShape2D_wm6hh")
-
-[node name="PlantCollider" type="StaticBody2D" parent="." unique_id=1369018961]
-position = Vector2(270, 100)
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlantCollider" unique_id=1565734528]
-shape = SubResource("CircleShape2D_8kjm2")
-
-[node name="WellPrompt" type="Sprite2D" parent="." unique_id=1502258637]
+[node name="WellPrompt" type="Sprite2D" parent="Well" unique_id=1502258637]
 visible = false
-position = Vector2(200, 108)
+position = Vector2(0, -18)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("41_s5cut")
 
-[node name="PlantPrompt" type="Sprite2D" parent="." unique_id=922726141]
+[node name="Plant" type="Node2D" parent="." unique_id=280000001]
+position = Vector2(270, 95)
+script = ExtResource("plant_script")
+
+[node name="PurplePlant" type="AnimatedSprite2D" parent="Plant" unique_id=285786784]
+sprite_frames = SubResource("PurplePlantFrames")
+autoplay = "default"
+
+[node name="PlantArea" type="Area2D" parent="Plant" unique_id=1092721803]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Plant/PlantArea" unique_id=1699770768]
+shape = SubResource("CircleShape2D_wm6hh")
+
+[node name="PlantCollider" type="StaticBody2D" parent="Plant" unique_id=1369018961]
+position = Vector2(0, 5)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Plant/PlantCollider" unique_id=1565734528]
+shape = SubResource("CircleShape2D_8kjm2")
+
+[node name="PlantPrompt" type="Sprite2D" parent="Plant" unique_id=922726141]
 visible = false
-position = Vector2(270, 77)
+position = Vector2(0, -18)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("41_s5cut")
 

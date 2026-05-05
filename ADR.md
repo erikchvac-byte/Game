@@ -311,6 +311,16 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-023: Interactable Router — Decoupled E-Key System
+**Status:** Accepted
+**Date:** 2026-05-05
+**Context:** world.gd._input() had hardcoded `if _near_well / elif _near_plant` branches. Adding any new interactable required editing world.gd.
+**Decision:** Each interactable (Well, Plant) is a Node2D parent grouping its children, with its own script defining `interact(player)`, `can_interact(player)`, and two signals: `interactable_entered(node)` / `interactable_exited(node)`. world.gd holds a single `_interactable: Node` var. Area2D proximity signals update it via the signals. `_input()` calls `_interactable.interact($Player)` — one line, no branching.
+**Rationale:** String-based `connect("signal_name", callable)` bypasses GDScript static type analysis for custom signals on untyped nodes — works at runtime without parse errors. Well/Plant grouped under parent Node2Ds (`res://Interactables/well.gd`, `res://Plants/plant.gd`). Prompts and collision shapes are children of the parent, so each script only uses `$ChildName` paths. HUD accessed via `get_node_or_null("/root/HUD")` directly in each script.
+**Consequences:** Adding a new interactable (chest, NPC, furnace) requires: create a Node2D scene with `interact()` + the two signals, drop it in world.tscn, connect its signals in world.gd `_ready()` — zero changes to _input() or existing scripts. `PLANT_STAGES` still hardcoded in plant.gd; PlantData resource refactor is a separate task.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
@@ -350,3 +360,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-05-05 | Water collection + plant growth loop implemented. Bucket walk animations (E/W/N/S), HUD icons, well fill timer, manual plant frame stepping. ADR-020 added. |
 | 2026-05-05 | Full UI built — HUD (top bar + hotbar + toast), Inventory overlay, Shop skeleton. HUDLayer removed from world.tscn. ADR-021/022 added. |
 | 2026-05-05 | HUD water section: blue dot replaced with WaterGem TextureRect; blue bar replaced with TextureProgressBar (WaterMeterBar.png). |
+| 2026-05-05 | Interactable router implemented — well.gd, plant.gd own their logic; world.gd reduced to signal router. ADR-023 added. |
