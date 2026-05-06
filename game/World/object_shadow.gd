@@ -11,8 +11,8 @@ extends Node2D
 var _dnc: Node = null
 
 func _ready() -> void:
-	z_index = -1
-	z_as_relative = true
+	z_as_relative = false
+	z_index = 0
 
 func _process(_delta: float) -> void:
 	if _dnc == null:
