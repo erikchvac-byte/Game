@@ -339,12 +339,56 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-025: Drying Rack — 3-State Sprite Swap on Plant Harvest
+**Status:** Accepted
+**Date:** 2026-05-06
+**Context:** A drying rack prop needed to show 1/2/3 plants as the PurplePunchOne plant completes its full watering cycle. Rack always starts with 1 plant visible.
+**Decision:** `DryingRack` is a `Sprite2D` with `drying_rack.gd` attached. Script preloads 3 textures (rack_weed_1/2/3plant.png) and exposes `add_plant()`. `world.gd` connects `$Plant.plant_harvested` signal → `$DryingRack.add_plant`. Plant resets to seedling (frame 0) after harvest; rack increments up to state 2 (3-plant image) and stops there.
+**Rationale:** Signal-based connection keeps rack and plant decoupled. Sprite2D texture swap is the simplest possible state display — no AnimatedSprite2D or SpriteFrames needed.
+**Consequences:** Rack state is not persisted between sessions. Max 2 harvests advance the rack (3 states total: 1→2→3 plants). Rack never resets — permanent decoration once full.
+
+---
+
+## ADR-026: Day/Night Cycle — CanvasModulate + DirectionalLight2D Keyframe Lerp
+**Status:** Accepted
+**Date:** 2026-05-06
+**Context:** Needed a built-in Godot 4 dynamic day/night lighting system: smooth ambient color transitions, a sun light source, and data exposed for shadow calculations.
+**Decision:** `DayNightCycle.gd` static autoload (`DayNight` Node in `main.tscn`, added to `"day_night_cycle"` group). Drives:
+- `CanvasModulate.color` via `_AMBIENT` keyframe table (midnight blue → sunrise orange → noon near-white → sunset red → night blue)
+- `DirectionalLight2D.energy/rotation_degrees/color` via separate keyframe tables
+- Exposes `shadow_dir: Vector2`, `shadow_alpha: float`, `shadow_length_factor: float` for use by `object_shadow.gd`
+- `cycle_duration = 120s`, `start_time = 0.35` (starts near morning)
+- Night ambient floor: Color(0.38, 0.42, 0.62) — readable blue-tinted night, not near-black
+**Rationale:** Keyframe lerp tables give smooth, author-controlled transitions at specific time fractions. Static autoload in `main.tscn` as a plain `Node` (not CanvasLayer) — no scene persistence needed, just data computation. Group membership allows `object_shadow.gd` nodes to find it lazily at runtime.
+**Consequences:** `shadow_alpha` = sun energy × 0.48 (shadows fade at dawn/dusk). Shadow direction sweeps 170°→10° during day. `DirectionalLight2D.shadow_enabled = false` — this is ambient tinting, not a shadow caster (object shadows are drawn manually).
+
+---
+
+## ADR-027: Object Shadows — Custom 2D Flat Oval, No Rotation
+**Status:** Accepted
+**Date:** 2026-05-06
+**Context:** Needed Stardew Valley–style grounded shadows on all world objects (PlayerHome, Well, Plant, DryingRack, Rock). Initial attempts incorrectly rotated the ellipse as the sun moved, producing a spinning oval.
+**Decision:** `object_shadow.gd` extends `Node2D`. In `_draw()`, draws a flat horizontal oval (two-pass: faint outer halo + solid inner core) whose **centre shifts** based on sun direction, but the ellipse itself **never rotates**. Y-component of shift is flattened by 0.25 for top-down perspective. `z_as_relative = false`, `z_index = 0` so shadows render above ground tiles (z=0) rather than below them.
+**Key parameters per object:**
+| Object | ground_offset | shadow_size | cast_length |
+|---|---|---|---|
+| PlayerHome | (0, 24) | (50, 8) | 32 |
+| Well | (0, 10) | (14, 6) | 14 |
+| Plant | (0, 12) | (11, 5) | 10 |
+| DryingRack | (0, 16) | (22, 5) | 16 |
+| Rock | (0, 5) | (8, 4) | 7 |
+**Rationale:** Stardew-style shadows are always a flat horizontal oval — they shift position with the sun angle but don't rotate. Rotating the ellipse produces an unrealistic spinning effect. `z_as_relative=false, z_index=0` is required: grandchild nodes with `z_as_relative=true, z_index=-1` get global z=-1 which goes below the Ground TileMapLayer (z=0), making shadows invisible.
+**Consequences:** `_dnc` (DayNight node) is looked up lazily in `_process()` (not `_ready()`) because world subtree children initialize before `DayNight` registers itself in its group. Shadow parameters may need per-object tuning after visual inspection.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
-- Stage 2: NPCs, farming/crop system, day cycle
+- Stage 2: NPCs, farming/crop system
 - Interior tileset: `GameAssets/interior/` has bed, furniture, carpet, kitchen assets ready to use
 - Audio: no tool in stack yet — deferred
 - GitHub MCP: not installed — using `gh` CLI directly (sufficient for now)
+- Shadow `ground_offset` / `shadow_size` per-object tuning — may need visual refinement after playtesting
 
 ---
 
@@ -381,3 +425,6 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-05-05 | Interactable router implemented — well.gd, plant.gd own their logic; world.gd reduced to signal router. ADR-023 added. |
 | 2026-05-05 | Asset inventory + organization: extracted 8 ZIPs, renamed assets by visual type. New folders: NPCs/GreyHoodie, NPCs/PurpleJack, Objects/DryingRacks (16 variants), Items/Bags (7), Items/Chests (3), Items/WateringCans (6), Items/Gems (8). ASSET_INDEX.md created. |
 | 2026-05-05 | HUD cleanup: removed energy bar, currency "0" label, yellow slot selection. E-prompt moved into HUD hotbar (left side, proximity-driven). ADR-024 added. |
+| 2026-05-06 | Drying rack 3-state mechanic: rack_weed_1/2/3plant.png textures, add_plant() via plant_harvested signal. Plant resets to seedling on harvest. ADR-025 added. |
+| 2026-05-06 | Day/night cycle: DayNightCycle.gd in main.tscn, 120s loop, CanvasModulate + DirectionalLight2D keyframe lerp. Night floor raised to 0.38 brightness. ADR-026 added. |
+| 2026-05-06 | Dynamic shadows: object_shadow.gd flat oval with positional shift (no rotation), two-pass soft rendering, z_as_relative=false. All 5 world objects have shadows. ADR-027 added. |

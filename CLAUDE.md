@@ -3,9 +3,9 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Full UI build — HUD autoload (top bar + hotbar + toast), Inventory overlay, Shop skeleton (session 10)
-- **Next up:** Drop in UI assets when ready; wire pixel bitmap font; terrain peering bits (deferred from session 8)
-- **Open decisions:** None
+- **Last completed:** Day/night cycle + dynamic shadows on all 5 world objects (sessions 15-17); drying rack 3-state mechanic
+- **Next up:** Confirm shadow shapes after spinning-oval fix; shadow parameter tuning if needed
+- **Open decisions:** Shadow `ground_offset`/`shadow_size` per-object values may need visual refinement
 
 ---
 
@@ -112,6 +112,29 @@
 - `class_name Foo` conflicts with any autoload also named `Foo` — never reuse autoload names for class_name
 - `Polygon2D` with `z_index = -1` works correctly as a colored background in Node2D scenes
 
+## Day/Night Cycle (ADR-026)
+- Script: `res://autoload/DayNightCycle.gd` — added as `DayNight` Node in `main.tscn` (NOT a static autoload, just in main)
+- Joins group `"day_night_cycle"` in `_ready()` — shadow nodes find it via `get_first_node_in_group()`
+- `cycle_duration = 120.0s`, `start_time = 0.35` (morning start)
+- Drives `CanvasModulate` (sibling in main.tscn) and `Sun` DirectionalLight2D (sibling in main.tscn)
+- Exposes: `shadow_dir: Vector2`, `shadow_alpha: float`, `shadow_length_factor: float`
+- Night ambient floor: Color(0.38, 0.42, 0.62) — readable blue-tinted, not near-black
+
+## Dynamic Shadows (ADR-027)
+- Script: `res://World/object_shadow.gd` — attach as child Node2D to any world object
+- Draws a flat horizontal oval (two-pass: halo + core); **centre shifts with sun, ellipse does NOT rotate**
+- **Critical z-order fix**: `z_as_relative = false`, `z_index = 0` — grandchild z=-1 relative = global z=-1 = invisible below terrain
+- `_dnc` looked up lazily in `_process()` NOT `_ready()` — world subtree initializes before DayNight registers its group
+- Exports: `ground_offset: Vector2`, `shadow_size: Vector2(w, h)`, `cast_length: float`
+- All 5 objects in world.tscn have Shadow Node2D children (PlayerHome, Well, Plant, DryingRack, Rock)
+
+## Drying Rack (ADR-025)
+- Script: `res://Interactables/drying_rack.gd` — Sprite2D with 3 preloaded textures
+- `add_plant()` increments texture state (1→2→3 plants); stops at state 2 (3-plant image)
+- Connected in `world.gd`: `$Plant.plant_harvested.connect($DryingRack.add_plant)`
+- Assets: `res://GameAssets/Objects/DryingRacks/rack_weed_1/2/3plant.png`
+- Plant (plant.gd) resets to frame 0 / stage 0 after emitting `plant_harvested`; no toast popups
+
 ## Stage 1 Milestones
 | # | Milestone | Status |
 |---|-----------|--------|
@@ -123,3 +146,5 @@
 | M5 | World scene + TileMapLayer | ✅ Done |
 | M6 | Main scene + camera limits | ✅ Done |
 | Post | Player home door + interior | ✅ Done |
+| Post | Day/night cycle + dynamic shadows | ✅ Done |
+| Post | Drying rack 3-state mechanic | ✅ Done |
