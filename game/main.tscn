@@ -29,7 +29,7 @@ region_rect = Rect2(0, 0, 80, 60)
 color = Color(1, 1, 1, 1)
 
 [node name="Sun" type="DirectionalLight2D" parent="."]
-shadow_enabled = true
+shadow_enabled = false
 energy = 0.35
 color = Color(1, 0.95, 0.82, 1)
 
