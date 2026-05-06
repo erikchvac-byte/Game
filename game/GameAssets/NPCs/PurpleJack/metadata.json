@@ -1,0 +1,30 @@
+{
+  "character": {
+    "id": "1872602a-808a-4696-b620-f5c48c15ffda",
+    "name": "Purple Jack...",
+    "prompt": "Girl from the 90s with black pants and purple jacket",
+    "size": {
+      "width": 68,
+      "height": 68
+    },
+    "template_id": "mannequin",
+    "directions": 8,
+    "view": "high top-down",
+    "created_at": "2026-04-22T01:01:00.137695+00:00"
+  },
+  "frames": {
+    "rotations": {
+      "south": "rotations/south.png",
+      "south-east": "rotations/south-east.png",
+      "east": "rotations/east.png",
+      "north-east": "rotations/north-east.png",
+      "north": "rotations/north.png",
+      "north-west": "rotations/north-west.png",
+      "west": "rotations/west.png",
+      "south-west": "rotations/south-west.png"
+    },
+    "animations": {}
+  },
+  "export_version": "2.0",
+  "export_date": "2026-05-05T22:06:33.605048"
+}

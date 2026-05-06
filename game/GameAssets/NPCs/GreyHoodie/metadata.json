@@ -1,0 +1,117 @@
+{
+  "character": {
+    "id": "b8fb9bd6-ec9c-4676-ae70-6783ec635021",
+    "name": "Grey Hoodies",
+    "prompt": "A scruffy pixel character with a slouched posture, half-lidded red eyes, messy shoulder-length dark hair, and a lazy smirk. Wearing an oversized faded tie-dye hoodie, baggy cargo pants, and worn skate shoes, they hold a slightly crooked posture with hands in pockets. The sprite uses muted greens, browns, and purples, with chunky 1999-era shading",
+    "size": {
+      "width": 92,
+      "height": 92
+    },
+    "template_id": "mannequin",
+    "directions": 8,
+    "view": "high top-down",
+    "created_at": "2026-05-05T03:50:18.170442+00:00"
+  },
+  "frames": {
+    "rotations": {
+      "south": "rotations/south.png",
+      "south-east": "rotations/south-east.png",
+      "east": "rotations/east.png",
+      "north-east": "rotations/north-east.png",
+      "north": "rotations/north.png",
+      "north-west": "rotations/north-west.png",
+      "west": "rotations/west.png",
+      "south-west": "rotations/south-west.png"
+    },
+    "animations": {
+      "Walking-fd89e09c": {
+        "south": [
+          "animations/Walking-fd89e09c/south/frame_000.png",
+          "animations/Walking-fd89e09c/south/frame_001.png",
+          "animations/Walking-fd89e09c/south/frame_002.png",
+          "animations/Walking-fd89e09c/south/frame_003.png",
+          "animations/Walking-fd89e09c/south/frame_004.png",
+          "animations/Walking-fd89e09c/south/frame_005.png"
+        ],
+        "east": [
+          "animations/Walking-fd89e09c/east/frame_000.png",
+          "animations/Walking-fd89e09c/east/frame_001.png",
+          "animations/Walking-fd89e09c/east/frame_002.png",
+          "animations/Walking-fd89e09c/east/frame_003.png",
+          "animations/Walking-fd89e09c/east/frame_004.png",
+          "animations/Walking-fd89e09c/east/frame_005.png"
+        ],
+        "west": [
+          "animations/Walking-fd89e09c/west/frame_000.png",
+          "animations/Walking-fd89e09c/west/frame_001.png",
+          "animations/Walking-fd89e09c/west/frame_002.png",
+          "animations/Walking-fd89e09c/west/frame_003.png",
+          "animations/Walking-fd89e09c/west/frame_004.png",
+          "animations/Walking-fd89e09c/west/frame_005.png"
+        ],
+        "north": [
+          "animations/Walking-fd89e09c/north/frame_000.png",
+          "animations/Walking-fd89e09c/north/frame_001.png",
+          "animations/Walking-fd89e09c/north/frame_002.png",
+          "animations/Walking-fd89e09c/north/frame_003.png",
+          "animations/Walking-fd89e09c/north/frame_004.png",
+          "animations/Walking-fd89e09c/north/frame_005.png"
+        ]
+      },
+      "Breathing_Idle-021ac61f": {
+        "south": [
+          "animations/Breathing_Idle-021ac61f/south/frame_000.png",
+          "animations/Breathing_Idle-021ac61f/south/frame_001.png",
+          "animations/Breathing_Idle-021ac61f/south/frame_002.png",
+          "animations/Breathing_Idle-021ac61f/south/frame_003.png"
+        ],
+        "east": [
+          "animations/Breathing_Idle-021ac61f/east/frame_000.png",
+          "animations/Breathing_Idle-021ac61f/east/frame_001.png",
+          "animations/Breathing_Idle-021ac61f/east/frame_002.png",
+          "animations/Breathing_Idle-021ac61f/east/frame_003.png"
+        ],
+        "west": [
+          "animations/Breathing_Idle-021ac61f/west/frame_000.png",
+          "animations/Breathing_Idle-021ac61f/west/frame_001.png",
+          "animations/Breathing_Idle-021ac61f/west/frame_002.png",
+          "animations/Breathing_Idle-021ac61f/west/frame_003.png"
+        ]
+      },
+      "slowly_receiving_a_bag_of_dry_lettuce-fe14a014": {
+        "south": [
+          "animations/slowly_receiving_a_bag_of_dry_lettuce-fe14a014/south/frame_000.png",
+          "animations/slowly_receiving_a_bag_of_dry_lettuce-fe14a014/south/frame_001.png",
+          "animations/slowly_receiving_a_bag_of_dry_lettuce-fe14a014/south/frame_002.png",
+          "animations/slowly_receiving_a_bag_of_dry_lettuce-fe14a014/south/frame_003.png"
+        ],
+        "north": [
+          "animations/slowly_receiving_a_bag_of_dry_lettuce-fe14a014/north/frame_000.png",
+          "animations/slowly_receiving_a_bag_of_dry_lettuce-fe14a014/north/frame_001.png",
+          "animations/slowly_receiving_a_bag_of_dry_lettuce-fe14a014/north/frame_002.png",
+          "animations/slowly_receiving_a_bag_of_dry_lettuce-fe14a014/north/frame_003.png"
+        ]
+      },
+      "Push_Object-6b24114c": {
+        "south": [
+          "animations/Push_Object-6b24114c/south/frame_000.png",
+          "animations/Push_Object-6b24114c/south/frame_001.png",
+          "animations/Push_Object-6b24114c/south/frame_002.png",
+          "animations/Push_Object-6b24114c/south/frame_003.png",
+          "animations/Push_Object-6b24114c/south/frame_004.png",
+          "animations/Push_Object-6b24114c/south/frame_005.png"
+        ],
+        "east": [
+          "animations/Push_Object-6b24114c/east/frame_000.png",
+          "animations/Push_Object-6b24114c/east/frame_001.png",
+          "animations/Push_Object-6b24114c/east/frame_002.png",
+          "animations/Push_Object-6b24114c/east/frame_003.png",
+          "animations/Push_Object-6b24114c/east/frame_004.png",
+          "animations/Push_Object-6b24114c/east/frame_005.png"
+        ]
+      }
+    }
+  },
+  "export_version": "2.0",
+  "export_date": "2026-05-05T22:05:26.722346"
+}

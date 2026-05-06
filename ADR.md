@@ -321,6 +321,24 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-024: HUD Cleanup — E-Prompt in HUD, Removed Energy/Currency/Yellow Selection
+**Status:** Accepted
+**Date:** 2026-05-05
+**Context:** HUD top bar had three sections (water, currency "0", energy green bar) and hotbar had a yellow selection square on the active slot. World-space WellPrompt/PlantPrompt sprites above objects served as proximity indicators. User requested: move E-prompt to HUD, remove energy section, remove currency "0" label, remove yellow selection square.
+**Decision:**
+- Removed energy section (green ColorRect bar + dot) from top bar — no game logic wired to energy yet.
+- Removed currency section (gold dot + "0" Label) from top bar — no currency system active.
+- Removed yellow border + dark-gold background from selected hotbar slot — all 12 slots now use uniform grey styling. `_slot_style(_selected)` parameter preserved (unused) for future re-introduction.
+- Added `_e_prompt` TextureRect (key_e.png, 14×14px) anchored PRESET_CENTER_LEFT at x=3 inside the hotbar Panel — hidden by default.
+- Added `show_interact_prompt(on: bool)` public method on HUD.
+- `world.gd._on_interactable_entered/exited` now calls `HUD.show_interact_prompt(true/false)` — E indicator is HUD-driven.
+- `well.gd` and `plant.gd`: all `$WellPrompt.visible` / `$PlantPrompt.visible` calls removed. World-space prompt nodes remain in scene but are permanently hidden. Plant still calls HUD directly when reaching max growth stage while player is in range.
+- Removed dead helper functions `_build_bar` and `_color_dot` from hud.gd.
+**Rationale:** World-space prompts floating above objects are immersion-breaking and don't match the Stardew-style HUD-indicator pattern. Centralizing in HUD gives a single, consistent "you can interact" signal. Removing unimplemented meters (energy, currency) reduces visual noise. Yellow selection square is visually distracting with no gameplay benefit at this stage.
+**Consequences:** `show_interact_prompt` parameter renamed from `show` to `on` — `show` shadows `CanvasLayer.show()` in GDScript. `plant.gd.interact()` reuses the `hud` var already declared at function top rather than re-declaring it in the inner scope (duplicate var error). Energy and currency API (`set_energy`, `set_currency`) fully removed — add back when those systems are built.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system, day cycle
@@ -361,3 +379,5 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-05-05 | Full UI built — HUD (top bar + hotbar + toast), Inventory overlay, Shop skeleton. HUDLayer removed from world.tscn. ADR-021/022 added. |
 | 2026-05-05 | HUD water section: blue dot replaced with WaterGem TextureRect; blue bar replaced with TextureProgressBar (WaterMeterBar.png). |
 | 2026-05-05 | Interactable router implemented — well.gd, plant.gd own their logic; world.gd reduced to signal router. ADR-023 added. |
+| 2026-05-05 | Asset inventory + organization: extracted 8 ZIPs, renamed assets by visual type. New folders: NPCs/GreyHoodie, NPCs/PurpleJack, Objects/DryingRacks (16 variants), Items/Bags (7), Items/Chests (3), Items/WateringCans (6), Items/Gems (8). ASSET_INDEX.md created. |
+| 2026-05-05 | HUD cleanup: removed energy bar, currency "0" label, yellow slot selection. E-prompt moved into HUD hotbar (left side, proximity-driven). ADR-024 added. |

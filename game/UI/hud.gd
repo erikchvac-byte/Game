@@ -6,14 +6,10 @@ const HOTBAR_H := 16.0
 
 var water: int = 0
 var water_max: int = 10
-var energy: int = 10
-var energy_max: int = 10
-var currency: int = 0
 var selected_slot: int = 0
 
 var _water_tp: TextureProgressBar
-var _energy_fill: ColorRect
-var _currency_label: Label
+var _e_prompt: TextureRect
 var _slots: Array = []
 var _toast_panel: Panel
 var _toast_label: Label
@@ -69,29 +65,7 @@ func _build_top_bar() -> void:
 	_water_tp.tint_progress = Color(0.24, 0.54, 1.0)
 	w_sec.add_child(_water_tp)
 
-	# Currency (center)
-	var c_sec := _hbox(Control.SIZE_EXPAND_FILL, BoxContainer.ALIGNMENT_CENTER, 2)
-	hbox.add_child(c_sec)
-	var coin := _color_dot(Color(1.0, 0.82, 0.1))
-	c_sec.add_child(coin)
-	_currency_label = Label.new()
-	_currency_label.text = "0"
-	_currency_label.add_theme_font_size_override("font_size", 8)
-	_currency_label.add_theme_color_override("font_color", Color(1.0, 0.90, 0.55))
-	_currency_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	c_sec.add_child(_currency_label)
-
-	# Energy (right)
-	var e_sec := _hbox(Control.SIZE_EXPAND_FILL, BoxContainer.ALIGNMENT_END, 2)
-	hbox.add_child(e_sec)
-	_energy_fill = _build_bar(e_sec, 48.0, Color(0.14, 0.28, 0.14), Color(0.28, 0.88, 0.28))
-	_energy_fill.size_flags_stretch_ratio = float(energy) / float(energy_max)
-	var e_icon := _color_dot(Color(0.28, 0.88, 0.28))
-	e_sec.add_child(e_icon)
-
-	# Init bars
 	_refresh_water_bar()
-	_refresh_energy_bar()
 
 
 # ── Hotbar ────────────────────────────────────────────────────────────────────
@@ -103,6 +77,19 @@ func _build_hotbar() -> void:
 	bar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	bar.offset_top = -HOTBAR_H
 	add_child(bar)
+
+	_e_prompt = TextureRect.new()
+	_e_prompt.name = "EPrompt"
+	_e_prompt.texture = load("res://GameAssets/UI/key_e.png")
+	_e_prompt.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+	_e_prompt.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_e_prompt.visible = false
+	_e_prompt.set_anchors_preset(Control.PRESET_CENTER_LEFT)
+	_e_prompt.offset_left = 3.0
+	_e_prompt.offset_top = -7.0
+	_e_prompt.offset_right = 17.0
+	_e_prompt.offset_bottom = 7.0
+	bar.add_child(_e_prompt)
 
 	var hbox := HBoxContainer.new()
 	hbox.name = "HotbarSlots"
@@ -206,18 +193,6 @@ func set_water(current: int, max_val: int = -1) -> void:
 	_refresh_water_bar()
 
 
-func set_energy(current: int, max_val: int = -1) -> void:
-	if max_val >= 0:
-		energy_max = max_val
-	energy = clampi(current, 0, energy_max)
-	_refresh_energy_bar()
-
-
-func set_currency(amount: int) -> void:
-	currency = maxi(0, amount)
-	if _currency_label:
-		_currency_label.text = str(currency)
-
 
 func select_slot(index: int) -> void:
 	selected_slot = clampi(index, 0, SLOT_COUNT - 1)
@@ -240,6 +215,11 @@ func set_slot_badge(slot: int, value: int) -> void:
 		badge.visible = value >= 0
 		if value >= 0:
 			badge.text = str(value)
+
+
+func show_interact_prompt(on: bool) -> void:
+	if _e_prompt:
+		_e_prompt.visible = on
 
 
 func set_carrying_water(carrying: bool) -> void:
@@ -268,45 +248,11 @@ func _refresh_water_bar() -> void:
 	_water_tp.value = 0.0 if water_max == 0 else float(water) / float(water_max)
 
 
-func _refresh_energy_bar() -> void:
-	if not _energy_fill:
-		return
-	var ratio := 0.0 if energy_max == 0 else float(energy) / float(energy_max)
-	_energy_fill.anchor_right = ratio
-	_energy_fill.offset_right = 0.0
-
 
 func _refresh_hotbar_selection() -> void:
 	for i in range(_slots.size()):
 		(_slots[i] as Panel).add_theme_stylebox_override("panel", _slot_style(i == selected_slot))
 
-
-func _build_bar(parent: HBoxContainer, width: float, bg_col: Color, fill_col: Color) -> ColorRect:
-	var container := Control.new()
-	container.custom_minimum_size = Vector2(width, 6.0)
-	container.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	container.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	parent.add_child(container)
-
-	var bg := ColorRect.new()
-	bg.color = bg_col
-	bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	container.add_child(bg)
-
-	var fill := ColorRect.new()
-	fill.name = "Fill"
-	fill.color = fill_col
-	fill.anchor_left = 0.0
-	fill.anchor_top = 0.0
-	fill.anchor_right = 1.0
-	fill.anchor_bottom = 1.0
-	fill.offset_left = 0.0
-	fill.offset_top = 0.0
-	fill.offset_right = 0.0
-	fill.offset_bottom = 0.0
-	container.add_child(fill)
-
-	return fill
 
 
 func _flat(color: Color) -> StyleBoxFlat:
@@ -323,28 +269,13 @@ func _hbox(h_flags: int, align: int, sep: int) -> HBoxContainer:
 	return hb
 
 
-func _color_dot(col: Color) -> ColorRect:
-	var cr := ColorRect.new()
-	cr.custom_minimum_size = Vector2(6.0, 6.0)
-	cr.color = col
-	cr.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	return cr
 
-
-func _slot_style(selected: bool) -> StyleBoxFlat:
+func _slot_style(_selected: bool) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
-	if selected:
-		s.bg_color = Color(0.36, 0.30, 0.07, 0.95)
-		s.border_width_left = 1
-		s.border_width_right = 1
-		s.border_width_top = 1
-		s.border_width_bottom = 1
-		s.border_color = Color(1.0, 0.85, 0.2)
-	else:
-		s.bg_color = Color(0.15, 0.15, 0.17, 0.90)
-		s.border_width_left = 1
-		s.border_width_right = 1
-		s.border_width_top = 1
-		s.border_width_bottom = 1
-		s.border_color = Color(0.30, 0.30, 0.34)
+	s.bg_color = Color(0.15, 0.15, 0.17, 0.90)
+	s.border_width_left = 1
+	s.border_width_right = 1
+	s.border_width_top = 1
+	s.border_width_bottom = 1
+	s.border_color = Color(0.30, 0.30, 0.34)
 	return s

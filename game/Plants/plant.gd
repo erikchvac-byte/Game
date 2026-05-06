@@ -37,18 +37,16 @@ func interact(player: CharacterBody2D) -> void:
 		await get_tree().create_timer(1.0 / fps).timeout
 		$PurplePlant.frame = f
 	_growing = false
-	if _stage >= PLANT_STAGES.size() - 1:
-		$PlantPrompt.visible = false
+	if _stage >= PLANT_STAGES.size() - 1 and hud:
+		hud.show_interact_prompt(false)
 
 func _on_area_entered(body: Node2D) -> void:
 	if body.name != "Player":
 		return
 	if _stage < PLANT_STAGES.size() - 1:
-		$PlantPrompt.visible = true
-	interactable_entered.emit(self)
+		interactable_entered.emit(self)
 
 func _on_area_exited(body: Node2D) -> void:
 	if body.name != "Player":
 		return
-	$PlantPrompt.visible = false
 	interactable_exited.emit(self)

@@ -17,10 +17,16 @@ func _input(event: InputEvent) -> void:
 
 func _on_interactable_entered(node: Node) -> void:
 	_interactable = node
+	var hud := get_node_or_null("/root/HUD")
+	if hud:
+		hud.show_interact_prompt(true)
 
 func _on_interactable_exited(node: Node) -> void:
 	if _interactable == node:
 		_interactable = null
+	var hud := get_node_or_null("/root/HUD")
+	if hud:
+		hud.show_interact_prompt(false)
 
 func _on_door_entered(body: Node2D) -> void:
 	if body.name != "Player":
