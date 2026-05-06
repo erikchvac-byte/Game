@@ -2,6 +2,7 @@ extends Node2D
 
 signal interactable_entered(node: Node)
 signal interactable_exited(node: Node)
+signal plant_harvested
 
 const PLANT_STAGES := [0, 5, 10, 16]
 
@@ -24,7 +25,6 @@ func interact(player: CharacterBody2D) -> void:
 	var hud = get_node_or_null("/root/HUD")
 	if hud:
 		hud.set_carrying_water(false)
-		hud.show_toast("Plant watered!")
 	_growing = true
 	var prev_stage := _stage
 	_stage += 1
@@ -37,8 +37,14 @@ func interact(player: CharacterBody2D) -> void:
 		await get_tree().create_timer(1.0 / fps).timeout
 		$PurplePlant.frame = f
 	_growing = false
-	if _stage >= PLANT_STAGES.size() - 1 and hud:
-		hud.show_interact_prompt(false)
+	if _stage >= PLANT_STAGES.size() - 1:
+		if hud:
+			hud.show_interact_prompt(false)
+		await get_tree().create_timer(1.0).timeout
+		plant_harvested.emit()
+		_stage = 0
+		$PurplePlant.stop()
+		$PurplePlant.frame = PLANT_STAGES[0]
 
 func _on_area_entered(body: Node2D) -> void:
 	if body.name != "Player":

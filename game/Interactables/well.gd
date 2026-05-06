@@ -29,7 +29,6 @@ func interact(player: CharacterBody2D) -> void:
 	var hud = get_node_or_null("/root/HUD")
 	if hud:
 		hud.set_carrying_water(true)
-		hud.show_toast("Water collected!")
 
 func _on_area_entered(body: Node2D) -> void:
 	if body.name != "Player":

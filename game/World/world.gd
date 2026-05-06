@@ -8,6 +8,7 @@ func _ready() -> void:
 	$Well.connect("interactable_exited", _on_interactable_exited)
 	$Plant.connect("interactable_entered", _on_interactable_entered)
 	$Plant.connect("interactable_exited", _on_interactable_exited)
+	$Plant.plant_harvested.connect($DryingRack.add_plant)
 
 func _input(event: InputEvent) -> void:
 	if not event.is_action_pressed("interact"):
