@@ -13,9 +13,10 @@ var _dnc: Node = null
 func _ready() -> void:
 	z_index = -1
 	z_as_relative = true
-	_dnc = get_tree().get_first_node_in_group("day_night_cycle")
 
 func _process(_delta: float) -> void:
+	if _dnc == null:
+		_dnc = get_tree().get_first_node_in_group("day_night_cycle")
 	queue_redraw()
 
 func _draw() -> void:
