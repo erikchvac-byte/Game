@@ -205,6 +205,21 @@ radius = 32.0
 [sub_resource type="CircleShape2D" id="CircleShape2D_8kjm2"]
 radius = 6.0
 
+[sub_resource type="OccluderPolygon2D" id="OccWell"]
+polygon = PackedVector2Array(-9, -6, 9, -6, 9, 5, -9, 5)
+
+[sub_resource type="OccluderPolygon2D" id="OccPlant"]
+polygon = PackedVector2Array(-10, -14, 10, -14, 10, 8, -10, 8)
+
+[sub_resource type="OccluderPolygon2D" id="OccRack"]
+polygon = PackedVector2Array(-22, -22, 22, -22, 22, 14, -22, 14)
+
+[sub_resource type="OccluderPolygon2D" id="OccHome"]
+polygon = PackedVector2Array(-28, 2, 28, 2, 28, 28, -28, 28)
+
+[sub_resource type="OccluderPolygon2D" id="OccRock"]
+polygon = PackedVector2Array(-5, -4, 5, -4, 5, 3, -5, 3)
+
 [node name="World" type="Node2D" unique_id=1479370967]
 y_sort_enabled = true
 script = ExtResource("4_worldgd")
@@ -219,6 +234,9 @@ texture_filter = 1
 position = Vector2(112, 96)
 scale = Vector2(2, 2)
 texture = ExtResource("2_8a836")
+
+[node name="Occluder" type="LightOccluder2D" parent="PlayerHome" unique_id=2101001001]
+occluder = SubResource("OccHome")
 
 [node name="PlayerHomeDoor" type="AnimatedSprite2D" parent="." unique_id=987654321]
 texture_filter = 1
@@ -274,6 +292,9 @@ position = Vector2(0, -18)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("41_s5cut")
 
+[node name="Occluder" type="LightOccluder2D" parent="Well" unique_id=2101001002]
+occluder = SubResource("OccWell")
+
 [node name="Plant" type="Node2D" parent="." unique_id=280000001]
 position = Vector2(270, 95)
 script = ExtResource("plant_script")
@@ -299,12 +320,21 @@ position = Vector2(0, -18)
 scale = Vector2(0.5, 0.5)
 texture = ExtResource("41_s5cut")
 
+[node name="Occluder" type="LightOccluder2D" parent="Plant" unique_id=2101001003]
+occluder = SubResource("OccPlant")
+
 [node name="DryingRack" type="Sprite2D" parent="." unique_id=2133297938]
 position = Vector2(205, 75)
 texture_filter = 1
 script = ExtResource("drack_script")
 texture = ExtResource("drack1_tex")
 
+[node name="Occluder" type="LightOccluder2D" parent="DryingRack" unique_id=2101001004]
+occluder = SubResource("OccRack")
+
 [node name="18" type="Sprite2D" parent="." unique_id=1264295051]
 position = Vector2(32, 254)
 texture = ExtResource("45_8kjm2")
+
+[node name="Occluder" type="LightOccluder2D" parent="18" unique_id=2101001005]
+occluder = SubResource("OccRock")

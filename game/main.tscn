@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://dn5yyumw6kj3j" path="res://World/world.tscn" id="1_world"]
 [ext_resource type="Script" uid="uid://oa1n61k237qq" path="res://main.gd" id="3_maingd"]
 [ext_resource type="Texture2D" uid="uid://c1lnxtrmtdvhd" path="res://GameAssets/Village/Houses/3_1.png" id="4_house"]
+[ext_resource type="Script" uid="uid://dncscript11" path="res://autoload/DayNightCycle.gd" id="dnc_script"]
 
 [node name="Main" type="Node2D" unique_id=1407496713]
 script = ExtResource("3_maingd")
@@ -23,3 +24,14 @@ scale = Vector2(2, 2)
 texture = ExtResource("4_house")
 region_enabled = true
 region_rect = Rect2(0, 0, 80, 60)
+
+[node name="CanvasModulate" type="CanvasModulate" parent="."]
+color = Color(1, 1, 1, 1)
+
+[node name="Sun" type="DirectionalLight2D" parent="."]
+shadow_enabled = true
+energy = 0.35
+color = Color(1, 0.95, 0.82, 1)
+
+[node name="DayNight" type="Node" parent="."]
+script = ExtResource("dnc_script")
