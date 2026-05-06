@@ -14,6 +14,8 @@ var _slots: Array = []
 var _toast_panel: Panel
 var _toast_label: Label
 var _toast_tween: Tween
+var _bucket_tex_empty: Texture2D
+var _bucket_tex_full: Texture2D
 
 
 func _ready() -> void:
@@ -78,25 +80,41 @@ func _build_hotbar() -> void:
 	bar.offset_top = -HOTBAR_H
 	add_child(bar)
 
+	# Top-level HBox: [EPromptArea 20px] [HotbarSlots expand]
+	var main_hbox := HBoxContainer.new()
+	main_hbox.name = "HotbarLayout"
+	main_hbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	main_hbox.add_theme_constant_override("separation", 0)
+	bar.add_child(main_hbox)
+
+	# Dedicated E prompt zone — fixed 20px left column
+	var e_container := Control.new()
+	e_container.name = "EPromptArea"
+	e_container.custom_minimum_size = Vector2(20, 0)
+	e_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	main_hbox.add_child(e_container)
+
 	_e_prompt = TextureRect.new()
 	_e_prompt.name = "EPrompt"
 	_e_prompt.texture = load("res://GameAssets/UI/key_e.png")
 	_e_prompt.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	_e_prompt.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	_e_prompt.visible = false
-	_e_prompt.set_anchors_preset(Control.PRESET_CENTER_LEFT)
+	_e_prompt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_e_prompt.offset_left = 3.0
-	_e_prompt.offset_top = -7.0
-	_e_prompt.offset_right = 17.0
-	_e_prompt.offset_bottom = 7.0
-	bar.add_child(_e_prompt)
+	_e_prompt.offset_right = -3.0
+	e_container.add_child(_e_prompt)
 
 	var hbox := HBoxContainer.new()
 	hbox.name = "HotbarSlots"
-	hbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
 	hbox.add_theme_constant_override("separation", 1)
-	bar.add_child(hbox)
+	main_hbox.add_child(hbox)
+
+	_bucket_tex_empty = load("res://GameAssets/UI/bucket_empty.png")
+	_bucket_tex_full = load("res://GameAssets/UI/bucket_full.png")
 
 	_slots = []
 	for i in range(SLOT_COUNT):
@@ -128,6 +146,8 @@ func _build_hotbar() -> void:
 
 		_slots.append(slot)
 
+	# Slot 0 is the permanent bucket slot
+	set_slot_texture(0, _bucket_tex_empty)
 	_refresh_hotbar_selection()
 
 
@@ -224,6 +244,7 @@ func show_interact_prompt(on: bool) -> void:
 
 func set_carrying_water(carrying: bool) -> void:
 	set_water(water_max if carrying else 0)
+	set_slot_texture(0, _bucket_tex_full if carrying else _bucket_tex_empty)
 
 
 func show_toast(message: String, duration: float = 2.0) -> void:
