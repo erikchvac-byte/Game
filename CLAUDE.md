@@ -3,9 +3,9 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Camera viewport +15% (zoom 0.87); night speed 2× multiplier; 4-point diffused house night lighting with light_mask exclusion (ADR-028/029/030)
+- **Last completed:** Imported 13 village building assets into `res://GameAssets/Buildings/` (ADR-031)
 - **Next up:** Playtest — tune HouseGlow* energy/scale if needed; verify daytime house looks correct (Sun range_item_cull_mask=3)
-- **Open decisions:** HouseGlow energy values (Back=0.32, Sides=0.17, Front=0.09) are initial estimates; adjust per visual preference
+- **Open decisions:** HouseGlow energy values (Back=0.32, Sides=0.17, Front=0.09) are initial estimates; adjust per visual preference. `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 
 ---
 
@@ -31,6 +31,10 @@
 ## Asset Layout
 - Source assets: `C:/Users/erikc/Dev/Game/GameAssets/` (~800 PNGs)
 - In-project assets: `res://GameAssets/` (same tree, copied into `game/`)
+- **Village buildings**: `res://GameAssets/Buildings/` — snake_case named, imported (ADR-031)
+  - `houses/` — 8 residential: `house_twostory_a/b/c.png`, `house_cottage_stone.png`, `house_stone_teal.png`, `house_stone_brown.png`, `house_twostory_teal.png`, `house_farm_cozy.png`
+  - `shops/` — 4 commercial: `shop_bakery_main.png`, `shop_general_small.png`, `shop_apothecary_main.png`, `shop_apothecary_alt.png` *(alt = duplicate, pending dedup)*
+  - `special/` — 1 landmark: `building_tavern_main.png`
 - **Erik player sprites**: `res://GameAssets/ErikPlayer/` — 64×64 px
   - Idle: `idle_south/north/east.png` (1 frame each)
   - Walk: `walk_south/north/east/west_0-3.png` (4 frames each, PixelLab generated)

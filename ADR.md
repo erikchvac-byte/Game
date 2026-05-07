@@ -421,6 +421,20 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-031: Village Building Assets — GameAssets/Buildings/ Organized Subtree
+**Status:** Accepted
+**Date:** 2026-05-07
+**Context:** 13 building PNGs downloaded from PixelLab and other sources needed importing into the project. The existing `GameAssets/Houses/` folder uses numbered filenames (1.png, 2.png…) with no descriptive naming. A separate, well-named subtree was needed to keep new assets discoverable.
+**Decision:** Created `game/GameAssets/Buildings/` with three subdirectories mirroring the building category system:
+- `houses/` — 8 residential buildings (two-story variants a/b/c, stone cottage, stone teal/brown, teal+tree, cozy farmhouse)
+- `shops/` — 4 commercial buildings (bakery, general small shop, apothecary x2)
+- `special/` — 1 landmark (tavern)
+All files renamed to snake_case descriptive names. Imported via `EditorInterface.get_resource_filesystem().scan()`.
+**Rationale:** Keeping new assets in a dedicated `Buildings/` subtree avoids polluting the existing numbered-name system in `Houses/` while establishing a clean naming convention for all future village buildings. snake_case names with type prefix (`house_`, `shop_`, `building_`) make assets immediately identifiable in the editor FileSystem dock.
+**Consequences:** `shop_apothecary_alt.png` is pixel-identical to `shop_apothecary_main.png` — likely the same source file saved twice. Pending dedup. Original files remain in `C:/Users/erikc/Downloads/` (not deleted). No scene references yet — assets are available for placement.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system
@@ -470,3 +484,4 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-05-07 | Camera zoom set to 0.87 — 15% more world visible. ADR-028 added. |
 | 2026-05-07 | Night speed 2× multiplier in DayNightCycle._process(). Daytime unchanged. ADR-029 added. |
 | 2026-05-07 | 4-point diffused house night lighting; PlayerHome/Door light_mask=2; Sun range_item_cull_mask=3. ADR-030 added. |
+| 2026-05-07 | 13 village building PNGs imported into res://GameAssets/Buildings/ (houses/shops/special). Renamed to snake_case. ADR-031 added. |
