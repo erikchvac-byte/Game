@@ -382,6 +382,45 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
+## ADR-028: Camera Viewport Zoom — 15% More Visible Area
+**Status:** Accepted
+**Date:** 2026-05-07
+**Context:** Default Camera2D zoom (1, 1) shows exactly the 320×180 logical viewport. Wanted 15% more world visible at once without changing the base resolution.
+**Decision:** `Camera2D.zoom = Vector2(0.87, 0.87)` on the player camera in `world.tscn`. (0.87 ≈ 1/1.15.)
+**Rationale:** Reducing zoom zooms the camera out — 320/0.87 ≈ 368px wide and 180/0.87 ≈ 207px tall visible. Existing camera limits (0, 0, 640, 384) remain adequate; the wider viewport still has room to scroll. No changes to resolution, UI, or tile size needed.
+**Consequences:** World objects appear ~15% smaller. Camera limits may need expanding if the world grows.
+
+---
+
+## ADR-029: Night Speed Multiplier — 2× During Night
+**Status:** Accepted
+**Date:** 2026-05-07
+**Context:** Day/night cycle runs at constant speed (120s). User wanted daytime unchanged but nighttime cut in half.
+**Decision:** In `DayNightCycle.gd._process()`, multiply `delta / cycle_duration` by `2.0` when `_t < 0.28 or _t > 0.80` (night territory), else `1.0`.
+**Rationale:** The simplest possible implementation — single multiplier, no keyframe changes. Night (dawn transition at 0.28, dusk at 0.80) spans ~48% of 120s = ~57.6s originally; at 2× it becomes ~28.8s. Daytime (0.28–0.80) remains 62.4s. Total cycle ~91s.
+**Consequences:** Night passes noticeably faster. Dawn/dusk transition windows (0.25–0.30, 0.73–0.80) also run at 2× — slightly snappier transitions, visually acceptable.
+
+---
+
+## ADR-030: House Night Lighting — 4-Point Diffused Glow + Light Mask Exclusion
+**Status:** Accepted
+**Date:** 2026-05-07
+**Context:** Wanted interior-window-glow feel: warm ambient spilling onto surrounding ground at night, house facade staying dark. A single `PointLight2D` produced a visible front spotlight on the house walls.
+**Decision:** Replace single `HouseBackLight` with 4 soft `PointLight2D` nodes in `world.tscn`, all sharing a 128×128 radial-gradient texture (white opaque center → transparent edge):
+
+| Node | Position | Energy | Texture Scale | Role |
+|---|---|---|---|---|
+| `HouseGlowBack` | (112, 50) | 0.32 | 2.8 | Wide halo rising behind roofline |
+| `HouseGlowLeft` | (70, 100) | 0.17 | 2.0 | Left yard / path spill |
+| `HouseGlowRight` | (154, 100) | 0.17 | 2.0 | Right yard spill |
+| `HouseGlowFront` | (112, 140) | 0.09 | 1.6 | Faint door/window ground spill |
+
+**Light mask exclusion**: `PlayerHome.light_mask = 2` and `PlayerHomeDoor.light_mask = 2`. All `PointLight2D` nodes use the default `range_item_cull_mask = 1`. Since `(2 & 1) = 0`, the house and door sprites receive zero illumination from the night lights — only `CanvasModulate` ambient (the dark blue night tint) affects them. Sun (`DirectionalLight2D`) updated to `range_item_cull_mask = 3` (1|2) so daytime still illuminates the house normally.
+**Rationale:** The light_mask split is the only reliable way to prevent `PointLight2D` from washing a specific sprite while still illuminating everything around it. No `LightOccluder2D` geometry needed. The contrast between warm-lit ground and dark-ambient house creates natural edge definition that reads as rim-lighting.
+**Consequences:** House/door are never illuminated by future `PointLight2D` additions unless their `range_item_cull_mask` includes layer 2. Any new directional lights (moon, etc.) must also set `range_item_cull_mask = 3` to hit the house. Energy values are initial estimates — may need tuning after playtesting.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system
@@ -428,3 +467,6 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | 2026-05-06 | Drying rack 3-state mechanic: rack_weed_1/2/3plant.png textures, add_plant() via plant_harvested signal. Plant resets to seedling on harvest. ADR-025 added. |
 | 2026-05-06 | Day/night cycle: DayNightCycle.gd in main.tscn, 120s loop, CanvasModulate + DirectionalLight2D keyframe lerp. Night floor raised to 0.38 brightness. ADR-026 added. |
 | 2026-05-06 | Dynamic shadows: object_shadow.gd flat oval with positional shift (no rotation), two-pass soft rendering, z_as_relative=false. All 5 world objects have shadows. ADR-027 added. |
+| 2026-05-07 | Camera zoom set to 0.87 — 15% more world visible. ADR-028 added. |
+| 2026-05-07 | Night speed 2× multiplier in DayNightCycle._process(). Daytime unchanged. ADR-029 added. |
+| 2026-05-07 | 4-point diffused house night lighting; PlayerHome/Door light_mask=2; Sun range_item_cull_mask=3. ADR-030 added. |

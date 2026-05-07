@@ -3,9 +3,9 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Day/night cycle + dynamic shadows on all 5 world objects (sessions 15-17); drying rack 3-state mechanic
-- **Next up:** Confirm shadow shapes after spinning-oval fix; shadow parameter tuning if needed
-- **Open decisions:** Shadow `ground_offset`/`shadow_size` per-object values may need visual refinement
+- **Last completed:** Camera viewport +15% (zoom 0.87); night speed 2× multiplier; 4-point diffused house night lighting with light_mask exclusion (ADR-028/029/030)
+- **Next up:** Playtest — tune HouseGlow* energy/scale if needed; verify daytime house looks correct (Sun range_item_cull_mask=3)
+- **Open decisions:** HouseGlow energy values (Back=0.32, Sides=0.17, Front=0.09) are initial estimates; adjust per visual preference
 
 ---
 
@@ -112,13 +112,25 @@
 - `class_name Foo` conflicts with any autoload also named `Foo` — never reuse autoload names for class_name
 - `Polygon2D` with `z_index = -1` works correctly as a colored background in Node2D scenes
 
-## Day/Night Cycle (ADR-026)
+## Day/Night Cycle (ADR-026, ADR-029)
 - Script: `res://autoload/DayNightCycle.gd` — added as `DayNight` Node in `main.tscn` (NOT a static autoload, just in main)
 - Joins group `"day_night_cycle"` in `_ready()` — shadow nodes find it via `get_first_node_in_group()`
 - `cycle_duration = 120.0s`, `start_time = 0.35` (morning start)
+- **Night speed 2×**: `_t < 0.28 or _t > 0.80` runs at 2× speed → night ~29s, day ~62s, total ~91s
 - Drives `CanvasModulate` (sibling in main.tscn) and `Sun` DirectionalLight2D (sibling in main.tscn)
+- **Sun `range_item_cull_mask = 3`** — must include layer 2 to illuminate house/door (light_mask=2 for night exclusion)
 - Exposes: `shadow_dir: Vector2`, `shadow_alpha: float`, `shadow_length_factor: float`
 - Night ambient floor: Color(0.38, 0.42, 0.62) — readable blue-tinted, not near-black
+
+## House Night Lighting (ADR-030)
+- 4 `PointLight2D` nodes in `world.tscn` (all `range_item_cull_mask=1`, warm amber Color(1,0.76,0.30)):
+  - `HouseGlowBack` (112,50) energy=0.32 scale=2.8 — wide halo behind roofline
+  - `HouseGlowLeft` (70,100) energy=0.17 scale=2.0 — left yard spill
+  - `HouseGlowRight` (154,100) energy=0.17 scale=2.0 — right yard spill
+  - `HouseGlowFront` (112,140) energy=0.09 scale=1.6 — faint door/path ground spill
+- **`PlayerHome.light_mask = 2`, `PlayerHomeDoor.light_mask = 2`** — excluded from night lights (cull_mask=1 misses layer 2)
+- Any future `PointLight2D` that should NOT hit the house: leave `range_item_cull_mask=1` (default)
+- Any future directional/point light that SHOULD hit the house: set `range_item_cull_mask=3`
 
 ## Dynamic Shadows (ADR-027)
 - Script: `res://World/object_shadow.gd` — attach as child Node2D to any world object

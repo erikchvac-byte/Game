@@ -60,7 +60,8 @@ func _ready() -> void:
 	add_to_group("day_night_cycle")
 
 func _process(delta: float) -> void:
-	_t = fmod(_t + delta / cycle_duration, 1.0)
+	var speed_mult: float = 2.0 if (_t < 0.28 or _t > 0.80) else 1.0
+	_t = fmod(_t + (delta / cycle_duration) * speed_mult, 1.0)
 	_mod.color = _lerp_color(_AMBIENT, _t)
 	var energy: float = _lerp_float(_SUN_ENERGY, _t)
 	_sun.energy = energy
