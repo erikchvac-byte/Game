@@ -40,7 +40,6 @@ func interact(player: CharacterBody2D) -> void:
 	if _stage >= PLANT_STAGES.size() - 1:
 		if hud:
 			hud.show_interact_prompt(false)
-		await get_tree().create_timer(1.0).timeout
 		plant_harvested.emit()
 		_stage = 0
 		$PurplePlant.stop()

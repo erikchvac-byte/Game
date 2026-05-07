@@ -9,7 +9,12 @@ var _player_in_range := false
 func _ready() -> void:
 	$WellArea.body_entered.connect(_on_area_entered)
 	$WellArea.body_exited.connect(_on_area_exited)
+	$WellWater.animation_finished.connect(_on_water_animation_finished)
 	$WellWater.stop()
+
+func _on_water_animation_finished() -> void:
+	$WellWater.speed_scale = 1.0
+	$WellWater.frame = 0
 
 func can_interact(player: CharacterBody2D) -> bool:
 	return not _collecting and not player.carrying_water
@@ -18,10 +23,10 @@ func interact(player: CharacterBody2D) -> void:
 	if not can_interact(player):
 		return
 	_collecting = true
-	var frame_count: int = $WellWater.sprite_frames.get_frame_count("default")
-	var fps: float = $WellWater.sprite_frames.get_animation_speed("default")
+	$WellWater.speed_scale = 2.22
 	$WellWater.play_backwards("default")
-	await get_tree().create_timer(frame_count / fps).timeout
+	await get_tree().create_timer(0.25).timeout
+	$WellWater.speed_scale = 1.0
 	$WellWater.stop()
 	$WellWater.frame = 0
 	_collecting = false
@@ -40,6 +45,7 @@ func _on_area_exited(body: Node2D) -> void:
 	if body.name != "Player":
 		return
 	_player_in_range = false
+	$WellWater.speed_scale = 1.0
 	$WellWater.stop()
 	$WellWater.frame = 0
 	interactable_exited.emit(self)
