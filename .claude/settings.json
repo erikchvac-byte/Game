@@ -100,5 +100,31 @@
       "mcp__pixellab__inpaint",
       "mcp__pixellab__rotate"
     ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Write-Output '{\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"additionalContext\": \"DOCS GATE: Before this commit, verify (1) CLAUDE.md Where We Are is current, (2) any new architectural decisions have an ADR entry, (3) ADR.md changelog has a row for today. If any are missing, update them first.\"}}' 2>$null; exit 0",
+            "if": "Bash(git commit *)",
+            "shell": "powershell"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "Write-Output '{\"systemMessage\": \"Session ending — have you updated CLAUDE.md (Where We Are) and ADR.md (new ADRs + changelog) for this session?\"}' 2>$null; exit 0",
+            "shell": "powershell"
+          }
+        ]
+      }
+    ]
   }
 }
