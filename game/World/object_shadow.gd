@@ -16,6 +16,7 @@ var _dnc: Node = null
 func _ready() -> void:
 	z_as_relative = false
 	z_index = 0
+	show_behind_parent = true
 
 func _process(_delta: float) -> void:
 	if _dnc == null:

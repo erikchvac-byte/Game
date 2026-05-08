@@ -268,7 +268,7 @@ size = Vector2(44, 10)
 radius = 20.0
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_y4tau"]
-size = Vector2(50.5, 15.200001)
+size = Vector2(55, 15.200001)
 
 [sub_resource type="Gradient" id="Gradient_dlis5"]
 colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
@@ -359,23 +359,20 @@ shape = SubResource("DoorArea")
 position = Vector2(112, 200)
 
 [node name="Plant" type="Node2D" parent="." unique_id=280000001]
-position = Vector2(62, 123)
+position = Vector2(173, 109)
 script = ExtResource("plant_script")
 
 [node name="PurplePlant" type="AnimatedSprite2D" parent="Plant" unique_id=285786784]
-position = Vector2(103, -12)
 sprite_frames = SubResource("PurplePlantFrames")
 autoplay = "default"
 
 [node name="PlantArea" type="Area2D" parent="Plant" unique_id=1092721803]
-position = Vector2(105, -5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Plant/PlantArea" unique_id=1699770768]
-position = Vector2(-7, -9)
 shape = SubResource("CircleShape2D_wm6hh")
 
 [node name="PlantCollider" type="StaticBody2D" parent="Plant" unique_id=1369018961]
-position = Vector2(105, -6)
+position = Vector2(0, 5)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Plant/PlantCollider" unique_id=1565734528]
 shape = SubResource("CircleShape2D_8kjm2")
@@ -387,7 +384,6 @@ scale = Vector2(0.5, 0.5)
 texture = ExtResource("41_s5cut")
 
 [node name="Shadow" type="Node2D" parent="Plant" unique_id=2101001003]
-position = Vector2(105, -4)
 script = ExtResource("obj_shadow_script")
 ground_offset = Vector2(0, 12)
 shadow_size = Vector2(11, 5)
@@ -436,7 +432,7 @@ texture = ExtResource("49_h4hkh")
 [node name="RockCollider" type="StaticBody2D" parent="Rock123x20" unique_id=733117737]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Rock123x20/RockCollider" unique_id=1305897773]
-position = Vector2(-2.25, -1.4777832)
+position = Vector2(0, -1.4777832)
 shape = SubResource("RectangleShape2D_y4tau")
 
 [node name="HouseGlowBack" type="PointLight2D" parent="." unique_id=2130001857]
@@ -447,10 +443,9 @@ texture = SubResource("GradientTexture2D_h4hkh")
 texture_scale = 2.8
 
 [node name="HouseGlowLeft" type="PointLight2D" parent="." unique_id=1403550455]
-position = Vector2(158, 138)
+position = Vector2(60, 82)
 color = Color(1, 0.76, 0.3, 1)
 energy = 0.17
-shadow_enabled = true
 texture = SubResource("GradientTexture2D_h4hkh")
 texture_scale = 2.0
 
@@ -462,7 +457,7 @@ texture = SubResource("GradientTexture2D_h4hkh")
 texture_scale = 2.0
 
 [node name="HouseGlowFront" type="PointLight2D" parent="." unique_id=1121903976]
-position = Vector2(120, 98)
+position = Vector2(110, 97)
 color = Color(1, 0.8, 0.38, 1)
 energy = 0.09
 texture = SubResource("GradientTexture2D_h4hkh")
