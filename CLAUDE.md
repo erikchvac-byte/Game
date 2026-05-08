@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Removed PlayerHomeDoor overlay sprite; bakery entrance fades directly to interior (ADR-033). DoorEntrance trigger playtested and confirmed working.
-- **Next up:** Playtest bakery collision feel + well/rack reachability in-game. Tune HouseGlow positions if needed.
+- **Last completed:** Tightened DoorEntrance trigger (44×30 → 14×6 px) so player must walk right up to bakery door. Fade now starts at frame 6 of 9 door animation (before last 3 frames show).
+- **Next up:** Playtest door approach feel + bakery collision. Tune HouseGlow positions if needed.
 - **Open decisions:** Collision shape offsets on bakery are estimated — nudge if player clips corners. `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 
 ---

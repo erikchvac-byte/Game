@@ -517,3 +517,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-07 | 13 village building PNGs imported into res://GameAssets/Buildings/ (houses/shops/special). Renamed to snake_case. ADR-031 added. |
 | 2026-05-07 | Bakery (shop_bakery_main.png) replaces old house as Erik's home. Well+DryingRack moved left. All collisions, lights, shadows, roof overlay, interior spawn updated. ADR-032 added. |
 | 2026-05-08 | Removed PlayerHomeDoor overlay sprite + Door1-4 assets. Transition now goes directly fade→interior. Playtested and confirmed. ADR-033 added. |
+| 2026-05-08 | DoorEntrance trigger shrunk 44×30 → 14×6 px (must walk up to door). Fade starts at frame 6 of 9 animation (last 3 frames never seen). |
