@@ -3,7 +3,7 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** World object polish — purple plant sprite offset fixed (was `(149,-32)`, reset to `(0,0)`); log ("18", 58×63) and rock ("Rock123x20", 69×19) given StaticBody2D collision; drying rack texture order reversed so first harvest shows 3 bundles and decrements to 1.
+- **Last completed:** Shadow + lighting fixes — `object_shadow.gd` given `show_behind_parent=true` so oval draws behind parent sprite instead of on top of it; `HouseGlowLeft` position corrected from `(158,138)` → `(60,82)` (had drifted to right side); `shadow_enabled=true` removed from `HouseGlowLeft`.
 - **Next up:** Playtest collision fit on log (CircleShape2D r=20 at offset (0,10)) and rock (RectangleShape2D 55×14) — nudge if player clips or stops too far away. Rename "18" and "Rock123x20" nodes to descriptive names.
 - **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 

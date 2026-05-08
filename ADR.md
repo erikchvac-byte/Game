@@ -485,6 +485,16 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-036: Shadow Rendering Fix — show_behind_parent + HouseGlowLeft Correction
+**Status:** Accepted
+**Date:** 2026-05-08
+**Context:** Two visual bugs on the bakery building: (1) `object_shadow.gd` oval was drawing ON TOP of its parent sprite because with `z_as_relative=false, z_index=0` the shadow rendered after the parent in draw order. (2) `HouseGlowLeft` PointLight2D had drifted to position `(158,138)` (right side of bakery) from its intended `(60,82)` (left side), and had an erroneous `shadow_enabled=true` flag — causing both glow lights to cluster on the right, leaving the left dark, and activating Godot's shadow rendering pass unnecessarily.
+**Decision:** Added `show_behind_parent = true` in `object_shadow.gd._ready()`. Corrected `HouseGlowLeft` position to `(60,82)` and removed `shadow_enabled = true`.
+**Rationale:** `show_behind_parent` is the correct Godot 4 mechanism to guarantee a child Node2D draws before its parent regardless of z_index. Fixing the light position restores symmetric left/right glow around the bakery. Removing `shadow_enabled` eliminates the unneeded shadow pipeline pass on a simple ambient glow.
+**Consequences:** All shadows (Well, Plant, DryingRack, Log, PlayerHome) now draw behind their parent sprites. HouseGlow lighting is symmetric. No gameplay changes.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system
@@ -544,3 +554,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-08 | PurplePlant sprite offset (149,-32) reset to (0,0) — sprite was 149px from its collision shapes after parent node was moved. ADR-034 added. |
 | 2026-05-08 | Log ("18", 58×63) and Rock ("Rock123x20", 69×19) given StaticBody2D collision shapes. ADR-034 added. |
 | 2026-05-08 | Drying rack TEXTURES array indices 1/3 swapped — first harvest now shows fullest visual state (3 bundles) and decrements. ADR-035 added. |
+| 2026-05-08 | object_shadow.gd: show_behind_parent=true — shadow oval now draws behind parent sprite. HouseGlowLeft position fixed (158,138)→(60,82); shadow_enabled removed. ADR-036 added. |
