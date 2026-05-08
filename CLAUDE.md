@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** (1) Replaced drying rack with new wooden A-frame (rack_new_*.png, 64×64 px) — 4 states (empty/1/2/3 plants), collision added (44×10 box at y+26), shadow corrected, y_sort_offset=30. (2) Door animation fade moved frame 6→4 so player sees only opening frames before scene cuts.
-- **Next up:** Playtest door approach + collision feel. Tune HouseGlow positions if needed.
+- **Last completed:** Player walks north into the door during transition — `auto_walk: Vector2` added to `player.gd` to override input with a forced direction; `world.gd` sets `auto_walk = Vector2(0,-1)` instead of freezing physics, so `walk_up` animation plays through the door open + fade.
+- **Next up:** Playtest walk-in feel. Check whether bakery collision blocks the player mid-walk (may need to disable `PlayerHomeCollider` during the transition).
 - **Open decisions:** Collision shape offsets on bakery are estimated — nudge if player clips corners. `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 
 ---

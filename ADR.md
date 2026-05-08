@@ -520,3 +520,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-08 | DoorEntrance trigger shrunk 44×30 → 14×6 px (must walk up to door). Fade starts at frame 6 of 9 animation (last 3 frames never seen). |
 | 2026-05-08 | Drying rack replaced: new wooden A-frame assets (rack_new_*.png, 64×64). Added empty state. Added player collision (44×10 box). Shadow corrected (ground_offset y=26, size 28×5, cast_length 18). y_sort_offset=30. ADR-025 updated. |
 | 2026-05-08 | Door animation fade moved from frame 6 → frame 4: player now sees only opening frames before scene cut; closing frames are fully hidden by fade. |
+| 2026-05-08 | Player walks into door: auto_walk Vector2 added to player.gd; door trigger sets auto_walk north instead of freezing physics so walk_up plays through fade. |
