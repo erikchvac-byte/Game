@@ -35,7 +35,7 @@ func _on_door_entered(body: Node2D) -> void:
 	$DoorEntrance.body_entered.disconnect(_on_door_entered)
 	var player := get_node_or_null("Player") as CharacterBody2D
 	if player:
-		player.set_physics_process(false)
+		player.auto_walk = Vector2(0, -1)
 	var bakery := $PlayerHome as AnimatedSprite2D
 	bakery.play("open")
 	while bakery.frame < 4:
