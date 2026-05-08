@@ -339,13 +339,13 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
-## ADR-025: Drying Rack — 3-State Sprite Swap on Plant Harvest
-**Status:** Accepted
+## ADR-025: Drying Rack — 4-State Sprite Swap on Plant Harvest
+**Status:** Accepted (Updated 2026-05-08)
 **Date:** 2026-05-06
-**Context:** A drying rack prop needed to show 1/2/3 plants as the PurplePunchOne plant completes its full watering cycle. Rack always starts with 1 plant visible.
-**Decision:** `DryingRack` is a `Sprite2D` with `drying_rack.gd` attached. Script preloads 3 textures (rack_weed_1/2/3plant.png) and exposes `add_plant()`. `world.gd` connects `$Plant.plant_harvested` signal → `$DryingRack.add_plant`. Plant resets to seedling (frame 0) after harvest; rack increments up to state 2 (3-plant image) and stops there.
-**Rationale:** Signal-based connection keeps rack and plant decoupled. Sprite2D texture swap is the simplest possible state display — no AnimatedSprite2D or SpriteFrames needed.
-**Consequences:** Rack state is not persisted between sessions. Max 2 harvests advance the rack (3 states total: 1→2→3 plants). Rack never resets — permanent decoration once full.
+**Context:** A drying rack prop needed to show 0/1/2/3 plants as the PurplePunchOne plant completes its full watering cycle. Originally used 3 `rack_weed_*` textures (no empty state, started with 1 plant visible). Replaced with new wooden A-frame rack assets.
+**Decision:** `DryingRack` is a `Sprite2D` with `drying_rack.gd` attached. Script preloads 4 textures (`rack_new_empty/1plant/2plants/3plants.png`, 64×64 px each). `world.gd` connects `$Plant.plant_harvested` → `$DryingRack.add_plant`. Rack starts empty and advances through 4 states (up to `_count >= 3` guard). Added `DryingRackCollider` (StaticBody2D → CollisionShape2D, RectangleShape2D 44×10 at offset (0,26)) for player collision. Shadow updated: `ground_offset=(0,26)`, `shadow_size=(28,5)`, `cast_length=18.0`. `y_sort_offset=30` so depth sort point = bottom of rack legs.
+**Rationale:** Adding an explicit empty state is more correct — player now sees the bare rack before any harvest. Collision prevents walking through the rack legs. Shadow ground_offset raised to y=26 (leg base for 64px sprite centred at origin). `y_sort_offset=30` puts sort_y=105 (leg base) so player behind rack sorts correctly.
+**Consequences:** Rack now shows empty on game start (was: showed 1 plant immediately). Max 3 harvests advance rack to full. Rack never resets — permanent decoration once full. Old `rack_weed_*` assets remain on disk but are no longer referenced.
 
 ---
 
@@ -375,7 +375,7 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 | PlayerHome | (0, 24) | (50, 8) | 32 |
 | Well | (0, 10) | (14, 6) | 14 |
 | Plant | (0, 12) | (11, 5) | 10 |
-| DryingRack | (0, 16) | (22, 5) | 16 |
+| DryingRack | (0, 26) | (28, 5) | 18 |
 | Rock | (0, 5) | (8, 4) | 7 |
 **Rationale:** Stardew-style shadows are always a flat horizontal oval — they shift position with the sun angle but don't rotate. Rotating the ellipse produces an unrealistic spinning effect. `z_as_relative=false, z_index=0` is required: grandchild nodes with `z_as_relative=true, z_index=-1` get global z=-1 which goes below the Ground TileMapLayer (z=0), making shadows invisible.
 **Consequences:** `_dnc` (DayNight node) is looked up lazily in `_process()` (not `_ready()`) because world subtree children initialize before `DayNight` registers itself in its group. Shadow parameters may need per-object tuning after visual inspection.
@@ -518,3 +518,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-07 | Bakery (shop_bakery_main.png) replaces old house as Erik's home. Well+DryingRack moved left. All collisions, lights, shadows, roof overlay, interior spawn updated. ADR-032 added. |
 | 2026-05-08 | Removed PlayerHomeDoor overlay sprite + Door1-4 assets. Transition now goes directly fade→interior. Playtested and confirmed. ADR-033 added. |
 | 2026-05-08 | DoorEntrance trigger shrunk 44×30 → 14×6 px (must walk up to door). Fade starts at frame 6 of 9 animation (last 3 frames never seen). |
+| 2026-05-08 | Drying rack replaced: new wooden A-frame assets (rack_new_*.png, 64×64). Added empty state. Added player collision (44×10 box). Shadow corrected (ground_offset y=26, size 28×5, cast_length 18). y_sort_offset=30. ADR-025 updated. |
+| 2026-05-08 | Door animation fade moved from frame 6 → frame 4: player now sees only opening frames before scene cut; closing frames are fully hidden by fade. |

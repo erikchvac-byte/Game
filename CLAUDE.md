@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Tightened DoorEntrance trigger (44×30 → 14×6 px) so player must walk right up to bakery door. Fade now starts at frame 6 of 9 door animation (before last 3 frames show).
-- **Next up:** Playtest door approach feel + bakery collision. Tune HouseGlow positions if needed.
+- **Last completed:** (1) Replaced drying rack with new wooden A-frame (rack_new_*.png, 64×64 px) — 4 states (empty/1/2/3 plants), collision added (44×10 box at y+26), shadow corrected, y_sort_offset=30. (2) Door animation fade moved frame 6→4 so player sees only opening frames before scene cuts.
+- **Next up:** Playtest door approach + collision feel. Tune HouseGlow positions if needed.
 - **Open decisions:** Collision shape offsets on bakery are estimated — nudge if player clips corners. `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 
 ---
@@ -144,10 +144,12 @@
 - All 5 objects in world.tscn have Shadow Node2D children (PlayerHome, Well, Plant, DryingRack, Rock)
 
 ## Drying Rack (ADR-025)
-- Script: `res://Interactables/drying_rack.gd` — Sprite2D with 3 preloaded textures
-- `add_plant()` increments texture state (1→2→3 plants); stops at state 2 (3-plant image)
+- Script: `res://Interactables/drying_rack.gd` — Sprite2D with 4 preloaded textures (64×64 px each)
+- `add_plant()` increments texture state (empty→1→2→3 plants); stops at `_count >= 3`
 - Connected in `world.gd`: `$Plant.plant_harvested.connect($DryingRack.add_plant)`
-- Assets: `res://GameAssets/Objects/DryingRacks/rack_weed_1/2/3plant.png`
+- Assets: `res://GameAssets/Objects/DryingRacks/rack_new_empty/1plant/2plants/3plants.png`
+- Collision: `DryingRackCollider` StaticBody2D → `CollisionShape2D` (RectangleShape2D 44×10) at offset (0, 26)
+- Shadow: `ground_offset=(0,26)`, `shadow_size=(28,5)`, `cast_length=18.0`; `y_sort_offset=30`
 - Plant (plant.gd) resets to frame 0 / stage 0 after emitting `plant_harvested`; no toast popups
 
 ## Stage 1 Milestones

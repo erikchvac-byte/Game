@@ -195,6 +195,9 @@ size = Vector2(22, 30)
 [sub_resource type="RectangleShape2D" id="DoorArea"]
 size = Vector2(14, 6)
 
+[sub_resource type="RectangleShape2D" id="DRackShape"]
+size = Vector2(44, 10)
+
 [sub_resource type="SpriteFrames" id="PurplePlantFrames"]
 animations = [{
 "frames": [{
@@ -382,13 +385,21 @@ cast_length = 10.0
 [node name="DryingRack" type="Sprite2D" parent="." unique_id=2133297938]
 texture_filter = 1
 position = Vector2(175, 75)
+y_sort_offset = 30
 texture = ExtResource("drack1_tex")
 script = ExtResource("drack_script")
 
+[node name="DryingRackCollider" type="StaticBody2D" parent="DryingRack" unique_id=2133297940]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DryingRack/DryingRackCollider" unique_id=2133297941]
+position = Vector2(0, 26)
+shape = SubResource("DRackShape")
+
 [node name="Shadow" type="Node2D" parent="DryingRack" unique_id=2101001004]
 script = ExtResource("obj_shadow_script")
-ground_offset = Vector2(0, 16)
-shadow_size = Vector2(22, 5)
+ground_offset = Vector2(0, 26)
+shadow_size = Vector2(28, 5)
+cast_length = 18.0
 
 [node name="18" type="Sprite2D" parent="." unique_id=1264295051]
 position = Vector2(21, 128)
