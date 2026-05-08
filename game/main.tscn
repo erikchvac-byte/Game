@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dn5yyumw6kj3j" path="res://World/world.tscn" id="1_world"]
 [ext_resource type="Script" uid="uid://oa1n61k237qq" path="res://main.gd" id="3_maingd"]
-[ext_resource type="Texture2D" uid="uid://c1lnxtrmtdvhd" path="res://GameAssets/Village/Houses/3_1.png" id="4_house"]
+[ext_resource type="Texture2D" uid="uid://c0fej5yjwixo6" path="res://GameAssets/Buildings/shops/shop_bakery_main.png" id="4_house"]
 [ext_resource type="Script" uid="uid://cq7ikygxeo6y1" path="res://autoload/DayNightCycle.gd" id="dnc_script"]
 
 [node name="Main" type="Node2D" unique_id=1407496713]
@@ -19,11 +19,11 @@ z_index = 2
 z_index = 2
 z_as_relative = false
 texture_filter = 1
-position = Vector2(307, 154)
-scale = Vector2(2, 2)
+position = Vector2(307, 144)
+scale = Vector2(0.5, 0.5)
 texture = ExtResource("4_house")
 region_enabled = true
-region_rect = Rect2(0, 0, 80, 60)
+region_rect = Rect2(0, 0, 256, 160)
 
 [node name="CanvasModulate" type="CanvasModulate" parent="." unique_id=649141323]
 

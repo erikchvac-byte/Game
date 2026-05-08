@@ -19,5 +19,5 @@ func _on_exit_entered(body: Node2D) -> void:
 	if player:
 		player.set_physics_process(false)
 	await TransitionManager.fade_to_black(0.4)
-	Engine.set_meta("spawn_position", Vector2(112, 168))
+	Engine.set_meta("spawn_position", Vector2(112, 150))
 	get_tree().change_scene_to_file("res://main.tscn")

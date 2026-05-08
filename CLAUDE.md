@@ -3,9 +3,9 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Imported 13 village building assets into `res://GameAssets/Buildings/` (ADR-031)
-- **Next up:** Playtest — tune HouseGlow* energy/scale if needed; verify daytime house looks correct (Sun range_item_cull_mask=3)
-- **Open decisions:** HouseGlow energy values (Back=0.32, Sides=0.17, Front=0.09) are initial estimates; adjust per visual preference. `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
+- **Last completed:** Removed PlayerHomeDoor overlay sprite; bakery entrance fades directly to interior (ADR-033). DoorEntrance trigger playtested and confirmed working.
+- **Next up:** Playtest bakery collision feel + well/rack reachability in-game. Tune HouseGlow positions if needed.
+- **Open decisions:** Collision shape offsets on bakery are estimated — nudge if player clips corners. `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 
 ---
 
@@ -70,8 +70,7 @@
 - `World` node has `y_sort_enabled = true` — all world objects and Player are siblings
 - Player lives in `world.tscn`, NOT `main.tscn` — `main.gd` accesses it via `$World/Player`
 - Buildings need `y_sort_offset` set so sort_y = bottom of visible wall face (the "walkable in front" line)
-  - `PlayerHome`: position y=96, `y_sort_offset=30` → sort y=126 (eave line)
-  - `PlayerHomeDoor`: position y=139, `y_sort_offset=-13` → sort y=126
+  - `PlayerHome` (Bakery): position y=80, `y_sort_offset=35` → sort y=115 (door base)
 - Rule: `player.y < sort_y` → player behind building; `player.y > sort_y` → player in front
 - `Overhead` Node2D in `main.tscn` at `z_index=2` holds roof overlay sprites — renders above everything
 - Adding new buildings: add to `world.tscn`, set `y_sort_offset`, add roof sprite to `Overhead` in `main.tscn`
@@ -89,8 +88,8 @@
   - `player.set_physics_process(false)` to freeze player during the sequence
 - Interior: `res://World/PlayerHome/interior.tscn` — 160×128 room, exit at south-center (80, 124)
   - Player spawns at (80, 108) facing "up" (north) — set via `$Player.facing = "up"` in interior.gd `_ready()`
-- Exterior door: `DoorEntrance` Area2D at world (112, 141); `PlayerHomeDoor` is AnimatedSprite2D with 4-frame "open" anim (Door1-4.png, 8fps)
-- `Engine.set_meta("spawn_position", Vector2(112, 168))` set on interior exit → consumed in `main.gd._ready()`
+- Exterior door: `DoorEntrance` Area2D at world (112, 128) — player enters → fade → interior (no door animation; ADR-033)
+- `Engine.set_meta("spawn_position", Vector2(112, 150))` set on interior exit → consumed in `main.gd._ready()`
 
 ## Interior Assets Available
 - `res://GameAssets/interior/` — bed, carpet, furniture, kitchen, decorations, stairs
@@ -126,13 +125,13 @@
 - Exposes: `shadow_dir: Vector2`, `shadow_alpha: float`, `shadow_length_factor: float`
 - Night ambient floor: Color(0.38, 0.42, 0.62) — readable blue-tinted, not near-black
 
-## House Night Lighting (ADR-030)
-- 4 `PointLight2D` nodes in `world.tscn` (all `range_item_cull_mask=1`, warm amber Color(1,0.76,0.30)):
-  - `HouseGlowBack` (112,50) energy=0.32 scale=2.8 — wide halo behind roofline
-  - `HouseGlowLeft` (70,100) energy=0.17 scale=2.0 — left yard spill
-  - `HouseGlowRight` (154,100) energy=0.17 scale=2.0 — right yard spill
-  - `HouseGlowFront` (112,140) energy=0.09 scale=1.6 — faint door/path ground spill
-- **`PlayerHome.light_mask = 2`, `PlayerHomeDoor.light_mask = 2`** — excluded from night lights (cull_mask=1 misses layer 2)
+## House Night Lighting (ADR-030, ADR-032)
+- 4 `PointLight2D` nodes in `world.tscn` (all `range_item_cull_mask=1`, warm amber Color(1,0.76,0.30)) — repositioned for Bakery:
+  - `HouseGlowBack` (112,28) energy=0.32 scale=2.8 — wide halo above bakery dome
+  - `HouseGlowLeft` (60,82) energy=0.17 scale=2.0 — left yard spill
+  - `HouseGlowRight` (164,82) energy=0.17 scale=2.0 — right yard spill
+  - `HouseGlowFront` (112,120) energy=0.09 scale=1.6 — faint door/path ground spill
+- **`PlayerHome.light_mask = 2`** — excluded from night lights (cull_mask=1 misses layer 2)
 - Any future `PointLight2D` that should NOT hit the house: leave `range_item_cull_mask=1` (default)
 - Any future directional/point light that SHOULD hit the house: set `range_item_cull_mask=3`
 

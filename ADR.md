@@ -435,6 +435,36 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-032: Bakery as Erik's Home — Building Asset Swap
+**Status:** Accepted
+**Date:** 2026-05-07
+**Context:** The placeholder house sprite (`GameAssets/Village/Houses/3_1.png`, 80×90px at scale 2) was replaced with `shop_bakery_main.png` (256×256px) from the newly imported Buildings asset set. The bakery's dome shape and prominent BAKERY sign make it visually distinct as the main residence.
+**Decision:** Replaced `PlayerHome` texture in `world.tscn` and `PlayerHomeRoof` texture in `main.tscn` with `shop_bakery_main.png`. Adjusted:
+- PlayerHome: position (112, 80), scale (0.5, 0.5), y_sort_offset=35 → sort_y=115
+- PlayerHomeCollider: position (112, 80), WallCenter size (60×25) at offset (0,25), LeftLower/RightLower (22×30) at (±38, 35)
+- PlayerHomeDoor: position (112, 118), scale (1, 1)
+- DoorEntrance: position (112, 128), shape (44×30)
+- PlayerHomeRoof overlay: position (307, 144) in main, scale (0.5, 0.5), region Rect2(0, 0, 256, 160) — shows top dome as overhead layer
+- Interior exit spawn: Vector2(112, 150) — 22px south of new door trigger
+- Well relocated: (200, 126) → (30, 140) — left side of house
+- DryingRack relocated: (205, 75) → (22, 85) — upper left yard
+- HouseGlow lights repositioned: Back (112,28), Left (60,82), Right (164,82), Front (112,120)
+- PlayerHome Shadow: ground_offset (0,42), shadow_size (65,10), cast_length 30
+**Rationale:** Bakery's round dome silhouette creates a memorable main residence. Scale 0.5 on 256×256 source gives 128×128 world pixels — reasonable footprint for the 320×180 viewport. Well/DryingRack moved left to clear the bakery's wider visual presence and create intentional left-yard placement. y_sort_offset=35 ensures player renders in front of bakery only when south of the door (sort_y=115 ≈ door base).
+**Consequences:** Door animation frames (29×19 at scale 1) are smaller than the bakery door visually — acceptable, fade transition masks the transition. Collision shapes are tuned estimates; adjust offsets if player can clip through corners. Interior scene unchanged — bakery is exterior-only; same 160×128 room inside.
+
+---
+
+## ADR-033: Remove Door Overlay Sprite — Direct Fade Transition
+**Status:** Accepted
+**Date:** 2026-05-08
+**Context:** `PlayerHomeDoor` (AnimatedSprite2D, Door1-4.png 29×19px, `visible=false`) was a leftover from a pre-bakery house setup. The door animation frames were too small and stylistically mismatched for the bakery sprite. The node was never made visible in `world.gd` — confirming it was vestigial.
+**Decision:** Deleted `PlayerHomeDoor` node, `DoorFrames` SpriteFrames sub-resource, and Door1-4.png ext_resources from `world.tscn`. Simplified `world.gd._on_door_entered` to go straight to `TransitionManager.fade_to_black(0.4)` → `change_scene_to_file` with no animation step.
+**Rationale:** The bakery PNG already draws a door in the building sprite — no overlay needed. The fade-to-black is sufficient to mask the transition without a separate door-open animation. Playtested: DoorEntrance trigger → fade → interior works correctly.
+**Consequences:** No door-open animation on entry. Future enhancement could add a per-building door animation at the right size/style if desired. `DoorEntrance` Area2D and collision remain unchanged — only the visual overlay was removed.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system
@@ -485,3 +515,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-07 | Night speed 2× multiplier in DayNightCycle._process(). Daytime unchanged. ADR-029 added. |
 | 2026-05-07 | 4-point diffused house night lighting; PlayerHome/Door light_mask=2; Sun range_item_cull_mask=3. ADR-030 added. |
 | 2026-05-07 | 13 village building PNGs imported into res://GameAssets/Buildings/ (houses/shops/special). Renamed to snake_case. ADR-031 added. |
+| 2026-05-07 | Bakery (shop_bakery_main.png) replaces old house as Erik's home. Well+DryingRack moved left. All collisions, lights, shadows, roof overlay, interior spawn updated. ADR-032 added. |
+| 2026-05-08 | Removed PlayerHomeDoor overlay sprite + Door1-4 assets. Transition now goes directly fade→interior. Playtested and confirmed. ADR-033 added. |
