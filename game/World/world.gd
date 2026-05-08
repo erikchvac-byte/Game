@@ -36,5 +36,9 @@ func _on_door_entered(body: Node2D) -> void:
 	var player := get_node_or_null("Player") as CharacterBody2D
 	if player:
 		player.set_physics_process(false)
+	var bakery := $PlayerHome as AnimatedSprite2D
+	bakery.play("open")
+	while bakery.frame < 6:
+		await bakery.frame_changed
 	await TransitionManager.fade_to_black(0.4)
 	get_tree().change_scene_to_file("res://World/PlayerHome/interior.tscn")
