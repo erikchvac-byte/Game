@@ -465,6 +465,26 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-034: World Object Polish — PurplePlant Sprite Fix + Log/Rock Collision
+**Status:** Accepted
+**Date:** 2026-05-08
+**Context:** After the Plant Node2D was repositioned in the editor, its `PurplePlant` AnimatedSprite2D child retained a stale local offset of `(149, -32)`, placing the visual sprite ~149px away from the PlantArea/PlantCollider shapes — interactions stopped working. Separately, the log ("18", 58×63px) and flat rock ("Rock123x20", 69×19px) had shadows but no collision, so the player walked through them.
+**Decision:** Reset `PurplePlant.position` to `(0, 0)`. Added `LogCollider` (StaticBody2D + CircleShape2D radius=20 at offset (0, 10)) to the "18" log node. Added `RockCollider` (StaticBody2D + RectangleShape2D 55×14) to `Rock123x20`.
+**Rationale:** Applied via `execute_editor_script` (not direct file edit) because the editor had the scene cached in memory and wouldn't re-read disk changes without a full reload. Collision shapes are estimates based on sprite dimensions — log uses a circle at the base of the 58px-tall sprite, rock uses a wide flat rectangle covering the 69×19 sprite footprint.
+**Consequences:** Collision sizes may need nudging after playtesting. Node "18" and "Rock123x20" are placeholder names — rename to descriptive strings when next editing world.tscn.
+
+---
+
+## ADR-035: Drying Rack Texture Order Reversed
+**Status:** Accepted
+**Date:** 2026-05-08
+**Context:** `drying_rack.gd` TEXTURES array was ordered `[empty, 1plant, 2plants, 3plants]`. In gameplay, adding the first harvest showed the `3plants` image (visually fullest), adding the second showed `2plants`, and the third showed `1plant` — visually the rack appeared to be emptying as you filled it. User wanted the opposite: first harvest = fewest items hanging, third harvest = most items hanging.
+**Decision:** Swapped TEXTURES indices 1 and 3: array is now `[empty, 3plants, 2plants, 1plant]`. Logic (`_count`, `add_plant()`) unchanged.
+**Rationale:** The image filenames count items hanging; visually the first plant harvest puts all 3 bundles on the rack (full display), and subsequent harvests reduce the hanging count — consistent with a "processing" metaphor (hang all at once, then bundles come off). Swapping only the array requires zero logic changes.
+**Consequences:** In-game rack now shows 3 bundles on first harvest, 2 on second, 1 on third. The progression reads as rack filling up and drying down — matches the intended visual progression.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system
@@ -521,3 +541,6 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-08 | Drying rack replaced: new wooden A-frame assets (rack_new_*.png, 64×64). Added empty state. Added player collision (44×10 box). Shadow corrected (ground_offset y=26, size 28×5, cast_length 18). y_sort_offset=30. ADR-025 updated. |
 | 2026-05-08 | Door animation fade moved from frame 6 → frame 4: player now sees only opening frames before scene cut; closing frames are fully hidden by fade. |
 | 2026-05-08 | Player walks into door: auto_walk Vector2 added to player.gd; door trigger sets auto_walk north instead of freezing physics so walk_up plays through fade. |
+| 2026-05-08 | PurplePlant sprite offset (149,-32) reset to (0,0) — sprite was 149px from its collision shapes after parent node was moved. ADR-034 added. |
+| 2026-05-08 | Log ("18", 58×63) and Rock ("Rock123x20", 69×19) given StaticBody2D collision shapes. ADR-034 added. |
+| 2026-05-08 | Drying rack TEXTURES array indices 1/3 swapped — first harvest now shows fullest visual state (3 bundles) and decrements. ADR-035 added. |

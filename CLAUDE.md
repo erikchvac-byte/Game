@@ -3,9 +3,9 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Player walks north into the door during transition — `auto_walk: Vector2` added to `player.gd` to override input with a forced direction; `world.gd` sets `auto_walk = Vector2(0,-1)` instead of freezing physics, so `walk_up` animation plays through the door open + fade.
-- **Next up:** Playtest walk-in feel. Check whether bakery collision blocks the player mid-walk (may need to disable `PlayerHomeCollider` during the transition).
-- **Open decisions:** Collision shape offsets on bakery are estimated — nudge if player clips corners. `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
+- **Last completed:** World object polish — purple plant sprite offset fixed (was `(149,-32)`, reset to `(0,0)`); log ("18", 58×63) and rock ("Rock123x20", 69×19) given StaticBody2D collision; drying rack texture order reversed so first harvest shows 3 bundles and decrements to 1.
+- **Next up:** Playtest collision fit on log (CircleShape2D r=20 at offset (0,10)) and rock (RectangleShape2D 55×14) — nudge if player clips or stops too far away. Rename "18" and "Rock123x20" nodes to descriptive names.
+- **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 
 ---
 
@@ -145,7 +145,7 @@
 
 ## Drying Rack (ADR-025)
 - Script: `res://Interactables/drying_rack.gd` — Sprite2D with 4 preloaded textures (64×64 px each)
-- `add_plant()` increments texture state (empty→1→2→3 plants); stops at `_count >= 3`
+- `add_plant()` increments `_count` 0→3; TEXTURES array order: `[empty, 3plants, 2plants, 1plant]` — first harvest shows fullest display (3 bundles), each add decrements the visual count
 - Connected in `world.gd`: `$Plant.plant_harvested.connect($DryingRack.add_plant)`
 - Assets: `res://GameAssets/Objects/DryingRacks/rack_new_empty/1plant/2plants/3plants.png`
 - Collision: `DryingRackCollider` StaticBody2D → `CollisionShape2D` (RectangleShape2D 44×10) at offset (0, 26)
