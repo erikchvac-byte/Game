@@ -1,0 +1,260 @@
+{
+  "objects": [
+    {
+      "id": "e401e853-c872-4aa1-a248-70855dcc9c6c",
+      "name": null,
+      "prompt": "Watering can   - Shovel / trowel   - Scythe / shears   - Hoe   - Fertilizer applicator   - Bucket / jug   - Coin / currency icon   - Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "a2164c23-d99d-4029-b540-051657ef48b3",
+      "name": null,
+      "prompt": "Watering can   - Shovel / trowel   - Scythe / shears   - Hoe   - Fertilizer applicator   - Bucket / jug   - Coin / currency icon   - Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ef74b7f1-aa95-4565-974e-59599cff306b",
+      "name": null,
+      "prompt": " Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "2a89e1ba-2ee4-4504-a943-104f88b1cd35",
+      "name": null,
+      "prompt": " Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "b649284f-5554-44c3-8497-ffa13cbe5664",
+      "name": null,
+      "prompt": " Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "64a9f30e-874d-44a7-89ab-d7aae9645c50",
+      "name": null,
+      "prompt": " Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "00ce2168-4f8f-43ee-8390-922f6b361e45",
+      "name": null,
+      "prompt": " Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "groups": [
+    {
+      "group_id": null,
+      "folder": "objects/Watering_can_-_Shovel_trow",
+      "objects": [
+        {
+          "id": "e401e853-c872-4aa1-a248-70855dcc9c6c",
+          "name": null,
+          "prompt": "Watering can   - Shovel / trowel   - Scythe / shears   - Hoe   - Fertilizer applicator   - Bucket / jug   - Coin / currency icon   - Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Watering_can_-_Shovel_trow_2",
+      "objects": [
+        {
+          "id": "a2164c23-d99d-4029-b540-051657ef48b3",
+          "name": null,
+          "prompt": "Watering can   - Shovel / trowel   - Scythe / shears   - Hoe   - Fertilizer applicator   - Bucket / jug   - Coin / currency icon   - Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Backpack_inventory_icon",
+      "objects": [
+        {
+          "id": "ef74b7f1-aa95-4565-974e-59599cff306b",
+          "name": null,
+          "prompt": " Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Backpack_inventory_icon_2",
+      "objects": [
+        {
+          "id": "2a89e1ba-2ee4-4504-a943-104f88b1cd35",
+          "name": null,
+          "prompt": " Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Backpack_inventory_icon_3",
+      "objects": [
+        {
+          "id": "b649284f-5554-44c3-8497-ffa13cbe5664",
+          "name": null,
+          "prompt": " Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Backpack_inventory_icon_4",
+      "objects": [
+        {
+          "id": "64a9f30e-874d-44a7-89ab-d7aae9645c50",
+          "name": null,
+          "prompt": " Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Backpack_inventory_icon_5",
+      "objects": [
+        {
+          "id": "00ce2168-4f8f-43ee-8390-922f6b361e45",
+          "name": null,
+          "prompt": " Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-09T00:53:53.447734"
+}

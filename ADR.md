@@ -567,3 +567,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-08 | object_shadow.gd: show_behind_parent=true — shadow oval now draws behind parent sprite. HouseGlowLeft position fixed (158,138)→(60,82); shadow_enabled removed. ADR-036 added. |
 | 2026-05-08 | 40×30 starter farm map: Ground rebuilt (1200 cells, sources 2/3 random), 66 Tree1.png border sprites, Camera limit_bottom 384→480. ADR-037 added. |
 | 2026-05-08 | 33 tree sprites imported to res://GameAssets/Trees/ (17 evergreens, 16 deciduous) and 7 tool icons to res://GameAssets/Tools/ (axe, pickaxe, hammer, shovel, saw, hatchet, scythe). Renamed from unknown.png with descriptive names. |
+| 2026-05-09 | town-grass-tile.png (256×256, 16×16 tiles) added to res://GameAssets/Tiles/ and registered as source 5 in world_tileset.tres via execute_editor_script. 256 tiles created across a 16×16 grid, paintable alongside existing sources. |

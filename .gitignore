@@ -10,3 +10,7 @@ mcp-bridge/node_modules/
 # OS
 .DS_Store
 Thumbs.db
+
+# Secrets / local config
+.env
+.claude/settings.local.json
