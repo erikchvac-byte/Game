@@ -3,7 +3,7 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** 40×30 starter farm map — `Ground` TileMapLayer cleared and rebuilt (1200 cells, sources 2/3 random grass variants); 66 `Tree1.png` (55×54px) Sprite2D border sprites placed every 32px along all four edges as direct `World` children; `Camera2D.limit_bottom` updated 384→480 to match new map height. Bakery, Well, Plant, DryingRack, Player kept at existing positions inside the cleared center.
+- **Last completed:** Asset import session — 33 tree sprites into `res://GameAssets/Trees/` (17 evergreens: pine variants; 16 deciduous: ash, dogwood, maple_japanese, maple_silver, maple_amur, oak, birch, hawthorn, apple, ginkgo, willow_weeping, sycamore, poplar_columnar, elm_american, birch_river, oak_dark) and 7 tool icons into `res://GameAssets/Tools/` (axe, pickaxe, hammer, shovel, saw, hatchet, scythe). All renamed from `unknown.png` with descriptive snake_case names.
 - **Next up:** Playtest the new map. Check collision fit on log ("18", CircleShape2D r=20 at offset (0,10)) and rock ("Rock123x20", RectangleShape2D 55×14) — nudge if player clips. Rename "18" and "Rock123x20" to descriptive node names. Add StaticBody2D collision to border trees if needed.
 - **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 
