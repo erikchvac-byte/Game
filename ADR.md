@@ -495,6 +495,16 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-037: Starter Farm Map — 40×30 Cleared Center + Tree Border
+**Status:** Accepted
+**Date:** 2026-05-08
+**Context:** The existing world map was an irregular ~45×26 cell field with no defined boundary. A Stardew Valley-style farm needs a clear player space with a natural wooded border.
+**Decision:** Rebuilt `Ground` TileMapLayer as a clean 40×30 cell grid (cells 0,0–39,29). Interior filled with sources 2/3 (fivegrass/mabeyfive) random atlas variants (seed=42). 66 `Tree1.png` Sprite2D nodes added as direct `World` children along all four edges: 20 top (y=8), 20 bottom (y=472), 13 left (x=8, y=40–424), 13 right (x=632, y=40–424), all spaced 32px apart. `Camera2D.limit_bottom` updated 384→480.
+**Rationale:** Sprite-based tree border (not tile-based) gives a natural-feeling forest edge that participates in the World y_sort system — top trees (y=8) naturally render behind gameplay objects, bottom trees (y=472) render in front. `Tree1.png` (55×54px, round bushy tree) at 32px spacing provides dense coverage over the 2-tile border without gaps.
+**Consequences:** All existing objects (Bakery, Well, Plant, DryingRack, Player) were already within the cleared center — no repositioning needed. Border trees have no collision yet — add StaticBody2D children if player walkout is an issue. `y_sort_offset` is not settable at runtime in Godot 4.6.2; tree sort is purely by `position.y`, which is correct for border placement.
+
+---
+
 ## Future Considerations (Post Stage 1)
 - Run animation — generate with PixelLab once walk quality confirmed
 - Stage 2: NPCs, farming/crop system
@@ -555,3 +565,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-08 | Log ("18", 58×63) and Rock ("Rock123x20", 69×19) given StaticBody2D collision shapes. ADR-034 added. |
 | 2026-05-08 | Drying rack TEXTURES array indices 1/3 swapped — first harvest now shows fullest visual state (3 bundles) and decrements. ADR-035 added. |
 | 2026-05-08 | object_shadow.gd: show_behind_parent=true — shadow oval now draws behind parent sprite. HouseGlowLeft position fixed (158,138)→(60,82); shadow_enabled removed. ADR-036 added. |
+| 2026-05-08 | 40×30 starter farm map: Ground rebuilt (1200 cells, sources 2/3 random), 66 Tree1.png border sprites, Camera limit_bottom 384→480. ADR-037 added. |

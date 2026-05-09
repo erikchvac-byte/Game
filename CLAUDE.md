@@ -3,8 +3,8 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Shadow + lighting fixes — `object_shadow.gd` given `show_behind_parent=true` so oval draws behind parent sprite instead of on top of it; `HouseGlowLeft` position corrected from `(158,138)` → `(60,82)` (had drifted to right side); `shadow_enabled=true` removed from `HouseGlowLeft`.
-- **Next up:** Playtest collision fit on log (CircleShape2D r=20 at offset (0,10)) and rock (RectangleShape2D 55×14) — nudge if player clips or stops too far away. Rename "18" and "Rock123x20" nodes to descriptive names.
+- **Last completed:** 40×30 starter farm map — `Ground` TileMapLayer cleared and rebuilt (1200 cells, sources 2/3 random grass variants); 66 `Tree1.png` (55×54px) Sprite2D border sprites placed every 32px along all four edges as direct `World` children; `Camera2D.limit_bottom` updated 384→480 to match new map height. Bakery, Well, Plant, DryingRack, Player kept at existing positions inside the cleared center.
+- **Next up:** Playtest the new map. Check collision fit on log ("18", CircleShape2D r=20 at offset (0,10)) and rock ("Rock123x20", RectangleShape2D 55×14) — nudge if player clips. Rename "18" and "Rock123x20" to descriptive node names. Add StaticBody2D collision to border trees if needed.
 - **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 
 ---
@@ -27,6 +27,7 @@
 - Scene write pattern: `PackedScene.new()` → `pack(root)` → `ResourceSaver.save(packed, path)` inside `execute_editor_script`. **Do NOT use this for scenes that instance other scenes** — `pack()` expands instances inline and breaks unique_ids. Write `.tscn` directly via the Write tool using minimal instance format (`instance=ExtResource(...)`) instead.
 - All Godot MCP tools use `additionalProperties: true` schema — always load via ToolSearch before first call in a session
 - Bridge server: `C:/Users/erikc/Dev/Game/mcp-bridge/index.js` — Godot editor must be open with MCP Pro plugin active
+- `y_sort_offset` does NOT exist as a runtime GDScript property in Godot 4.6.2 — it is only a `.tscn` serialization field. Setting it via `execute_editor_script` (even via `set()`) will error. Sorting is purely by `position.y`; use `position.y` placement to control sort order.
 
 ## Asset Layout
 - Source assets: `C:/Users/erikc/Dev/Game/GameAssets/` (~800 PNGs)
