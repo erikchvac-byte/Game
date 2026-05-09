@@ -3,9 +3,9 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Asset import session — 33 tree sprites into `res://GameAssets/Trees/` (17 evergreens: pine variants; 16 deciduous: ash, dogwood, maple_japanese, maple_silver, maple_amur, oak, birch, hawthorn, apple, ginkgo, willow_weeping, sycamore, poplar_columnar, elm_american, birch_river, oak_dark) and 7 tool icons into `res://GameAssets/Tools/` (axe, pickaxe, hammer, shovel, saw, hatchet, scythe). All renamed from `unknown.png` with descriptive snake_case names.
-- **Next up:** Playtest the new map. Check collision fit on log ("18", CircleShape2D r=20 at offset (0,10)) and rock ("Rock123x20", RectangleShape2D 55×14) — nudge if player clips. Rename "18" and "Rock123x20" to descriptive node names. Add StaticBody2D collision to border trees if needed.
-- **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
+- **Last completed:** Shadow/collision polish session — plant shadow ground_offset corrected to base of sprite; well shadow made wider and more static; log ("18") collision changed from CircleShape2D to RectangleShape2D 50×22; stray `Trees/5.png` sprite freed from inside LogCollider and placed at World root (94,188); `TreeWillowWeeping` given Shadow + TreeCollider; `town-grass-tile.png` (256×256, 16×16) added as source 5 in `world_tileset.tres`.
+- **Next up:** Playtest shadows and collisions in-game. Rename node `"18"` to a descriptive name (e.g. `Log`). Rock (`Rock123x20`) is **missing** from the world scene — needs to be re-placed. Decide whether the reparented tree at (94,188) is correct position. Rename "18" to `Log`.
+- **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup. Rock missing from scene — unknown which sprite it used.
 
 ---
 
