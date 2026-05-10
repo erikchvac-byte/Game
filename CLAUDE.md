@@ -4,8 +4,8 @@
 
 ## Where We Are
 - **Last completed:** Shadow/collision polish session — plant shadow ground_offset corrected to base of sprite; well shadow made wider and more static; log ("18") collision changed from CircleShape2D to RectangleShape2D 50×22; stray `Trees/5.png` sprite freed from inside LogCollider and placed at World root (94,188); `TreeWillowWeeping` given Shadow + TreeCollider; `town-grass-tile.png` (256×256, 16×16) added as source 5 in `world_tileset.tres`.
-- **Next up:** Playtest shadows and collisions in-game. Rename node `"18"` to a descriptive name (e.g. `Log`). Rock (`Rock123x20`) is **missing** from the world scene — needs to be re-placed. Decide whether the reparented tree at (94,188) is correct position. Rename "18" to `Log`.
-- **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup. Rock missing from scene — unknown which sprite it used.
+- **Next up:** Playtest shadows and collisions in-game. Verify reparented tree (`Trees/5.png`) at (94,188) looks correct in context.
+- **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
 
 ---
 
