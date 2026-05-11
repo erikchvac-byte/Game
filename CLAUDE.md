@@ -3,9 +3,9 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** Shadow/collision polish session — plant shadow ground_offset corrected to base of sprite; well shadow made wider and more static; log ("18") collision changed from CircleShape2D to RectangleShape2D 50×22; stray `Trees/5.png` sprite freed from inside LogCollider and placed at World root (94,188); `TreeWillowWeeping` given Shadow + TreeCollider; `town-grass-tile.png` (256×256, 16×16) added as source 5 in `world_tileset.tres`.
-- **Next up:** Playtest shadows and collisions in-game. Verify reparented tree (`Trees/5.png`) at (94,188) looks correct in context.
-- **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup.
+- **Last completed:** NPC + world expansion session — Big Rock shadow offset fixed; camera limit_bottom 384→496; `HouseTwostoryTeal` converted to AnimatedSprite2D using `house_grey_teal_frames.tres` (9-frame, 768×768) + shadow + `HouseTealCollider` (85×28 wall box); `Frame000` replaced with `GreyHoodie` Node2D patrol NPC (`npc_grey_hoodie.gd`) with walk/idle animations, patrolling (165,150)↔(510,150); `Log1` (Trees/5.png at 94,188) given shadow + TreeCollider (CircleShape2D r=6); `BigMushroomStump` (48×48 at 440,85) given shadow + MushroomCollider (RectangleShape2D 20×10); `Plant/Shadow` ground_offset corrected (0,22)→(0,10) for 48×48 sprite.
+- **Next up:** Playtest NPC patrol look/feel; refine teal house collision shape to match sprite; add cave entrance rigging; add roof overlay to main.tscn Overhead for teal house.
+- **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup. Cave entrance at (29,409) — rigging TBD.
 
 ---
 

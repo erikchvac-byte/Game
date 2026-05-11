@@ -1,0 +1,86 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://bdowx3l78eemq"]
+
+[ext_resource type="Texture2D" uid="uid://dplso3kaun5gj" path="res://GameAssets/Buildings/special/House Grey with teal roof animation.png" id="1_xkhhc"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_46phx"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(0, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_5j7uj"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(256, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rrjj7"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(512, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ey4nf"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(0, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_kr6md"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(256, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vcetk"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(512, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_da3jq"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(0, 512, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_od2w0"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(256, 512, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_maxq8"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(512, 512, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_2rkj6"]
+atlas = ExtResource("1_xkhhc")
+region = Rect2(0, 0, 256, 256)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_46phx")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_5j7uj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rrjj7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ey4nf")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_kr6md")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vcetk")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_da3jq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_od2w0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_maxq8")
+}],
+"loop": true,
+"name": &"animated",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_2rkj6")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}]
