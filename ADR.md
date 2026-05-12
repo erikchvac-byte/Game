@@ -576,3 +576,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-11 | Log1 (Trees/5.png, 94,188) given Shadow (ground_offset y=10, size 22×5) + TreeCollider (CircleShape2D r=6 at y=8). |
 | 2026-05-11 | BigMushroomStump (48×48, 440,85) given Shadow (ground_offset y=20, size 22×6) + MushroomCollider (RectangleShape2D 20×10 at y=18). |
 | 2026-05-11 | Plant/Shadow ground_offset corrected (0,22)→(0,10): 48×48 sprite, shadow was too far below plant base. |
+
+| 2026-05-11 | NPC bakery-stop waypoint corrected (165,150)→(112,165) — was landing at right edge of bakery sprite, now centered in front of door. |
