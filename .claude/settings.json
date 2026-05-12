@@ -81,6 +81,7 @@
       "mcp__godot-mcp-pro__tilemap_get_info",
       "mcp__godot-mcp-pro__project_path_to_uid",
       "mcp__godot-mcp-pro__uid_to_project_path",
+      "mcp__godot-mcp-pro__set_editor_camera",
       "mcp__filesystem__read_text_file",
       "mcp__filesystem__read_media_file",
       "mcp__filesystem__write_file",

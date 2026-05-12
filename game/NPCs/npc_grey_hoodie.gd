@@ -3,8 +3,8 @@ extends Node2D
 const SPEED := 45.0
 const IDLE_DURATION := 2.5
 
-# Patrol waypoints: in front of Erik's house, then in front of NPC's house
-var _waypoints := [Vector2(165.0, 150.0), Vector2(510.0, 150.0)]
+# Patrol waypoints: in front of Erik's bakery door, then in front of NPC's house
+var _waypoints := [Vector2(112.0, 165.0), Vector2(510.0, 150.0)]
 var _target_idx := 1
 var _idle_timer := 0.0
 
