@@ -5,6 +5,7 @@
 ## Where We Are
 - **Last completed:** NPC + world expansion session — Big Rock shadow offset fixed; camera limit_bottom 384→496; `HouseTwostoryTeal` converted to AnimatedSprite2D using `house_grey_teal_frames.tres` (9-frame, 768×768) + shadow + `HouseTealCollider` (85×28 wall box); `Frame000` replaced with `GreyHoodie` Node2D patrol NPC (`npc_grey_hoodie.gd`) with walk/idle animations, patrolling (112,165)↔(510,150); `Log1` (Trees/5.png at 94,188) given shadow + TreeCollider (CircleShape2D r=6); `BigMushroomStump` (48×48 at 440,85) given shadow + MushroomCollider (RectangleShape2D 20×10); `Plant/Shadow` ground_offset corrected (0,22)→(0,10) for 48×48 sprite.
 - **Next up:** Playtest NPC patrol look/feel; refine teal house collision shape to match sprite; add cave entrance rigging; add roof overlay to main.tscn Overhead for teal house.
+- **Camera lesson:** World node in main.tscn sits at position (195,88). Camera2D limits must be in **global** coords: left=195, top=88, right=835, bottom=584. Always add World offset when setting camera limits.
 - **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup. Cave entrance at (29,409) — rigging TBD.
 
 ---

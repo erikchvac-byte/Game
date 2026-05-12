@@ -578,3 +578,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-11 | Plant/Shadow ground_offset corrected (0,22)→(0,10): 48×48 sprite, shadow was too far below plant base. |
 
 | 2026-05-11 | NPC bakery-stop waypoint corrected (165,150)→(112,165) — was landing at right edge of bakery sprite, now centered in front of door. |
+| 2026-05-12 | Camera2D limits corrected to global coords accounting for World offset (195,88): left=195 top=88 right=835 bottom=584 (was 0,0,640,496 which confined player to bakery area). Root cause: World instanced at (195,88) in main.tscn shifts all global positions by that amount. |
