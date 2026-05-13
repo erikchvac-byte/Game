@@ -6,9 +6,8 @@
 - **PLAYTEST RULE:** If you make it, you play test it. Always. Run the game via MCP, exercise the feature, take a screenshot to confirm correct behavior before reporting done.
 
 ## Where We Are
-- **Last completed:** Harvest-to-trade loop asset audit; dried bud sprite added at `GameAssets/Bud/states/dry/rotations/unknown.png`. Prior: NPC home interior + teal house door — `res://World/NPCHome/interior.tscn` (160×128), `NPCHomeDoor` Area2D at (534,125), world.gd wired with 0.5s reconnect delay.
-- **Next up:** Wire drying rack collection mechanic: drying timer → "ready" signal → collect → bud enters inventory. Then: playtest NPC home entry/exit feel; refine teal house collision; cave entrance rigging; roof overlay for teal house in Overhead; dedup `shop_apothecary_alt.png`.
-- **Bud asset:** `GameAssets/Bud/states/dry/rotations/unknown.png` — small pixelart dried bud, usable as inventory icon and/or world drop. More states (fresh, wet) deferred.
+- **Last completed:** Full drying rack processing loop — 3 plants → 5s drying → 1.5s golden pulse → random bud item awarded to hotbar (stacks up to 16 by key, then overflows to new slot with new random sprite). 8 bud variants in `res://GameAssets/Bud/`. Inventory/hotbar stacking by item key, not texture. Fix: inventory `get_node("TextureRect")` replaced with direct `_slot_icons[]` reference (Godot 4 auto-names nodes `@TextureRect@N`). ADR-040.
+- **Next up:** NPC home entry/exit playtest feel; teal house collision refinement (door gap + side walls); cave entrance rigging; roof overlay for teal house in Overhead; dedup `shop_apothecary_alt.png`; currency/trade system groundwork.
 - **Camera lesson:** World node in main.tscn sits at position (195,88). Camera2D limits must be in **global** coords: left=195, top=88, right=835, bottom=584. Always add World offset when setting camera limits.
 - **NPC position lesson:** Any NPC script that stores waypoints as world-local coords MUST use `position` (local) not `global_position`. Using `global_position` offsets all targets by the World node's (195,88) global offset, sending NPCs off-map.
 - **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup. Cave entrance at (29,409) — rigging TBD. Teal house collision (HouseTealCollider) is a single 85×28 box — needs door gap + side walls to match sprite.

@@ -342,10 +342,10 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 ## ADR-025: Drying Rack — 3-Plant Processing Loop with Inventory Reward
 **Status:** Accepted (Updated 2026-05-13)
 **Date:** 2026-05-06
-**Context:** A drying rack prop needed to show 0/1/2/3 plants as the PurplePunchOne plant completes its full watering cycle. Originally a permanent decoration (never reset). Now extended to be a repeatable processing loop.
-**Decision:** `drying_rack.gd` implements a 4-state machine: `EMPTY → FILLING → DRYING → READY → EMPTY`. After the 3rd plant is added the script enters `DRYING` (5s timer, `set_process(true)`). When the timer expires it enters `READY` (1.5s golden amber pulse via `modulate`). After `READY` expires, `_award_and_reset()` calls `Inventory.add_item(herb_bundle_dried.png)`, resets `_count`, clears `modulate`, and returns to `EMPTY`. `add_plant()` is blocked while in `DRYING` or `READY`. `Inventory.add_item(tex)` added to `inventory.gd` — scans `_items[]` for first null slot, sets `_items[i]` and calls `set_item(i, tex)`. Product texture: `res://GameAssets/Objects/herb_bundle_dried.png` (already imported). Texture array order retained: `[empty, 3plants, 2plants, 1plant]` — first plant shows fullest display (3 bundles), each subsequent add decrements.
-**Rationale:** Timer-based completion (not interaction-based) keeps the mechanic passive — player grows plants, rack processes automatically. Golden pulse (warm amber oscillation) clearly signals READY state without extra UI. Blocking `add_plant` during DRYING/READY prevents broken intermediate states. `set_process(false)` in `_ready()` and on reset avoids per-frame cost during idle.
-**Consequences:** Rack now cycles: grow 3 plants → rack fills → 5s drying → 1.5s golden flash → herb_bundle_dried added to inventory slot 0-35 → rack empties. If inventory is full, `add_item()` returns false and the item is silently lost (no overflow handling yet). `rack_weed_*` assets still on disk but unreferenced.
+**Context:** A drying rack prop needed to show 0/1/2/3 plants as the PurplePunchOne plant completes its full watering cycle. Originally a permanent decoration (never reset). Now a repeatable processing loop producing a random bud product.
+**Decision:** `drying_rack.gd` implements a 4-state machine: `EMPTY → FILLING → DRYING → READY → EMPTY`. After the 3rd plant the script enters `DRYING` (5s timer). Timer expires → `READY` (1.5s golden amber pulse via `modulate`). `READY` expires → `_award_and_reset()` calls `Inventory.add_item("bud", PRODUCTS[randi() % 8])`, resets state, clears modulate. `add_plant()` is blocked in DRYING/READY. 8 product textures in `res://GameAssets/Bud/` + `herb_bundle_dried.png`. See ADR-040 for inventory stacking design.
+**Rationale:** Timer-based passive processing. Golden pulse signals READY without extra UI. Random product texture per cycle provides visual variety; stacking is by item key not texture (see ADR-040).
+**Consequences:** Rack cycles indefinitely. `rack_weed_*` assets unreferenced. If all inventory slots full, item is silently lost.
 
 ---
 
@@ -515,6 +515,16 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-040: Inventory Stacking — Key-Based with Hotbar-First Placement
+**Status:** Accepted
+**Date:** 2026-05-13
+**Context:** Drying rack produces items that needed to land visibly in the hotbar, stack up to 16 per slot, and support visual variety (random sprite per stack) without breaking stacking logic.
+**Decision:** `add_item(key: String, tex: Texture2D)` on `Inventory` autoload. Items stack by `key` (not by texture), so all buds (`key="bud"`) share a stack regardless of which random sprite was picked for that cycle. `tex` is used only when opening a new slot. Placement priority: HUD hotbar slots 1–11 first (slot 0 reserved for bucket), then inventory grid slots 0–35. Both layers store `{key, tex, count}` dicts. Slot count badge (Label, font_size 6, bottom-right) is shown when count > 1. `inventory.gd._items[]` changed from bare `Texture2D` to dict. `hud.gd._slot_items[]` added as parallel tracking array. `inventory.gd._slot_icons[]` stores direct TextureRect refs (replaces broken `get_node("TextureRect")` lookup — Godot 4 auto-names nodes `@TextureRect@N`).
+**Rationale:** Separating stacking identity from visual texture allows random-sprite variety per new slot while maintaining a single logical item type. Hotbar-first keeps items immediately visible without opening inventory. Key-based comparison is robust to resource reference variance.
+**Consequences:** `add_item` signature changed from `add_item(tex)` to `add_item(key, tex)` — only caller is `drying_rack.gd`. When hotbar is full, overflow goes to inventory grid. When both are full, item is silently lost. Badge hidden at count=1, visible at count≥2.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -587,3 +597,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-13 | NPC script simplified to walk_east/walk_west only; walk_north/walk_south removed (horizontal patrol only). Scene default animation fixed walk_north→idle_south. Log1 TreeCollider: CircleShape2D r=20.46→RectangleShape2D 28×10. |
 | 2026-05-13 | NPC home interior added: res://World/NPCHome/interior.tscn (160×128, same tileset as player home). NPCHomeDoor Area2D added to world.tscn at (534,125) with 30×10 shape. world.gd wired: player auto-walks north → fade → NPC interior; exit spawns player at (534,140). 0.5s delay on door reconnect prevents re-entry on spawn. Spawn position pattern: interior.gd sets Engine.set_meta("spawn_position", ...) consumed by main.gd._ready(). |
 | 2026-05-13 | Harvest-to-trade loop audited: identified missing dried product inventory icon, rack "complete" state, NPC sprite, and currency icon. Dried bud sprite added at GameAssets/Bud/states/dry/rotations/unknown.png — usable as inventory icon and world drop. More bud states deferred. |
+| 2026-05-13 | Drying rack: 4-state machine (EMPTY→FILLING→DRYING 5s→READY 1.5s golden pulse→award+reset). _award_and_reset() picks random bud from 8 variants. 7 bud PNGs copied to res://GameAssets/Bud/ with clean names. ADR-025 updated. |
+| 2026-05-13 | Inventory stacking: add_item(key, tex) — stacks by key up to 16, hotbar slots 1-11 first then inventory grid, badge label at count>1, new slot gets random tex. Fixed get_node("TextureRect") → direct _slot_icons[] ref. ADR-040 added. |
