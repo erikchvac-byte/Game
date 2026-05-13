@@ -3,12 +3,12 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** NPC home interior + teal house door — `res://World/NPCHome/interior.tscn` created (160×128 room, same floor/wall tileset as player home). `NPCHomeDoor` Area2D added to world.tscn at (534,125). `world.gd` wired: player walks north → fade → NPC interior; exit returns player to world at (534,140) in front of teal house door. 0.5s delay on door reconnect prevents immediate re-entry on spawn. Prior session: NPC patrol fixed (`global_position`→`position`); Log1 rect collision; BorderBottom repositioned.
-- **Next up:** Playtest NPC home entry/exit feel; refine teal house collision shape to match sprite; add cave entrance rigging; add roof overlay to main.tscn Overhead for teal house; dedup `shop_apothecary_alt.png`.
+- **Last completed:** Harvest-to-trade loop asset audit; dried bud sprite added at `GameAssets/Bud/states/dry/rotations/unknown.png`. Prior: NPC home interior + teal house door — `res://World/NPCHome/interior.tscn` (160×128), `NPCHomeDoor` Area2D at (534,125), world.gd wired with 0.5s reconnect delay.
+- **Next up:** Wire drying rack collection mechanic: drying timer → "ready" signal → collect → bud enters inventory. Then: playtest NPC home entry/exit feel; refine teal house collision; cave entrance rigging; roof overlay for teal house in Overhead; dedup `shop_apothecary_alt.png`.
+- **Bud asset:** `GameAssets/Bud/states/dry/rotations/unknown.png` — small pixelart dried bud, usable as inventory icon and/or world drop. More states (fresh, wet) deferred.
 - **Camera lesson:** World node in main.tscn sits at position (195,88). Camera2D limits must be in **global** coords: left=195, top=88, right=835, bottom=584. Always add World offset when setting camera limits.
 - **NPC position lesson:** Any NPC script that stores waypoints as world-local coords MUST use `position` (local) not `global_position`. Using `global_position` offsets all targets by the World node's (195,88) global offset, sending NPCs off-map.
 - **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup. Cave entrance at (29,409) — rigging TBD. Teal house collision (HouseTealCollider) is a single 85×28 box — needs door gap + side walls to match sprite.
-- **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup. Cave entrance at (29,409) — rigging TBD.
 
 ---
 
