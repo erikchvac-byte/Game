@@ -3,9 +3,10 @@
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
 ## Where We Are
-- **Last completed:** NPC + world expansion session — Big Rock shadow offset fixed; camera limit_bottom 384→496; `HouseTwostoryTeal` converted to AnimatedSprite2D using `house_grey_teal_frames.tres` (9-frame, 768×768) + shadow + `HouseTealCollider` (85×28 wall box); `Frame000` replaced with `GreyHoodie` Node2D patrol NPC (`npc_grey_hoodie.gd`) with walk/idle animations, patrolling (112,165)↔(510,150); `Log1` (Trees/5.png at 94,188) given shadow + TreeCollider (CircleShape2D r=6); `BigMushroomStump` (48×48 at 440,85) given shadow + MushroomCollider (RectangleShape2D 20×10); `Plant/Shadow` ground_offset corrected (0,22)→(0,10) for 48×48 sprite.
-- **Next up:** Playtest NPC patrol look/feel; refine teal house collision shape to match sprite; add cave entrance rigging; add roof overlay to main.tscn Overhead for teal house.
+- **Last completed:** NPC patrol fully working — GreyHoodie walks from teal house door (534,158) to bakery door (112,150) and back in a continuous loop. Root-cause fix: NPC script was using `global_position` with world-local waypoints; since World sits at (195,88) in main.tscn, the NPC was targeting global (112,150) = local (−83,62), flying northwest off-map every cycle. Fixed by replacing all `global_position` with `position` in npc_grey_hoodie.gd. Also fixed: `Log1/TreeCollider` CircleShape2D→RectangleShape2D (28×10); BorderBottom y=487→y=471; extra column x=0 tiles removed; NPC walk_north/walk_south removed (east-west patrol only); scene default animation fixed walk_north→idle_south.
+- **Next up:** Playtest all four border edges for collision feel; refine teal house collision shape; add cave entrance rigging; add roof overlay to main.tscn Overhead for teal house.
 - **Camera lesson:** World node in main.tscn sits at position (195,88). Camera2D limits must be in **global** coords: left=195, top=88, right=835, bottom=584. Always add World offset when setting camera limits.
+- **NPC position lesson:** Any NPC script that stores waypoints as world-local coords MUST use `position` (local) not `global_position` for movement and distance checks. Using `global_position` offsets all targets by World's (195,88) global offset, sending NPCs off-map.
 - **Open decisions:** `shop_apothecary_alt.png` is a duplicate of `shop_apothecary_main.png` — pending dedup. Cave entrance at (29,409) — rigging TBD.
 
 ---

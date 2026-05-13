@@ -3,8 +3,7 @@ extends Node2D
 const SPEED := 45.0
 const IDLE_DURATION := 2.5
 
-# Patrol waypoints: in front of Erik's bakery door, then in front of NPC's house
-var _waypoints := [Vector2(112.0, 165.0), Vector2(510.0, 150.0)]
+var _waypoints := [Vector2(112.0, 150.0), Vector2(534.0, 158.0)]
 var _target_idx := 1
 var _idle_timer := 0.0
 
@@ -20,26 +19,22 @@ func _process(delta: float) -> void:
 		return
 
 	var target: Vector2 = _waypoints[_target_idx]
-	var diff: Vector2 = target - global_position
+	var diff: Vector2 = target - position
 	var dist: float = diff.length()
 
 	if dist < 2.0:
-		global_position = target
+		position = target
 		_idle_timer = IDLE_DURATION
 		$AnimatedSprite2D.play("idle_south")
 		_target_idx = (_target_idx + 1) % _waypoints.size()
 		return
 
-	global_position += diff.normalized() * SPEED * delta
+	position += diff.normalized() * SPEED * delta
 
 func _start_walk() -> void:
 	var target: Vector2 = _waypoints[_target_idx]
-	var dir: Vector2 = (target - global_position).normalized()
-	if dir.x > 0.1:
+	var dir: Vector2 = (target - position).normalized()
+	if dir.x >= 0.0:
 		$AnimatedSprite2D.play("walk_east")
-	elif dir.x < -0.1:
-		$AnimatedSprite2D.play("walk_west")
-	elif dir.y > 0.0:
-		$AnimatedSprite2D.play("walk_south")
 	else:
-		$AnimatedSprite2D.play("walk_north")
+		$AnimatedSprite2D.play("walk_west")
