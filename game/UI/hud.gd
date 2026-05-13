@@ -11,6 +11,7 @@ var selected_slot: int = 0
 var _water_tp: TextureProgressBar
 var _e_prompt: TextureRect
 var _slots: Array = []
+var _slot_items: Array = []
 var _toast_panel: Panel
 var _toast_label: Label
 var _toast_tween: Tween
@@ -117,6 +118,7 @@ func _build_hotbar() -> void:
 	_bucket_tex_full = load("res://GameAssets/UI/bucket_full.png")
 
 	_slots = []
+	_slot_items = []
 	for i in range(SLOT_COUNT):
 		var slot := Panel.new()
 		slot.name = "Slot%d" % i
@@ -145,6 +147,7 @@ func _build_hotbar() -> void:
 		slot.add_child(badge)
 
 		_slots.append(slot)
+		_slot_items.append(null)
 
 	# Slot 0 is the permanent bucket slot
 	set_slot_texture(0, _bucket_tex_empty)
@@ -217,6 +220,23 @@ func set_water(current: int, max_val: int = -1) -> void:
 func select_slot(index: int) -> void:
 	selected_slot = clampi(index, 0, SLOT_COUNT - 1)
 	_refresh_hotbar_selection()
+
+
+func hotbar_add_item(key: String, tex: Texture2D) -> bool:
+	# slot 0 is reserved for bucket — stack into 1..11
+	for i in range(1, SLOT_COUNT):
+		var item = _slot_items[i]
+		if item != null and item.key == key and item.count < 16:
+			item.count += 1
+			set_slot_badge(i, item.count if item.count > 1 else -1)
+			return true
+	for i in range(1, SLOT_COUNT):
+		if _slot_items[i] == null:
+			_slot_items[i] = {key = key, tex = tex, count = 1}
+			set_slot_texture(i, tex)
+			set_slot_badge(i, -1)
+			return true
+	return false
 
 
 func set_slot_texture(slot: int, tex: Texture2D) -> void:

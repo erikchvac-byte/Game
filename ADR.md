@@ -339,13 +339,13 @@ Asset pack: `GameAssets/` — ~800 PNG files, 16×16 tiles, 59×49 player sprite
 
 ---
 
-## ADR-025: Drying Rack — 4-State Sprite Swap on Plant Harvest
-**Status:** Accepted (Updated 2026-05-08)
+## ADR-025: Drying Rack — 3-Plant Processing Loop with Inventory Reward
+**Status:** Accepted (Updated 2026-05-13)
 **Date:** 2026-05-06
-**Context:** A drying rack prop needed to show 0/1/2/3 plants as the PurplePunchOne plant completes its full watering cycle. Originally used 3 `rack_weed_*` textures (no empty state, started with 1 plant visible). Replaced with new wooden A-frame rack assets.
-**Decision:** `DryingRack` is a `Sprite2D` with `drying_rack.gd` attached. Script preloads 4 textures (`rack_new_empty/1plant/2plants/3plants.png`, 64×64 px each). `world.gd` connects `$Plant.plant_harvested` → `$DryingRack.add_plant`. Rack starts empty and advances through 4 states (up to `_count >= 3` guard). Added `DryingRackCollider` (StaticBody2D → CollisionShape2D, RectangleShape2D 44×10 at offset (0,26)) for player collision. Shadow updated: `ground_offset=(0,26)`, `shadow_size=(28,5)`, `cast_length=18.0`. `y_sort_offset=30` so depth sort point = bottom of rack legs.
-**Rationale:** Adding an explicit empty state is more correct — player now sees the bare rack before any harvest. Collision prevents walking through the rack legs. Shadow ground_offset raised to y=26 (leg base for 64px sprite centred at origin). `y_sort_offset=30` puts sort_y=105 (leg base) so player behind rack sorts correctly.
-**Consequences:** Rack now shows empty on game start (was: showed 1 plant immediately). Max 3 harvests advance rack to full. Rack never resets — permanent decoration once full. Old `rack_weed_*` assets remain on disk but are no longer referenced.
+**Context:** A drying rack prop needed to show 0/1/2/3 plants as the PurplePunchOne plant completes its full watering cycle. Originally a permanent decoration (never reset). Now extended to be a repeatable processing loop.
+**Decision:** `drying_rack.gd` implements a 4-state machine: `EMPTY → FILLING → DRYING → READY → EMPTY`. After the 3rd plant is added the script enters `DRYING` (5s timer, `set_process(true)`). When the timer expires it enters `READY` (1.5s golden amber pulse via `modulate`). After `READY` expires, `_award_and_reset()` calls `Inventory.add_item(herb_bundle_dried.png)`, resets `_count`, clears `modulate`, and returns to `EMPTY`. `add_plant()` is blocked while in `DRYING` or `READY`. `Inventory.add_item(tex)` added to `inventory.gd` — scans `_items[]` for first null slot, sets `_items[i]` and calls `set_item(i, tex)`. Product texture: `res://GameAssets/Objects/herb_bundle_dried.png` (already imported). Texture array order retained: `[empty, 3plants, 2plants, 1plant]` — first plant shows fullest display (3 bundles), each subsequent add decrements.
+**Rationale:** Timer-based completion (not interaction-based) keeps the mechanic passive — player grows plants, rack processes automatically. Golden pulse (warm amber oscillation) clearly signals READY state without extra UI. Blocking `add_plant` during DRYING/READY prevents broken intermediate states. `set_process(false)` in `_ready()` and on reset avoids per-frame cost during idle.
+**Consequences:** Rack now cycles: grow 3 plants → rack fills → 5s drying → 1.5s golden flash → herb_bundle_dried added to inventory slot 0-35 → rack empties. If inventory is full, `add_item()` returns false and the item is silently lost (no overflow handling yet). `rack_weed_*` assets still on disk but unreferenced.
 
 ---
 

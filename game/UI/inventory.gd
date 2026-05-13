@@ -5,8 +5,12 @@ const COLS := 6
 
 var is_open: bool = false
 
-var _items: Array = []
+const MAX_STACK := 16
+
+var _items: Array = []        # each: null | {tex: Texture2D, count: int}
 var _slot_panels: Array = []
+var _slot_icons: Array = []
+var _slot_badges: Array = []
 var _overlay: Control
 
 
@@ -93,6 +97,8 @@ func _build_overlay() -> void:
 	slot_style_normal.border_color = Color(0.28, 0.28, 0.33)
 
 	_slot_panels = []
+	_slot_icons = []
+	_slot_badges = []
 	for i in range(TOTAL_SLOTS):
 		var slot := Panel.new()
 		slot.custom_minimum_size = Vector2(26.0, 26.0)
@@ -106,7 +112,19 @@ func _build_overlay() -> void:
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.add_child(icon)
 
+		var badge := Label.new()
+		badge.add_theme_font_size_override("font_size", 6)
+		badge.add_theme_color_override("font_color", Color.WHITE)
+		badge.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
+		badge.vertical_alignment = VERTICAL_ALIGNMENT_BOTTOM
+		badge.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		badge.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		badge.visible = false
+		slot.add_child(badge)
+
 		_slot_panels.append(slot)
+		_slot_icons.append(icon)
+		_slot_badges.append(badge)
 
 	# Hint
 	var hint := Label.new()
@@ -151,8 +169,37 @@ func toggle() -> void:
 
 
 func set_item(slot: int, tex: Texture2D) -> void:
-	if slot < 0 or slot >= _slot_panels.size():
+	if slot < 0 or slot >= _slot_icons.size():
 		return
-	var icon := (_slot_panels[slot] as Panel).get_node("TextureRect") as TextureRect
-	if icon:
-		icon.texture = tex
+	(_slot_icons[slot] as TextureRect).texture = tex
+
+
+func add_item(key: String, tex: Texture2D) -> bool:
+	var hud := get_node_or_null("/root/HUD")
+	if hud and hud.has_method("hotbar_add_item"):
+		if hud.hotbar_add_item(key, tex):
+			return true
+	for i in range(TOTAL_SLOTS):
+		var item = _items[i]
+		if item != null and item.key == key and item.count < MAX_STACK:
+			item.count += 1
+			_set_badge(i, item.count)
+			return true
+	for i in range(TOTAL_SLOTS):
+		if _items[i] == null:
+			_items[i] = {key = key, tex = tex, count = 1}
+			set_item(i, tex)
+			_set_badge(i, 1)
+			return true
+	return false
+
+
+func _set_badge(slot: int, count: int) -> void:
+	if slot < 0 or slot >= _slot_badges.size():
+		return
+	var badge := _slot_badges[slot] as Label
+	if count > 1:
+		badge.text = str(count)
+		badge.visible = true
+	else:
+		badge.visible = false

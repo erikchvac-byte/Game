@@ -2,6 +2,9 @@
 
 > **Session start:** Read `ADR.md` for full architectural context and history.
 
+## Rules
+- **PLAYTEST RULE:** If you make it, you play test it. Always. Run the game via MCP, exercise the feature, take a screenshot to confirm correct behavior before reporting done.
+
 ## Where We Are
 - **Last completed:** Harvest-to-trade loop asset audit; dried bud sprite added at `GameAssets/Bud/states/dry/rotations/unknown.png`. Prior: NPC home interior + teal house door — `res://World/NPCHome/interior.tscn` (160×128), `NPCHomeDoor` Area2D at (534,125), world.gd wired with 0.5s reconnect delay.
 - **Next up:** Wire drying rack collection mechanic: drying timer → "ready" signal → collect → bud enters inventory. Then: playtest NPC home entry/exit feel; refine teal house collision; cave entrance rigging; roof overlay for teal house in Overhead; dedup `shop_apothecary_alt.png`.
@@ -148,10 +151,13 @@
 - All 5 objects in world.tscn have Shadow Node2D children (PlayerHome, Well, Plant, DryingRack, Rock)
 
 ## Drying Rack (ADR-025)
-- Script: `res://Interactables/drying_rack.gd` — Sprite2D with 4 preloaded textures (64×64 px each)
-- `add_plant()` increments `_count` 0→3; TEXTURES array order: `[empty, 3plants, 2plants, 1plant]` — first harvest shows fullest display (3 bundles), each add decrements the visual count
+- Script: `res://Interactables/drying_rack.gd` — Sprite2D with 4-state machine: `EMPTY → FILLING → DRYING → READY → EMPTY`
+- `add_plant()` blocked in DRYING/READY states; TEXTURES array: `[empty, 3plants, 2plants, 1plant]` (first plant shows fullest display)
+- After 3rd plant: enters DRYING (5s timer), then READY (1.5s golden pulse via `modulate`), then `_award_and_reset()`
+- `_award_and_reset()` picks a random texture from `PRODUCTS` array (8 bud types) via `randi() % PRODUCTS.size()` and calls `Inventory.add_item(tex)`
+- `Inventory.add_item(tex)` tries hotbar (slots 1–11) first, then inventory grid (slots 0–35); stacks same texture up to 16, then opens new slot; returns false if all full (silent loss)
 - Connected in `world.gd`: `$Plant.plant_harvested.connect($DryingRack.add_plant)`
-- Assets: `res://GameAssets/Objects/DryingRacks/rack_new_empty/1plant/2plants/3plants.png`
+- Assets: racks in `res://GameAssets/Objects/DryingRacks/`; 8 product textures in `res://GameAssets/Bud/` + `res://GameAssets/Objects/herb_bundle_dried.png`
 - Collision: `DryingRackCollider` StaticBody2D → `CollisionShape2D` (RectangleShape2D 44×10) at offset (0, 26)
 - Shadow: `ground_offset=(0,26)`, `shadow_size=(28,5)`, `cast_length=18.0`; `y_sort_offset=30`
 - Plant (plant.gd) resets to frame 0 / stage 0 after emitting `plant_harvested`; no toast popups
