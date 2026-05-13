@@ -4,6 +4,8 @@ var _interactable: Node = null
 
 func _ready() -> void:
 	$DoorEntrance.body_entered.connect(_on_door_entered)
+	# Small delay prevents immediate re-entry when player spawns near the door
+	get_tree().create_timer(0.5).timeout.connect(func(): $NPCHomeDoor.body_entered.connect(_on_npc_door_entered))
 	$Well.connect("interactable_entered", _on_interactable_entered)
 	$Well.connect("interactable_exited", _on_interactable_exited)
 	$Plant.connect("interactable_entered", _on_interactable_entered)
@@ -28,6 +30,16 @@ func _on_interactable_exited(node: Node) -> void:
 	var hud := get_node_or_null("/root/HUD")
 	if hud:
 		hud.show_interact_prompt(false)
+
+func _on_npc_door_entered(body: Node2D) -> void:
+	if body.name != "Player":
+		return
+	$NPCHomeDoor.body_entered.disconnect(_on_npc_door_entered)
+	var player := get_node_or_null("Player") as CharacterBody2D
+	if player:
+		player.auto_walk = Vector2(0, -1)
+	await TransitionManager.fade_to_black(0.4)
+	get_tree().change_scene_to_file("res://World/NPCHome/interior.tscn")
 
 func _on_door_entered(body: Node2D) -> void:
 	if body.name != "Player":
