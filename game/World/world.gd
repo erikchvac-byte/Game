@@ -1,20 +1,19 @@
 extends Node2D
 
+const NPC_TRADE_RADIUS := 36.0
+
 var _interactable: Node = null
 var _npc_trade_active := false
 
 
 func _ready() -> void:
 	$DoorEntrance.body_entered.connect(_on_door_entered)
-	# Small delay prevents immediate re-entry when player spawns near the door
 	get_tree().create_timer(0.5).timeout.connect(func(): $NPCHomeDoor.body_entered.connect(_on_npc_door_entered))
 	$Well.connect("interactable_entered", _on_interactable_entered)
 	$Well.connect("interactable_exited", _on_interactable_exited)
 	$Plant.connect("interactable_entered", _on_interactable_entered)
 	$Plant.connect("interactable_exited", _on_interactable_exited)
 	$Plant.plant_harvested.connect($DryingRack.add_plant)
-	$GreyHoodie.arrived_for_trade.connect(_on_npc_arrived_for_trade)
-	$GreyHoodie.departed_from_trade.connect(_on_npc_departed_from_trade)
 	_grant_starting_bud()
 
 
@@ -22,6 +21,31 @@ func _grant_starting_bud() -> void:
 	var inv := get_node_or_null("/root/Inventory")
 	if inv:
 		inv.add_item("bud", preload("res://GameAssets/Bud/dry_bud.png"))
+
+
+func _process(_delta: float) -> void:
+	_update_npc_proximity()
+
+
+func _update_npc_proximity() -> void:
+	var player := get_node_or_null("Player") as CharacterBody2D
+	var npc := get_node_or_null("GreyHoodie")
+	if not player or not npc:
+		return
+	var dist: float = player.global_position.distance_to(npc.global_position)
+	var in_range: bool = dist <= NPC_TRADE_RADIUS
+	var can_trade: bool = in_range and npc.is_interactable()
+
+	npc.call("set_player_nearby", in_range)
+	if in_range:
+		npc.call("face_toward", player.global_position)
+
+	if can_trade == _npc_trade_active:
+		return
+	_npc_trade_active = can_trade
+	var hud := get_node_or_null("/root/HUD")
+	if hud:
+		hud.show_trade_prompt(_npc_trade_active)
 
 
 func _input(event: InputEvent) -> void:
@@ -45,24 +69,12 @@ func _handle_npc_trade() -> void:
 			hud.show_toast("No product available", 2.0)
 
 
-func _on_npc_arrived_for_trade() -> void:
-	_npc_trade_active = true
-	var hud := get_node_or_null("/root/HUD")
-	if hud:
-		hud.show_trade_prompt(true)
-
-
-func _on_npc_departed_from_trade() -> void:
-	_npc_trade_active = false
-	var hud := get_node_or_null("/root/HUD")
-	if hud:
-		hud.show_trade_prompt(false)
-
 func _on_interactable_entered(node: Node) -> void:
 	_interactable = node
 	var hud := get_node_or_null("/root/HUD")
 	if hud:
 		hud.show_interact_prompt(true)
+
 
 func _on_interactable_exited(node: Node) -> void:
 	if _interactable == node:
@@ -70,6 +82,7 @@ func _on_interactable_exited(node: Node) -> void:
 	var hud := get_node_or_null("/root/HUD")
 	if hud:
 		hud.show_interact_prompt(false)
+
 
 func _on_npc_door_entered(body: Node2D) -> void:
 	if body.name != "Player":
@@ -80,6 +93,7 @@ func _on_npc_door_entered(body: Node2D) -> void:
 		player.auto_walk = Vector2(0, -1)
 	await TransitionManager.fade_to_black(0.4)
 	get_tree().change_scene_to_file("res://World/NPCHome/interior.tscn")
+
 
 func _on_door_entered(body: Node2D) -> void:
 	if body.name != "Player":

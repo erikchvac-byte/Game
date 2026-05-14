@@ -525,14 +525,18 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
-## ADR-041: NPC Trade Interaction — E-Key Bud-for-Gem Exchange
-**Status:** Accepted
-**Date:** 2026-05-13
-**Context:** The drying rack produces tradeable bud items. The grey hoodie NPC patrols between the teal house and the player bakery door. A trade loop was needed: NPC arrives → player exchanges bud for gem → NPC departs.
-**Decision:** State machine extension in `npc_grey_hoodie.gd`: TRADE_WAIT state entered when NPC arrives at waypoint 0 (player door). `arrived_for_trade` / `departed_from_trade` signals connect to `world.gd`. `world.gd` sets `_npc_trade_active` flag and shows the HUD E-prompt. E key in `world.gd._input` is routed to `_handle_npc_trade()` when flag is active, which calls `npc.attempt_trade()`. Trade consumes 1 `"bud"` key item, awards 1 `"gem"` (WaterGem.png). NPC pauses 1.5s then walks home. Timer (10s) expires the trade window if player doesn't act — NPC departs without trade. `_trade_done_this_visit` flag prevents repeat trades per visit; resets on next home arrival.
-**Rationale:** Signals keep NPC and world.gd decoupled. Reuses the existing E-prompt and interactable routing pattern. `attempt_trade()` on the NPC owns all trade logic (inventory check, item swap, state change), so world.gd stays thin. Key-based `has_item`/`remove_item` added to both `hud.gd` and `inventory.gd` as symmetric counterparts to the existing `add_item` API.
-**Consequences:** Gem uses WaterGem.png as placeholder — a dedicated gem sprite is pending. Trade prompt appears whenever NPC is at door regardless of player proximity (no range check — world is small enough this is acceptable). NPC trade priority overrides other interactables in `_input` while trade is active.
-**Testing:** Verified via execute_game_script: (1) bud→gem swap succeeds with bud in hotbar, `trade_done=true`, hotbar updates; (2) attempt with no bud returns false, `trade_wait` remains true; (3) 10s timer expiry clears `trade_wait` and departs.
+## ADR-041: NPC Trade Interaction — Proximity-Based Bud-for-Gem Exchange
+**Status:** Accepted (supersedes door-locked design from 2026-05-13)
+**Date:** 2026-05-14
+**Context:** Initial design locked trade to the NPC arriving at the player bakery door. This was too restrictive — the NPC is a roaming trade partner and should be tradeable wherever the player intercepts it.
+**Decision:** Removed `arrived_for_trade`/`departed_from_trade` signals and TRADE_WAIT/door-arrival state. Replaced with:
+- `world.gd._process()` checks `player.global_position.distance_to(npc.global_position)` every frame against `NPC_TRADE_RADIUS = 36.0` px.
+- NPC exposes `set_player_nearby(bool)` — called each frame; NPC stops walking and plays `idle_south` when player enters range, resumes pathing when player leaves.
+- T prompt shown when `in_range AND npc.is_interactable()`. Hidden during `_is_trading` (1.5s pause) and `_trade_cooldown_timer` (5s after trade).
+- `attempt_trade()` guards on `_is_trading OR _trade_cooldown_timer > 0`. On success: bud removed, gem added, `_is_trading = true`, `_idle_timer = TRADE_PAUSE (1.5s)`. When timer expires, `_is_trading = false`, cooldown starts. NPC resumes walk only if player no longer nearby.
+**Rationale:** Proximity model is simpler than signals and naturally handles all NPC movement states (walking, idling, mid-path). Single distance check per frame is negligible cost. Decouples trade availability from NPC routing entirely.
+**Consequences:** NPC pauses its patrol whenever player is within 36px — intentional UX. Cooldown prevents spam. `_trade_done_this_visit` removed (cooldown timer replaces it). Gem still uses WaterGem.png placeholder.
+**Testing:** Verified via execute_game_script: (1) `_npc_trade_active` flips true at dist=10px; (2) T prompt visible confirmed at `/root/HUD/Hotbar/HotbarLayout/EPromptArea/TPrompt`; (3) `attempt_trade()` returns true, bud removed, gem in hotbar, `_is_trading=true`; (4) prompt hides while trading.
 
 ---
 
@@ -612,3 +616,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-13 | Inventory stacking: add_item(key, tex) — stacks by key up to 16, hotbar slots 1-11 first then inventory grid, badge label at count>1, new slot gets random tex. Fixed get_node("TextureRect") → direct _slot_icons[] ref. ADR-040 added. |
 | 2026-05-13 | NPC trade interaction: GreyHoodie pauses at player door, E-key exchanges 1 bud for 1 gem (WaterGem.png placeholder), 10s trade window then NPC departs. has_item/remove_item added to hud.gd + inventory.gd. ADR-041 added. |
 | 2026-05-13 | Keybinding standardization: E = environmental/world only (well, plant, drying rack, doors). T = NPC trade only. T prompt is a gold-bordered Panel/Label in EPromptArea; shown/hidden by show_trade_prompt(). E and T prompts are fully independent. Player starts with 1 bud in hotbar. |
+| 2026-05-14 | NPC trade reworked to proximity-based: NPC stops when player within 36px, T prompt shows, trade executes on T press anywhere in world. Removed door-arrival signals. Added set_player_nearby(), _is_trading flag, 5s cooldown. ADR-041 updated. |
+| 2026-05-14 | NPC post-trade cycle: after trade, NPC skips player door, walks to own house, plays walk_north then goes invisible. Tracks one full DayNightCycle (_t elapsed ≥ 1.0) then reappears at NPC door, resets _trade_completed, resumes patrol. NPC faces player during interaction (idle_east/west/south). |
