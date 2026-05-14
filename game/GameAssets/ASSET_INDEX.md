@@ -41,7 +41,17 @@ Separate asset-pack character (not Erik). Spritesheets per action/direction.
 
 ## NPCs (`NPCs/`)
 
-**Generic NPCs:** `1.png` – `8.png` (8 standalone character sprites)
+**Generic NPCs** (legacy, renamed 2026-05-14):
+| File | Description |
+|---|---|
+| `npc_sprite_dark_hair.png` | Multi-direction sheet, dark hair |
+| `npc_sprite_red_hair.png` | Multi-direction sheet, red hair |
+| `npc_sprite_green_hair.png` | Multi-direction sheet, green hair |
+| `npc_sprite_gold_hair.png` | Multi-direction sheet, gold/blonde hair |
+| `npc_sprite_brown_hair.png` | Multi-direction sheet, brown hair |
+| `npc_sprite_pink_hair.png` | Multi-direction sheet, pink/magenta hair |
+| `npc_sprite_darkgreen_hair.png` | Multi-direction sheet, dark green hair |
+| `npc_sprite_grey_hair.png` | Multi-direction sheet, grey hair |
 
 **GreyHoodie** (`NPCs/GreyHoodie/`) — 92×92, scruffy tie-dye hoodie character
 | Animation | Frames | Directions |
@@ -71,15 +81,50 @@ Rotations only: 8-direction stills, no animations yet
 ## Environment — World Objects
 
 ### Rocks (`Rocks/`)
-19 individual rock sprites (`1.png` – `19.png`)
+19 individual rock sprites, renamed to descriptive snake_case (2026-05-14):
+| File | Description | Active |
+|---|---|---|
+| `rock_grey_cluster.png` | Grey cluster with pebbles (formerly 18.png) | ✅ world.tscn |
+| `rock_grey_small_round.png` | Small grey rounded boulder | legacy |
+| `rock_dark_medium.png` | Medium dark boulder | legacy |
+| `rock_grey_triangular.png` | Small triangular grey rock | legacy |
+| `rock_dark_tiny.png` | Tiny dark rock piece | legacy |
+| `rock_grey_cluster_large.png` | Large grey clustered rocks | legacy |
+| `rock_dark_small_round.png` | Small rounded dark stone | legacy |
+| `rock_grey_medium_round.png` | Medium grey rounded boulder | legacy |
+| `rock_grey_cluster_irregular.png` | Large irregular grey cluster | legacy |
+| `rock_dark_pebble.png` | Small dark stone pebble | legacy |
+| `rock_dark_grey_medium.png` | Medium dark grey boulder | legacy |
+| `rock_dark_fragment.png` | Small dark rock fragment | legacy |
+| `rock_grey_pebble_tiny.png` | Tiny grey stone pebble | legacy |
+| `rock_grey_medium_round_2.png` | Medium rounded grey stone (alt) | legacy |
+| `rock_dark_small.png` | Small dark rock piece | legacy |
+| `rock_grey_upright.png` | Small upright grey stone | legacy |
+| `rock_dark_round_medium.png` | Medium dark rounded rock | legacy |
+| `rock_grey_stacked_large.png` | Large stacked grey rocks | legacy |
+| `rock_grey_cluster_medium.png` | Medium grey clustered rocks | legacy |
 
 ### Trees (`Trees/`)
-`Tree1.png`, `2.png`–`6.png`, `Treeshadow.png`
+Renamed to descriptive snake_case (2026-05-14):
+| File | Description | Active |
+|---|---|---|
+| `tree_pine_tall.png` | Tall conifer/pine (formerly Tree1.png) | border sprites |
+| `bush_green_round.png` | Small rounded green bush (formerly 2.png) | legacy |
+| `shrub_berries_red.png` | Tiny red berry cluster (formerly 3.png) | legacy |
+| `log_brown_short.png` | Short brown tree trunk log (formerly 4.png) | ✅ world.tscn |
+| `log_fallen_brown.png` | Long horizontal fallen log (formerly 5.png) | ✅ world.tscn |
+| `tree_foliage_overlay_dark.png` | Dark foliage shadow overlay (formerly 6.png) | legacy |
+| `shadow_tree_black.png` | Black irregular tree shadow (formerly Treeshadow.png) | legacy |
+| `tree_willow_weeping.png` | Green weeping willow canopy | ✅ world.tscn |
+| `tree_pine_bushy_b.png` | Bushy pine tree variant B | ✅ world.tscn |
+| `tree_pine_narrow.png` | Narrow pine tree | ✅ world.tscn |
+| `tree_ginkgo.png` | Ginkgo tree | ✅ world.tscn |
+| `tree_oak_green.png` | Green oak tree | ✅ world.tscn |
 
 ### Caves (`Caves/`)
 | Subfolder | Contents |
 |---|---|
-| `CaveEntrance/` | `1.png` |
+| `CaveEntrance/` | `cave_entrance_arch_stone.png` (formerly 1.png — arched brick/stone entrance) |
 | `Ores/` | Coal, Diamond, Emerald, Gold, Iron, Purple Ore, RedOre |
 | `Rocks/` | 4 cave rock variants |
 | `Tiles/Tiles.png` | Cave tile atlas |
@@ -101,14 +146,15 @@ Rotations only: 8-direction stills, no animations yet
 
 ## Buildings & Structures
 
-### Houses (`Houses/`)
-| Subfolder | Contents |
+### Houses (`Houses/`) — LEGACY, not in active scenes
+Renamed from numbered filenames (2026-05-14). None currently referenced in world.tscn.
+| Subfolder | Old Name → New Name |
 |---|---|
-| `Farm/1.png` | Farmhouse |
-| `Houses/` | `1.png`–`8.png` — 8 house variants |
-| `Shops/` | `1.png`–`4.png` — 4 shop facades |
-| `Tents/` | `1.png`–`5.png` — 5 tent variants |
-| `Well/` | `1.png`–`4.png` — 4 well stages / angles |
+| `Farm/` | `1.png` → `farmhouse_barn_main.png` (red barn, green roof) |
+| `Houses/` | `1–8.png` → `house_generic_01–08.png` (8 varied house styles) |
+| `Shops/` | `1.png` → `shop_striped_red_brown.png`, `2.png` → `shop_striped_teal_green.png`, `3.png` → `shop_striped_red_brown_alt.png`, `4.png` → `shop_striped_teal_blue_alt.png` |
+| `Tents/` | `1.png` → `tent_yellow_white.png`, `2.png` → `tent_yellow.png`, `3.png` → `tent_purple_dark.png`, `4.png` → `tent_red_orange.png`, `5.png` → `tent_navy_dark.png` |
+| `Well/` | `1.png` → `well_roofed_red.png`, `2.png` → `well_roofed_teal.png`, `3.png` → `well_roofed_purple.png`, `4.png` → `well_roofed_dark.png` |
 
 ### Town (`Town/`)
 Larger town asset pack. Some folders duplicate Village content.
@@ -169,8 +215,12 @@ Winter-themed equivalents. Mirrors main structure.
 
 ---
 
-## Chests (`Chests/`)
-`1.png`, `2.png` — 2 world chest sprites
+## Chests (`Chests/`) — LEGACY
+Renamed 2026-05-14. Not referenced in active scenes (see Items/Chests/ for named versions).
+| File | Description |
+|---|---|
+| `chest_wood_closed.png` | Closed wooden treasure chest (formerly 1.png) |
+| `chest_wood_open.png` | Open wooden treasure chest (formerly 2.png) |
 
 ---
 

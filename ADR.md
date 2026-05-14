@@ -540,6 +540,27 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-042: Asset Naming Pass — Descriptive snake_case for All Assets
+**Status:** Accepted
+**Date:** 2026-05-14
+**Context:** ~1,000+ PNG assets included numbered filenames (18.png, 5.png, 1.png, Rocks/1–19, Trees/1–6, etc.) making them undiscoverable and preventing meaningful reference auditing. Several active assets in world.tscn had broken or ambiguous path references.
+**Decision:** Full visual-identification and rename pass across all GameAssets subfolders. Active assets renamed with UID-preserved .import files + scene reference updates. Inactive numbered files renamed in bulk via PowerShell.
+- `Rocks/18.png` → `rock_grey_cluster.png` (grey cluster with pebbles; active in world.tscn)
+- `Trees/5.png` → `log_fallen_brown.png` (horizontal fallen log; active in world.tscn)
+- `Trees/4.png` → `log_brown_short.png` (short brown log trunk; active in world.tscn — was undocumented)
+- `Caves/CaveEntrance/1.png` → `cave_entrance_arch_stone.png` (arched stone entrance; active in world.tscn)
+- `Buildings/special/House Grey with teal roof animation.png` → `house_grey_teal_animation.png` (spaces+mixed case → snake_case; active in house_grey_teal_frames.tres)
+- All 19 `Rocks/*.png` numbered files → descriptive `rock_TYPE_SIZE.png` names
+- All `Trees/Tree1.png`, `2–6.png`, `Treeshadow.png` → descriptive names
+- All `Houses/Houses/1–8.png`, `Shops/1–4.png`, `Tents/1–5.png`, `Well/1–4.png`, `Farm/1.png` → descriptive names
+- All `NPCs/1–8.png` → `npc_sprite_HAIR.png` names
+- `Chests/1–2.png` → `chest_wood_closed/open.png`
+**Rationale:** Descriptive names make assets discoverable without opening each file. UID preservation in .import files (same uid, updated source_file path) means scene references find resources correctly after rename. Godot editor autosave conflict: must close scene (open a different scene) before editing .tscn on disk, or edits are overwritten within seconds.
+**Consequences:** ASSET_INDEX.md updated with new names and active/legacy status. `shop_apothecary_alt.png` still pending dedup (pixel-identical to `shop_apothecary_main.png`). `Town/` and `Village/` legacy folders still use numbered/mixed-case names — large sets (~250 files each), deferred to a future pass.
+**Testing:** Played main.tscn — world renders correctly with all renamed assets visible (rock cluster, fallen log, trees, cave entrance, teal house animation, NPC). No broken texture references.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -618,3 +639,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-13 | Keybinding standardization: E = environmental/world only (well, plant, drying rack, doors). T = NPC trade only. T prompt is a gold-bordered Panel/Label in EPromptArea; shown/hidden by show_trade_prompt(). E and T prompts are fully independent. Player starts with 1 bud in hotbar. |
 | 2026-05-14 | NPC trade reworked to proximity-based: NPC stops when player within 36px, T prompt shows, trade executes on T press anywhere in world. Removed door-arrival signals. Added set_player_nearby(), _is_trading flag, 5s cooldown. ADR-041 updated. |
 | 2026-05-14 | NPC post-trade cycle: after trade, NPC skips player door, walks to own house, plays walk_north then goes invisible. Tracks one full DayNightCycle (_t elapsed ≥ 1.0) then reappears at NPC door, resets _trade_completed, resumes patrol. NPC faces player during interaction (idle_east/west/south). |
+| 2026-05-14 | Full asset naming pass: ~60 assets renamed to descriptive snake_case. 5 active asset paths fixed in world.tscn + house_grey_teal_frames.tres. UIDs preserved in .import files. ASSET_INDEX.md updated. ADR-042 added. |
