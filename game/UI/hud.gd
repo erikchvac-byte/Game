@@ -10,6 +10,7 @@ var selected_slot: int = 0
 
 var _water_tp: TextureProgressBar
 var _e_prompt: TextureRect
+var _t_prompt: Panel
 var _slots: Array = []
 var _slot_items: Array = []
 var _toast_panel: Panel
@@ -105,6 +106,35 @@ func _build_hotbar() -> void:
 	_e_prompt.offset_left = 3.0
 	_e_prompt.offset_right = -3.0
 	e_container.add_child(_e_prompt)
+
+	_t_prompt = Panel.new()
+	_t_prompt.name = "TPrompt"
+	_t_prompt.visible = false
+	_t_prompt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_t_prompt.offset_left = 2.0
+	_t_prompt.offset_right = -2.0
+	var t_style := StyleBoxFlat.new()
+	t_style.bg_color = Color(0.13, 0.13, 0.16, 0.95)
+	t_style.border_width_left = 1
+	t_style.border_width_right = 1
+	t_style.border_width_top = 1
+	t_style.border_width_bottom = 1
+	t_style.border_color = Color(0.60, 0.55, 0.35)
+	t_style.corner_radius_top_left = 2
+	t_style.corner_radius_top_right = 2
+	t_style.corner_radius_bottom_left = 2
+	t_style.corner_radius_bottom_right = 2
+	_t_prompt.add_theme_stylebox_override("panel", t_style)
+	var t_label := Label.new()
+	t_label.text = "T"
+	t_label.add_theme_font_size_override("font_size", 7)
+	t_label.add_theme_color_override("font_color", Color(0.95, 0.88, 0.55))
+	t_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	t_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	t_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	t_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_t_prompt.add_child(t_label)
+	e_container.add_child(_t_prompt)
 
 	var hbox := HBoxContainer.new()
 	hbox.name = "HotbarSlots"
@@ -239,6 +269,29 @@ func hotbar_add_item(key: String, tex: Texture2D) -> bool:
 	return false
 
 
+func hotbar_has_item(key: String) -> bool:
+	for i in range(1, SLOT_COUNT):
+		var item = _slot_items[i]
+		if item != null and item.key == key:
+			return true
+	return false
+
+
+func hotbar_remove_item(key: String) -> bool:
+	for i in range(1, SLOT_COUNT):
+		var item = _slot_items[i]
+		if item != null and item.key == key:
+			item.count -= 1
+			if item.count <= 0:
+				_slot_items[i] = null
+				set_slot_texture(i, null)
+				set_slot_badge(i, -1)
+			else:
+				set_slot_badge(i, item.count if item.count > 1 else -1)
+			return true
+	return false
+
+
 func set_slot_texture(slot: int, tex: Texture2D) -> void:
 	if slot < 0 or slot >= _slots.size():
 		return
@@ -260,6 +313,11 @@ func set_slot_badge(slot: int, value: int) -> void:
 func show_interact_prompt(on: bool) -> void:
 	if _e_prompt:
 		_e_prompt.visible = on
+
+
+func show_trade_prompt(on: bool) -> void:
+	if _t_prompt:
+		_t_prompt.visible = on
 
 
 func set_carrying_water(carrying: bool) -> void:

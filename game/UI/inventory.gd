@@ -174,6 +174,35 @@ func set_item(slot: int, tex: Texture2D) -> void:
 	(_slot_icons[slot] as TextureRect).texture = tex
 
 
+func has_item(key: String) -> bool:
+	var hud := get_node_or_null("/root/HUD")
+	if hud and hud.has_method("hotbar_has_item") and hud.hotbar_has_item(key):
+		return true
+	for i in range(TOTAL_SLOTS):
+		var item = _items[i]
+		if item != null and item.key == key:
+			return true
+	return false
+
+
+func remove_item(key: String) -> bool:
+	var hud := get_node_or_null("/root/HUD")
+	if hud and hud.has_method("hotbar_remove_item") and hud.hotbar_remove_item(key):
+		return true
+	for i in range(TOTAL_SLOTS):
+		var item = _items[i]
+		if item != null and item.key == key:
+			item.count -= 1
+			if item.count <= 0:
+				_items[i] = null
+				set_item(i, null)
+				_set_badge(i, 0)
+			else:
+				_set_badge(i, item.count)
+			return true
+	return false
+
+
 func add_item(key: String, tex: Texture2D) -> bool:
 	var hud := get_node_or_null("/root/HUD")
 	if hud and hud.has_method("hotbar_add_item"):

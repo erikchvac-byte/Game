@@ -525,6 +525,17 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-041: NPC Trade Interaction — E-Key Bud-for-Gem Exchange
+**Status:** Accepted
+**Date:** 2026-05-13
+**Context:** The drying rack produces tradeable bud items. The grey hoodie NPC patrols between the teal house and the player bakery door. A trade loop was needed: NPC arrives → player exchanges bud for gem → NPC departs.
+**Decision:** State machine extension in `npc_grey_hoodie.gd`: TRADE_WAIT state entered when NPC arrives at waypoint 0 (player door). `arrived_for_trade` / `departed_from_trade` signals connect to `world.gd`. `world.gd` sets `_npc_trade_active` flag and shows the HUD E-prompt. E key in `world.gd._input` is routed to `_handle_npc_trade()` when flag is active, which calls `npc.attempt_trade()`. Trade consumes 1 `"bud"` key item, awards 1 `"gem"` (WaterGem.png). NPC pauses 1.5s then walks home. Timer (10s) expires the trade window if player doesn't act — NPC departs without trade. `_trade_done_this_visit` flag prevents repeat trades per visit; resets on next home arrival.
+**Rationale:** Signals keep NPC and world.gd decoupled. Reuses the existing E-prompt and interactable routing pattern. `attempt_trade()` on the NPC owns all trade logic (inventory check, item swap, state change), so world.gd stays thin. Key-based `has_item`/`remove_item` added to both `hud.gd` and `inventory.gd` as symmetric counterparts to the existing `add_item` API.
+**Consequences:** Gem uses WaterGem.png as placeholder — a dedicated gem sprite is pending. Trade prompt appears whenever NPC is at door regardless of player proximity (no range check — world is small enough this is acceptable). NPC trade priority overrides other interactables in `_input` while trade is active.
+**Testing:** Verified via execute_game_script: (1) bud→gem swap succeeds with bud in hotbar, `trade_done=true`, hotbar updates; (2) attempt with no bud returns false, `trade_wait` remains true; (3) 10s timer expiry clears `trade_wait` and departs.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -599,3 +610,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-13 | Harvest-to-trade loop audited: identified missing dried product inventory icon, rack "complete" state, NPC sprite, and currency icon. Dried bud sprite added at GameAssets/Bud/states/dry/rotations/unknown.png — usable as inventory icon and world drop. More bud states deferred. |
 | 2026-05-13 | Drying rack: 4-state machine (EMPTY→FILLING→DRYING 5s→READY 1.5s golden pulse→award+reset). _award_and_reset() picks random bud from 8 variants. 7 bud PNGs copied to res://GameAssets/Bud/ with clean names. ADR-025 updated. |
 | 2026-05-13 | Inventory stacking: add_item(key, tex) — stacks by key up to 16, hotbar slots 1-11 first then inventory grid, badge label at count>1, new slot gets random tex. Fixed get_node("TextureRect") → direct _slot_icons[] ref. ADR-040 added. |
+| 2026-05-13 | NPC trade interaction: GreyHoodie pauses at player door, E-key exchanges 1 bud for 1 gem (WaterGem.png placeholder), 10s trade window then NPC departs. has_item/remove_item added to hud.gd + inventory.gd. ADR-041 added. |
+| 2026-05-13 | Keybinding standardization: E = environmental/world only (well, plant, drying rack, doors). T = NPC trade only. T prompt is a gold-bordered Panel/Label in EPromptArea; shown/hidden by show_trade_prompt(). E and T prompts are fully independent. Player starts with 1 bud in hotbar. |
