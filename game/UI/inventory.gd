@@ -5,20 +5,19 @@ const COLS := 6
 
 var is_open: bool = false
 
-const MAX_STACK := 16
-
-var _items: Array = []        # each: null | {tex: Texture2D, count: int}
 var _slot_panels: Array = []
 var _slot_icons: Array = []
 var _slot_badges: Array = []
 var _overlay: Control
+var _inv_mgr: Node
 
 
 func _ready() -> void:
 	layer = 20
 	visible = false
-	_items.resize(TOTAL_SLOTS)
 	_build_overlay()
+	_inv_mgr = get_node("/root/InventoryManager")
+	_inv_mgr.slot_changed.connect(_on_slot_changed)
 
 
 func _build_overlay() -> void:
@@ -175,52 +174,23 @@ func set_item(slot: int, tex: Texture2D) -> void:
 
 
 func has_item(key: String) -> bool:
-	var hud := get_node_or_null("/root/HUD")
-	if hud and hud.has_method("hotbar_has_item") and hud.hotbar_has_item(key):
-		return true
-	for i in range(TOTAL_SLOTS):
-		var item = _items[i]
-		if item != null and item.key == key:
-			return true
-	return false
+	return _inv_mgr.has_item(key)
 
 
 func remove_item(key: String) -> bool:
-	var hud := get_node_or_null("/root/HUD")
-	if hud and hud.has_method("hotbar_remove_item") and hud.hotbar_remove_item(key):
-		return true
-	for i in range(TOTAL_SLOTS):
-		var item = _items[i]
-		if item != null and item.key == key:
-			item.count -= 1
-			if item.count <= 0:
-				_items[i] = null
-				set_item(i, null)
-				_set_badge(i, 0)
-			else:
-				_set_badge(i, item.count)
-			return true
-	return false
+	return _inv_mgr.remove_item(key)
 
 
 func add_item(key: String, tex: Texture2D) -> bool:
-	var hud := get_node_or_null("/root/HUD")
-	if hud and hud.has_method("hotbar_add_item"):
-		if hud.hotbar_add_item(key, tex):
-			return true
-	for i in range(TOTAL_SLOTS):
-		var item = _items[i]
-		if item != null and item.key == key and item.count < MAX_STACK:
-			item.count += 1
-			_set_badge(i, item.count)
-			return true
-	for i in range(TOTAL_SLOTS):
-		if _items[i] == null:
-			_items[i] = {key = key, tex = tex, count = 1}
-			set_item(i, tex)
-			_set_badge(i, 1)
-			return true
-	return false
+	return _inv_mgr.add_item(key, tex)
+
+
+func _on_slot_changed(index: int, item: Variant) -> void:
+	var grid_index: int = index - 12  # InventoryManager.HOTBAR_SLOTS
+	if grid_index < 0 or grid_index >= TOTAL_SLOTS:
+		return
+	set_item(grid_index, null if item == null else item.tex)
+	_set_badge(grid_index, 0 if item == null else item.count)
 
 
 func _set_badge(slot: int, count: int) -> void:

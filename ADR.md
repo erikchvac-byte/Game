@@ -561,6 +561,17 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-043: InventoryManager Autoload — Single Canonical Item Store
+**Status:** Accepted
+**Date:** 2026-05-14
+**Context:** Item state lived in two places: `_slot_items[]` in `hud.gd` (hotbar) and `_items[]` in `inventory.gd` (grid). `add_item/remove_item/has_item` in `inventory.gd` delegated to HUD via `get_node_or_null("/root/HUD")` with method-name string checks — fragile, opaque coupling. HUD and Inventory were mutually aware of each other's internals.
+**Decision:** New `res://autoload/InventoryManager.gd` owns a single `_slots[0..47]` array (0–11 = hotbar, 12–47 = grid). Emits `slot_changed(index, item)` signal on every mutation. `add_item/remove_item/has_item` live exclusively in InventoryManager. `hud.gd` and `inventory.gd` connect to the signal in `_ready()` and update visuals reactively — no data of their own. Callers (`drying_rack.gd`, `npc_grey_hoodie.gd`) continue to use `Inventory.add_item/has_item/remove_item`, which now delegate to InventoryManager.
+**Rationale:** One source of truth. Adding an item anywhere fires the signal; both HUD and Inventory update without explicit coordination. New autoloads added after editor startup are not recognized by the GDScript parser until restart (see ADR-021) — so InventoryManager is accessed via `get_node("/root/InventoryManager")` and stored in a local `_inv_mgr: Node` var rather than by its global name. This avoids parse errors on the current session.
+**Consequences:** Once the Godot editor is restarted, scripts can reference `InventoryManager` by name directly. The `_inv_mgr: Node` pattern is the interim workaround and can be cleaned up to `InventoryManager.xxx` after the next editor restart. Bucket slot (0) remains a HUD-only visual driven by `set_carrying_water()` — not managed by InventoryManager. `hotbar_add_item/has_item/remove_item` methods removed from `hud.gd`.
+**Testing:** Game launched clean. HUD hotbar visible. No inventory-related parse or runtime errors.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -640,3 +651,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-14 | NPC trade reworked to proximity-based: NPC stops when player within 36px, T prompt shows, trade executes on T press anywhere in world. Removed door-arrival signals. Added set_player_nearby(), _is_trading flag, 5s cooldown. ADR-041 updated. |
 | 2026-05-14 | NPC post-trade cycle: after trade, NPC skips player door, walks to own house, plays walk_north then goes invisible. Tracks one full DayNightCycle (_t elapsed ≥ 1.0) then reappears at NPC door, resets _trade_completed, resumes patrol. NPC faces player during interaction (idle_east/west/south). |
 | 2026-05-14 | Full asset naming pass: ~60 assets renamed to descriptive snake_case. 5 active asset paths fixed in world.tscn + house_grey_teal_frames.tres. UIDs preserved in .import files. ASSET_INDEX.md updated. ADR-042 added. |
+| 2026-05-14 | InventoryManager autoload refactor: dual _items[]/_slot_items[] replaced with single _slots[48] store. slot_changed signal drives HUD + Inventory visuals reactively. hotbar_* methods removed from hud.gd. ADR-043 added. |

@@ -12,7 +12,6 @@ var _water_tp: TextureProgressBar
 var _e_prompt: TextureRect
 var _t_prompt: Panel
 var _slots: Array = []
-var _slot_items: Array = []
 var _toast_panel: Panel
 var _toast_label: Label
 var _toast_tween: Tween
@@ -25,6 +24,7 @@ func _ready() -> void:
 	_build_top_bar()
 	_build_hotbar()
 	_build_toast()
+	get_node("/root/InventoryManager").slot_changed.connect(_on_slot_changed)
 
 
 # ── Top bar ───────────────────────────────────────────────────────────────────
@@ -148,7 +148,6 @@ func _build_hotbar() -> void:
 	_bucket_tex_full = load("res://GameAssets/UI/bucket_full.png")
 
 	_slots = []
-	_slot_items = []
 	for i in range(SLOT_COUNT):
 		var slot := Panel.new()
 		slot.name = "Slot%d" % i
@@ -177,7 +176,6 @@ func _build_hotbar() -> void:
 		slot.add_child(badge)
 
 		_slots.append(slot)
-		_slot_items.append(null)
 
 	# Slot 0 is the permanent bucket slot
 	set_slot_texture(0, _bucket_tex_empty)
@@ -252,46 +250,6 @@ func select_slot(index: int) -> void:
 	_refresh_hotbar_selection()
 
 
-func hotbar_add_item(key: String, tex: Texture2D) -> bool:
-	# slot 0 is reserved for bucket — stack into 1..11
-	for i in range(1, SLOT_COUNT):
-		var item = _slot_items[i]
-		if item != null and item.key == key and item.count < 16:
-			item.count += 1
-			set_slot_badge(i, item.count if item.count > 1 else -1)
-			return true
-	for i in range(1, SLOT_COUNT):
-		if _slot_items[i] == null:
-			_slot_items[i] = {key = key, tex = tex, count = 1}
-			set_slot_texture(i, tex)
-			set_slot_badge(i, -1)
-			return true
-	return false
-
-
-func hotbar_has_item(key: String) -> bool:
-	for i in range(1, SLOT_COUNT):
-		var item = _slot_items[i]
-		if item != null and item.key == key:
-			return true
-	return false
-
-
-func hotbar_remove_item(key: String) -> bool:
-	for i in range(1, SLOT_COUNT):
-		var item = _slot_items[i]
-		if item != null and item.key == key:
-			item.count -= 1
-			if item.count <= 0:
-				_slot_items[i] = null
-				set_slot_texture(i, null)
-				set_slot_badge(i, -1)
-			else:
-				set_slot_badge(i, item.count if item.count > 1 else -1)
-			return true
-	return false
-
-
 func set_slot_texture(slot: int, tex: Texture2D) -> void:
 	if slot < 0 or slot >= _slots.size():
 		return
@@ -340,6 +298,14 @@ func show_toast(message: String, duration: float = 2.0) -> void:
 
 
 # ── Private ───────────────────────────────────────────────────────────────────
+
+func _on_slot_changed(index: int, item: Variant) -> void:
+	if index < 0 or index >= SLOT_COUNT:
+		return
+	set_slot_texture(index, null if item == null else item.tex)
+	var count: int = 0 if item == null else item.count
+	set_slot_badge(index, count if count > 1 else -1)
+
 
 func _refresh_water_bar() -> void:
 	if not _water_tp:

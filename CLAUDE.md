@@ -4,9 +4,11 @@
 
 ## Rules
 - **PLAYTEST RULE:** If you make it, you play test it. Always. Run the game via MCP, exercise the feature, take a screenshot to confirm correct behavior before reporting done.
+- **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** Full asset naming pass (ADR-042). ~60 assets renamed from numbered/ambiguous filenames to descriptive snake_case. 5 active asset paths fixed in world.tscn + house_grey_teal_frames.tres with UID preserved in .import files. Game playtested — all renamed assets render correctly. Previously: proximity-based NPC trade + post-trade home cycle (ADR-041).
+- **Last completed:** InventoryManager autoload refactor (ADR-043). Dual `_items[]`/`_slot_items[]` arrays replaced with single canonical `_slots[48]` in `InventoryManager.gd`. HUD + Inventory now update reactively via `slot_changed` signal. Previously: full asset naming pass (ADR-042).
+- **Pending editor restart:** InventoryManager is accessed via `get_node("/root/InventoryManager")` / `_inv_mgr: Node` because the autoload was added after editor startup — GDScript parser won't recognize it by name until Godot restarts. After restart, replace `_inv_mgr.xxx` with `InventoryManager.xxx` and remove `_inv_mgr` vars.
 - **Next up:** Teal house collision refinement (door gap + side walls); cave entrance rigging; roof overlay for teal house in Overhead; dedup `shop_apothecary_alt.png`; dedicated gem sprite to replace WaterGem.png placeholder. Town/ and Village/ folders (~250 files each) still use numbered/mixed-case names — next naming pass.
 - **Godot autosave lesson:** Close scene in editor before editing .tscn on disk. Pattern: `open_scene("other.tscn")` → edit file → `open_scene("world.tscn")`. UID must be restored in .tscn ext_resource entries for renamed assets (Godot strips uid field for broken paths).
 - **Camera lesson:** World node in main.tscn sits at position (195,88). Camera2D limits must be in **global** coords: left=195, top=88, right=835, bottom=584. Always add World offset when setting camera limits.
