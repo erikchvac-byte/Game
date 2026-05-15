@@ -14,13 +14,16 @@ func _ready() -> void:
 	$Plant.connect("interactable_entered", _on_interactable_entered)
 	$Plant.connect("interactable_exited", _on_interactable_exited)
 	$Plant.plant_harvested.connect($DryingRack.add_plant)
-	_grant_starting_bud()
+	_grant_starting_items()
 
 
-func _grant_starting_bud() -> void:
+func _grant_starting_items() -> void:
 	var inv := get_node_or_null("/root/Inventory")
-	if inv:
-		inv.add_item("bud", preload("res://GameAssets/Bud/dry_bud.png"))
+	if not inv:
+		return
+	inv.add_item("axe", preload("res://GameAssets/Tools/tool_axe.png"))
+	inv.add_item("bud", preload("res://GameAssets/Bud/dry_bud.png"))
+	inv.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
 
 
 func _process(_delta: float) -> void:
@@ -54,9 +57,22 @@ func _input(event: InputEvent) -> void:
 	if event.keycode == KEY_T and _npc_trade_active:
 		_handle_npc_trade()
 		return
+	if event.keycode == KEY_C:
+		_handle_axe_toggle()
+		return
 	if event.is_action_pressed("interact"):
 		if _interactable and _interactable.has_method("interact"):
 			_interactable.interact($Player as CharacterBody2D)
+
+
+func _handle_axe_toggle() -> void:
+	var inv_mgr := get_node_or_null("/root/InventoryManager")
+	if not inv_mgr or not inv_mgr.has_item("axe"):
+		return
+	var player := get_node_or_null("Player") as CharacterBody2D
+	if not player:
+		return
+	player.equipped_tool = "" if player.equipped_tool == "axe" else "axe"
 
 
 func _handle_npc_trade() -> void:

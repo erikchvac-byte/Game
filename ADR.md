@@ -572,6 +572,21 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-044: Axe Tool + Wood Resource — Equip State via player.equipped_tool
+**Status:** Accepted
+**Date:** 2026-05-14
+**Context:** Needed first tool integration: axe that can be equipped/unequipped with C key, and wood as a stackable inventory resource. No prior tool equip system existed beyond the water bucket (which uses a separate `carrying_water` flag and HUD slot 0).
+**Decision:**
+- `player.gd`: added `var equipped_tool: String = ""`. Empty string = nothing equipped; `"axe"` = axe active.
+- `world.gd`: renamed `_grant_starting_bud()` → `_grant_starting_items()` — grants axe (`tool_axe.png`), bud, and wood (`rock3.png` placeholder) at start via `Inventory.add_item()`.
+- `world.gd._input()`: KEY_C calls `_handle_axe_toggle()` — checks `InventoryManager.has_item("axe")`, then flips `player.equipped_tool` between `""` and `"axe"`.
+- Items land in hotbar slots 1–3 via InventoryManager hotbar-first placement. HUD and Inventory update via `slot_changed` signal (no additional wiring needed).
+**Rationale:** Follows the same pattern as `carrying_water`: a string flag on the player root tracks equipped state; world.gd handles the key event; no changes to InventoryManager, HUD, or Inventory UI scripts needed. Equip state is data-only for now — no axe animations exist yet, but `player.equipped_tool` can drive animation suffix or ability logic when those are built.
+**Consequences:** Wood uses `rock3.png` as a placeholder icon. Key `"wood"` stacks correctly. No tree-chopping mechanic yet — wood is granted at start for inventory testing. Axe equip has no gameplay effect yet beyond setting the flag.
+**Testing:** Game launched. Hotbar shows bucket(0), axe(1), bud(2), wood(3). execute_game_script confirmed `equipped_tool` toggles between `""` and `"axe"` on repeated calls. Inventory grid correctly empty (all items in hotbar).
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -652,3 +667,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-14 | NPC post-trade cycle: after trade, NPC skips player door, walks to own house, plays walk_north then goes invisible. Tracks one full DayNightCycle (_t elapsed ≥ 1.0) then reappears at NPC door, resets _trade_completed, resumes patrol. NPC faces player during interaction (idle_east/west/south). |
 | 2026-05-14 | Full asset naming pass: ~60 assets renamed to descriptive snake_case. 5 active asset paths fixed in world.tscn + house_grey_teal_frames.tres. UIDs preserved in .import files. ASSET_INDEX.md updated. ADR-042 added. |
 | 2026-05-14 | InventoryManager autoload refactor: dual _items[]/_slot_items[] replaced with single _slots[48] store. slot_changed signal drives HUD + Inventory visuals reactively. hotbar_* methods removed from hud.gd. ADR-043 added. |
+| 2026-05-14 | Axe tool + wood resource integrated: player.equipped_tool var, C key equip toggle in world.gd, _grant_starting_items() grants axe+bud+wood at start. Hotbar shows all three in slots 1–3. ADR-044 added. |
+| 2026-05-14 | Permission allowlist expanded: added all remaining mcp__godot-mcp-pro__* tools + mcp__filesystem__edit_file/read_file/read_multiple_files/search_files to .claude/settings.json. |

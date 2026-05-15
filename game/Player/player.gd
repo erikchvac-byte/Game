@@ -8,6 +8,7 @@ var is_moving := false
 var is_running := false
 var facing_left := false
 var carrying_water := false
+var equipped_tool: String = ""
 var auto_walk := Vector2.ZERO  # when non-zero, overrides player input
 
 func _physics_process(_delta: float) -> void:
