@@ -587,6 +587,24 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-045: Choppable Tree Scenes — Reusable Instance with Per-Tree State
+**Status:** Accepted
+**Date:** 2026-05-14
+**Context:** Four trees in world.tscn were bare Sprite2D nodes (TreePine one/two/three/four) with separate Stump Sprite2Ds — no logic, no interaction, no shared structure. Converting them to a reusable scene enables new trees to be added by duplicating the scene with zero script changes.
+**Decision:** `res://World/ChoppableTree/choppable_tree.tscn` — Node2D root with:
+- `TreeSprite` (Sprite2D) and `StumpSprite` (Sprite2D, hidden by default)
+- `TreeCollider` (StaticBody2D + CircleShape2D r=10) — blocks player while tree is standing
+- `ChopArea` (Area2D + CircleShape2D r=22) — proximity detection for E-key interactable
+- Script: `choppable_tree.gd` — implements the interactable pattern (`interactable_entered/exited`, `interact(player)`), `can_interact()` guards on `player.equipped_tool == "axe"`, per-instance `_chop_count` incremented on each `interact()` call, transitions to stump on `_chop_count >= chops_required`
+- Exported vars configure each instance: `tree_texture`, `stump_texture`, `tree_visual_scale`, `stump_offset`, `stump_visual_scale`, `stump_flip_h`, `chops_required` (default 3)
+- `wood_chopped` signal emitted on transition; `world.gd._on_wood_chopped()` calls `Inventory.add_item("wood", rock3.png)`
+- 8 standalone nodes (4 TreePine + 4 Stump) removed from world.tscn; replaced with 4 `[node instance=ExtResource("choptree_scene")]` entries with per-tree property overrides
+**Rationale:** Each instance has its own `_chop_count` and `_is_chopped` vars — no shared state. Adding a new tree = duplicate the scene + configure exports. Interactable pattern reuses the existing world.gd E-key router. Tree collider is disabled on chop so the player can walk through the stump.
+**Consequences:** `chops_required = 3` is a scene default, overridable per instance. Wood uses `rock3.png` placeholder. No chop animation or sound yet. Stumps are permanent — no respawn timer.
+**Testing:** Game launched. All 4 trees visible at correct positions. Script-driven chop of Tree1: `_is_chopped=true`, TreeSprite hidden, StumpSprite visible, `has_item("wood")=true`, wood count=2 (1 starting + 1 from chop).
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -669,3 +687,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-14 | InventoryManager autoload refactor: dual _items[]/_slot_items[] replaced with single _slots[48] store. slot_changed signal drives HUD + Inventory visuals reactively. hotbar_* methods removed from hud.gd. ADR-043 added. |
 | 2026-05-14 | Axe tool + wood resource integrated: player.equipped_tool var, C key equip toggle in world.gd, _grant_starting_items() grants axe+bud+wood at start. Hotbar shows all three in slots 1–3. ADR-044 added. |
 | 2026-05-14 | Permission allowlist expanded: added all remaining mcp__godot-mcp-pro__* tools + mcp__filesystem__edit_file/read_file/read_multiple_files/search_files to .claude/settings.json. |
+| 2026-05-14 | Choppable tree scenes: 4 Sprite2D trees + 4 Stump Sprite2Ds replaced with choppable_tree.tscn instances. Each tracks own chop counter, transitions tree→stump, emits wood_chopped. ADR-045 added. |

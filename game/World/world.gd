@@ -14,7 +14,17 @@ func _ready() -> void:
 	$Plant.connect("interactable_entered", _on_interactable_entered)
 	$Plant.connect("interactable_exited", _on_interactable_exited)
 	$Plant.plant_harvested.connect($DryingRack.add_plant)
+	for tree in [$Tree1, $Tree2, $Tree3, $Tree4]:
+		tree.connect("interactable_entered", _on_interactable_entered)
+		tree.connect("interactable_exited", _on_interactable_exited)
+		tree.connect("wood_chopped", _on_wood_chopped)
 	_grant_starting_items()
+
+
+func _on_wood_chopped() -> void:
+	var inv := get_node_or_null("/root/Inventory")
+	if inv:
+		inv.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
 
 
 func _grant_starting_items() -> void:
