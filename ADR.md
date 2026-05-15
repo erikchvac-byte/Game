@@ -601,7 +601,7 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 - 8 standalone nodes (4 TreePine + 4 Stump) removed from world.tscn; replaced with 4 `[node instance=ExtResource("choptree_scene")]` entries with per-tree property overrides
 **Rationale:** Each instance has its own `_chop_count` and `_is_chopped` vars — no shared state. Adding a new tree = duplicate the scene + configure exports. Interactable pattern reuses the existing world.gd E-key router. Tree collider is disabled on chop so the player can walk through the stump.
 **Consequences:** `chops_required = 3` is a scene default, overridable per instance. Wood uses `rock3.png` placeholder. No chop animation or sound yet. Stumps are permanent — no respawn timer.
-**Testing:** Game launched. All 4 trees visible at correct positions. Script-driven chop of Tree1: `_is_chopped=true`, TreeSprite hidden, StumpSprite visible, `has_item("wood")=true`, wood count=2 (1 starting + 1 from chop).
+**Testing:** Game launched. All 4 trees visible at correct positions. Script-driven chop of Tree1: `_is_chopped=true`, TreeSprite hidden, StumpSprite visible, `has_item("wood")=true`, wood count=2 (1 starting + 1 from chop). Live play test 2026-05-15: user confirmed all 4 trees chop correctly — 3-hit counter, tree→stump transition, wood granted on completion, axe-equip guard (no chop without axe).
 
 ---
 
@@ -688,3 +688,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-14 | Axe tool + wood resource integrated: player.equipped_tool var, C key equip toggle in world.gd, _grant_starting_items() grants axe+bud+wood at start. Hotbar shows all three in slots 1–3. ADR-044 added. |
 | 2026-05-14 | Permission allowlist expanded: added all remaining mcp__godot-mcp-pro__* tools + mcp__filesystem__edit_file/read_file/read_multiple_files/search_files to .claude/settings.json. |
 | 2026-05-14 | Choppable tree scenes: 4 Sprite2D trees + 4 Stump Sprite2Ds replaced with choppable_tree.tscn instances. Each tracks own chop counter, transitions tree→stump, emits wood_chopped. ADR-045 added. |
+| 2026-05-15 | Choppable tree live play test confirmed — all 4 trees chop correctly, 3-hit counter, tree→stump, wood granted. Axe-equip guard verified. ADR-045 testing updated. |
+| 2026-05-15 | Permission allowlist: added Bash(Get-ChildItem *) to .claude/settings.json. |

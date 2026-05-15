@@ -11,6 +11,7 @@
       "PowerShell(Add-Type *)",
       "PowerShell(Get-ChildItem *)",
       "PowerShell(Copy-Item *)",
+      "Bash(Get-ChildItem *)",
       "mcp__godot-mcp-pro__execute_editor_script",
       "mcp__godot-mcp-pro__execute_game_script",
       "mcp__godot-mcp-pro__set_project_setting",
