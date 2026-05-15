@@ -17,6 +17,7 @@ var _is_chopped: bool = false
 
 
 func _ready() -> void:
+	add_to_group("choppable_trees")
 	$TreeSprite.texture = tree_texture
 	$TreeSprite.scale = tree_visual_scale
 	if stump_texture:

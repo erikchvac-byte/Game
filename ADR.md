@@ -644,6 +644,51 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-052: Structural Refactor Validation — Tool Registry + Tree Group
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** After ADR-050 (tool registry) and ADR-051 (tree group registration) both landed in the same session, a structured validation pass was needed before shipping to confirm no regressions across the full system.
+**Decision:** Full validation via `execute_game_script` — 7 tool/tree checks + 7 regression checks covering all active subsystems.
+**Results:**
+| Check | Outcome |
+|---|---|
+| TOOL-1: axe equip toggle (`_handle_tool_toggle("axe")`) | ✅ `equipped_tool: '' → 'axe'` |
+| TOOL-2: EQUIPPABLE_TOOLS is data-driven | ✅ Keys `["axe"]`; adding a tool = 1 dict entry |
+| TOOL-3: toggle off | ✅ `equipped_tool: 'axe' → ''` |
+| TOOL-4: hotbar gold highlight | ✅ `HUD._equipped_slot=1`; gold border confirmed in screenshot |
+| TREE-1: all 4 trees auto-registered via group | ✅ `get_nodes_in_group("choppable_trees")` returns 4 |
+| TREE-2: independent state — chop Tree1 doesn't affect Tree2 | ✅ Tree2 `_chop_count=0` unchanged |
+| TREE-3: full chop via `interact()` — Tree3 to stump | ✅ `_is_chopped: false → true`; stump visible |
+| REGRESS-1: `_interactables: Array[Node]` arch intact | ✅ Array exists; well/plant signal-connected |
+| REGRESS-2: distance sorting selects nearest | ✅ Plant (d²=12002) over Well (d²=29786) |
+| REGRESS-3: inventory items all present | ✅ `has_item` true for axe, wood, bud |
+| REGRESS-4: wood count increments on chop | ✅ 2 → 3 on `_on_wood_chopped()` |
+| REGRESS-5: well `interact()` exists | ✅ `has_method('interact')=true` |
+| REGRESS-6: plant `interact()` exists | ✅ `has_method('interact')=true` |
+| REGRESS-7: plant→drying rack chain intact | ✅ `plant_harvested` signal + `add_plant` + `stage` property all present |
+**Rationale:** All 14 checks pass. Architecture is clean and ready for feature work.
+**Consequences:** None — validation only. Establishes the 14-check suite as the regression baseline for future refactors.
+
+---
+
+## ADR-051: Choppable Tree Group Registration
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** `world.gd._ready()` used a hardcoded array `[$Tree1, $Tree2, $Tree3, $Tree4]` to connect tree signals. Adding a 5th tree required editing `world.gd`. Architecture review flagged this as a scene-coupling issue.
+**Decision:** `choppable_tree.gd._ready()` calls `add_to_group("choppable_trees")`. `world.gd._ready()` iterates `get_tree().get_nodes_in_group("choppable_trees")` to connect signals.
+**Rationale:** Group self-registration is the idiomatic Godot pattern for this problem. No world.gd change is needed when a new tree is added — place the scene instance in the world and it registers automatically.
+**Consequences:** `world.gd` no longer holds named references to individual tree nodes. Group lookup happens once at `_ready()`. Trees added after `_ready()` (dynamic spawn) would need an explicit `connect()` call — not a concern for static world layout.
+**Testing:** 4 trees auto-registered in group, Tree2 chopped correctly, wood awarded. All existing signal connections verified via execute_game_script.
+
+## ADR-050: Tool Registry — Generalized Equip/Toggle System
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** `_handle_axe_toggle()` in world.gd was axe-specific: hardcoded action name, hardcoded `"axe"` key, slot search over magic `range(1, 48)`. Adding a second equippable tool (pickaxe, fishing rod) would require copy-pasting the function. Architecture review (post ADR-049) flagged this as the highest-priority scalability risk.
+**Decision:** Replace `_handle_axe_toggle()` with `_handle_tool_toggle(tool_key: String)`. Add `EQUIPPABLE_TOOLS` dict mapping item key → InputMap action. Cache `_inv_mgr` in `_ready()` instead of three separate `get_node_or_null()` lookups. Fix slot search to `range(1, _HOTBAR_SLOTS)` (only hotbar slots appear in HUD display).
+**Rationale:** Adding a new equippable tool now requires one line in `EQUIPPABLE_TOOLS` and one registered InputMap action — no logic branches. The `_input()` loop is data-driven over the registry. Caching `_inv_mgr` removes three redundant node lookups per frame-event path.
+**Consequences:** Slot search is now hotbar-only (slots 1–11). If a tool lands in the grid (unlikely given hotbar-first placement), the gold indicator won't display but equip still works. Acceptable trade-off — tools should always occupy hotbar. `choppable_tree.gd`, `InventoryManager`, HUD, and all other systems unchanged.
+**Testing:** Axe equip/unequip, gold indicator, no-axe toast, and tree chop verified via execute_game_script after refactor.
+
 ## ADR-049: Full Integration Validation — Axe/Tree/Wood/Inventory System
 **Status:** Accepted
 **Date:** 2026-05-15
@@ -759,3 +804,6 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-15 | Architecture hardening: 6 structural fixes — starting-items guard, named InputMap actions (npc_trade/equip_toggle), drying_rack InventoryManager fix, ItemEntry class, interactable priority list, player.facing enum. ADR-047 added. |
 | 2026-05-15 | Hotbar equipped-slot indicator: _slot_style now takes selected+equipped bools; white border = selected slot, gold border = equipped tool slot; world.gd notifies HUD via set_equipped_slot() on axe toggle. ADR-048 added. |
 | 2026-05-15 | Full integration validation: all 8 axe/tree/wood checks pass, all 6 existing-system checks pass (well, plant, drying rack, bucket, HUD, InventoryManager). simulate_key via MCP does not reach world.gd._input() — documented in ADR-049. Testing pattern established: use execute_game_script to call handlers directly. |
+| 2026-05-15 | Tool registry refactor: replaced _handle_axe_toggle() with _handle_tool_toggle(tool_key), added EQUIPPABLE_TOOLS const dict, cached _inv_mgr in _ready(), fixed slot search range(1,48)→range(1,12). ADR-050 added. |
+| 2026-05-15 | Tree group registration: choppable_tree.gd self-registers to "choppable_trees" group; world.gd uses get_nodes_in_group() instead of hardcoded [$Tree1...$Tree4] array. New trees require no script edits. ADR-051 added. |
+| 2026-05-15 | Structural refactor validation: 14/14 checks pass across tool registry + tree group + all regression systems. CLAUDE.md Notes section added (session context, permissions reference). ADR-052 added. |

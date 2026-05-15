@@ -2,11 +2,23 @@ extends Node2D
 
 const NPC_TRADE_RADIUS := 36.0
 
+# Maps item key → InputMap action name. Add a row to register a new equippable tool;
+# no other code changes required.
+const EQUIPPABLE_TOOLS := {
+	"axe": "equip_toggle",
+}
+
+# Hotbar slot count must match InventoryManager.HOTBAR_SLOTS.
+# Only hotbar slots map to HUD display, so the search is capped here.
+const _HOTBAR_SLOTS := 12
+
 var _interactables: Array[Node] = []
 var _npc_trade_active := false
+var _inv_mgr: Node
 
 
 func _ready() -> void:
+	_inv_mgr = get_node_or_null("/root/InventoryManager")
 	$DoorEntrance.body_entered.connect(_on_door_entered)
 	get_tree().create_timer(0.5).timeout.connect(func(): $NPCHomeDoor.body_entered.connect(_on_npc_door_entered))
 	$Well.connect("interactable_entered", _on_interactable_entered)
@@ -14,7 +26,7 @@ func _ready() -> void:
 	$Plant.connect("interactable_entered", _on_interactable_entered)
 	$Plant.connect("interactable_exited", _on_interactable_exited)
 	$Plant.plant_harvested.connect($DryingRack.add_plant)
-	for tree in [$Tree1, $Tree2, $Tree3, $Tree4]:
+	for tree in get_tree().get_nodes_in_group("choppable_trees"):
 		tree.connect("interactable_entered", _on_interactable_entered)
 		tree.connect("interactable_exited", _on_interactable_exited)
 		tree.connect("wood_chopped", _on_wood_chopped)
@@ -22,20 +34,18 @@ func _ready() -> void:
 
 
 func _on_wood_chopped() -> void:
-	var inv := get_node_or_null("/root/InventoryManager")
-	if inv:
-		inv.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
+	if _inv_mgr:
+		_inv_mgr.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
 
 
 func _grant_starting_items() -> void:
 	if Engine.has_meta("starting_items_granted"):
 		return
-	var inv := get_node_or_null("/root/InventoryManager")
-	if not inv:
+	if not _inv_mgr:
 		return
-	inv.add_item("axe", preload("res://GameAssets/Tools/tool_axe.png"))
-	inv.add_item("bud", preload("res://GameAssets/Bud/dry_bud.png"))
-	inv.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
+	_inv_mgr.add_item("axe", preload("res://GameAssets/Tools/tool_axe.png"))
+	_inv_mgr.add_item("bud", preload("res://GameAssets/Bud/dry_bud.png"))
+	_inv_mgr.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
 	Engine.set_meta("starting_items_granted", true)
 
 
@@ -70,9 +80,10 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("npc_trade") and _npc_trade_active:
 		_handle_npc_trade()
 		return
-	if event.is_action_pressed("equip_toggle"):
-		_handle_axe_toggle()
-		return
+	for tool_key: String in EQUIPPABLE_TOOLS:
+		if event.is_action_pressed(EQUIPPABLE_TOOLS[tool_key]):
+			_handle_tool_toggle(tool_key)
+			return
 	if event.is_action_pressed("interact"):
 		var target := _get_nearest_interactable()
 		if target and target.has_method("interact"):
@@ -85,20 +96,19 @@ func _input(event: InputEvent) -> void:
 				target.interact(player)
 
 
-func _handle_axe_toggle() -> void:
-	var inv_mgr := get_node_or_null("/root/InventoryManager")
-	if not inv_mgr or not inv_mgr.has_item("axe"):
+func _handle_tool_toggle(tool_key: String) -> void:
+	if not _inv_mgr or not _inv_mgr.has_item(tool_key):
 		return
 	var player := get_node_or_null("Player") as CharacterBody2D
 	if not player:
 		return
-	player.equipped_tool = "" if player.equipped_tool == "axe" else "axe"
+	player.equipped_tool = "" if player.equipped_tool == tool_key else tool_key
 	var hud := get_node_or_null("/root/HUD")
 	if hud:
 		var slot_idx := -1
 		if player.equipped_tool != "":
-			for i in range(1, 48):
-				var item = inv_mgr.get_slot(i)
+			for i in range(1, _HOTBAR_SLOTS):
+				var item = _inv_mgr.get_slot(i)
 				if item != null and item.key == player.equipped_tool:
 					slot_idx = i
 					break
