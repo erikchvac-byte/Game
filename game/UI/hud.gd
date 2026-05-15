@@ -17,6 +17,7 @@ var _toast_label: Label
 var _toast_tween: Tween
 var _bucket_tex_empty: Texture2D
 var _bucket_tex_full: Texture2D
+var _equipped_slot: int = -1
 
 
 func _ready() -> void:
@@ -171,7 +172,7 @@ func _build_hotbar() -> void:
 		slot.name = "Slot%d" % i
 		slot.custom_minimum_size = Vector2(24, 14)
 		slot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-		slot.add_theme_stylebox_override("panel", _slot_style(false))
+		slot.add_theme_stylebox_override("panel", _slot_style(false, false))
 		hbox.add_child(slot)
 
 		var icon := TextureRect.new()
@@ -323,6 +324,17 @@ func _on_slot_changed(index: int, item: Variant) -> void:
 	set_slot_texture(index, null if item == null else item.tex)
 	var count: int = 0 if item == null else item.count
 	set_slot_badge(index, count if count > 1 else -1)
+	var icon := (_slots[index] as Panel).get_node("Icon") as TextureRect
+	if item != null and item.key == "wood":
+		icon.offset_left = 6.0
+		icon.offset_top = 3.5
+		icon.offset_right = -6.0
+		icon.offset_bottom = -3.5
+	else:
+		icon.offset_left = 0.0
+		icon.offset_top = 0.0
+		icon.offset_right = 0.0
+		icon.offset_bottom = 0.0
 
 
 func _refresh_water_bar() -> void:
@@ -332,9 +344,14 @@ func _refresh_water_bar() -> void:
 
 
 
+func set_equipped_slot(index: int) -> void:
+	_equipped_slot = index
+	_refresh_hotbar_selection()
+
+
 func _refresh_hotbar_selection() -> void:
 	for i in range(_slots.size()):
-		(_slots[i] as Panel).add_theme_stylebox_override("panel", _slot_style(i == selected_slot))
+		(_slots[i] as Panel).add_theme_stylebox_override("panel", _slot_style(i == selected_slot, i == _equipped_slot))
 
 
 
@@ -353,12 +370,20 @@ func _hbox(h_flags: int, align: int, sep: int) -> HBoxContainer:
 
 
 
-func _slot_style(_selected: bool) -> StyleBoxFlat:
+func _slot_style(selected: bool, equipped: bool) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
 	s.bg_color = Color(0.15, 0.15, 0.17, 0.90)
 	s.border_width_left = 1
 	s.border_width_right = 1
 	s.border_width_top = 1
 	s.border_width_bottom = 1
-	s.border_color = Color(0.30, 0.30, 0.34)
+	if equipped and selected:
+		s.bg_color = Color(0.20, 0.18, 0.10, 0.90)
+		s.border_color = Color(1.0, 0.85, 0.20)
+	elif equipped:
+		s.border_color = Color(0.90, 0.72, 0.15)
+	elif selected:
+		s.border_color = Color(0.85, 0.85, 0.90)
+	else:
+		s.border_color = Color(0.30, 0.30, 0.34)
 	return s

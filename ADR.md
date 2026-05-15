@@ -618,6 +618,32 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-047: Architecture Hardening — 6 Structural Fixes
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** Architecture review identified 8 systemic gaps that would break as more tools/items are added. Fixed the 6 that were actionable without requiring new feature design.
+**Decision:**
+1. **`_grant_starting_items()` first-load guard** — `Engine.set_meta("starting_items_granted", true)` set on first call; early-return if meta already exists. Prevents duplicate axe/bud/wood on every world scene re-entry.
+2. **Named InputMap actions for T/C** — Added `npc_trade` (T, keycode 84) and `equip_toggle` (C, keycode 67) to project.godot. `world.gd._input()` updated from raw `event.keycode == KEY_T/KEY_C` checks to `event.is_action_pressed("npc_trade"/"equip_toggle")`. Keys are now rebindable via InputMap without touching code.
+3. **drying_rack.gd: `/root/Inventory` → `/root/InventoryManager`** — `_award_and_reset()` was calling the old (non-existent) Inventory autoload, silently losing all bud rewards. Fixed to use InventoryManager.
+4. **InventoryManager `ItemEntry` class** — Replaced anonymous dict `{key, tex, count}` with a typed inner class `ItemEntry` (key: String, tex: Texture2D, count: int). All slots are now typed. Stacking was already key-based — no behavior change, just type safety.
+5. **Interactable priority list** — `_interactable: Node` (single ref) replaced with `_interactables: Array[Node]`. `_on_interactable_entered` appends (dedup guard), `_on_interactable_exited` erases. `_get_nearest_interactable()` returns the closest Node2D by `distance_squared_to` from player. SPC prompt hides only when the list is empty. Overlapping areas (e.g. two adjacent trees) now resolve to the closest target instead of whichever fired `body_entered` last.
+6. **`player.facing` enum** — `String` var replaced with `enum Facing { DOWN, UP, SIDE }`. `facing_name() -> String` helper added to player.gd for animation name construction. `player_animation.gd` updated to call `facing_name()` and use `player.Facing.SIDE` enum comparison. Both interior scripts updated from `$Player.facing = "up"` to the typed `Facing.UP` enum assignment.
+**Rationale:** Items 1–3 were silent bugs (duplicate items, lost bud rewards). Items 4–6 are structural changes that prevent future breakage: named actions make keybinding possible; interactable list eliminates the "last-enter wins" overlap bug; the facing enum eliminates string-mismatch silent failures as animation states are added.
+**Consequences:** `_get_nearest_interactable()` is a public method (no `_` prefix — kept callable from execute_game_script for testing). World state persistence and animation state machine are out of scope for this session. `player.Facing` enum is accessible from external scripts as `($Player as CharacterBody2D).Facing.UP`. T/C keys remain the default bindings but are now rebindable.
+**Testing:** All 7 changed scripts compile clean. Game boots: player idle_down animation works, hotbar shows axe/bud/wood (no duplicates). Starting-items guard confirmed (`Engine.has_meta("starting_items_granted") = true`). Interactable list size = 1 confirmed on game start. `_get_nearest_interactable()` returns Tree1. Tree chopped to stump in 3 hits, wood count = 2. No output log errors.
+
+## ADR-048: Hotbar Selection + Equipped-Tool Indicators
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** `_slot_style(bool)` ignored its parameter — selected and unselected slots were visually identical. No indicator existed for which tool was equipped.
+**Decision:** `_slot_style` now takes `selected: bool, equipped: bool`. Border color logic: dim (default) → near-white (selected) → amber-gold (equipped) → bright-gold + warm-bg (selected + equipped). `_equipped_slot: int = -1` tracks which slot is highlighted. `set_equipped_slot(index)` is a new public method on HUD. `world.gd._handle_axe_toggle()` calls `hud.set_equipped_slot(slot_idx)` after toggling, scanning InventoryManager for the equipped key's slot index (or -1 to clear).
+**Rationale:** Two separate visual states (keyboard cursor vs active tool) need different colors. White = "where your cursor is"; gold = "what you have in hand". Scanning InventoryManager in `_handle_axe_toggle` keeps the HUD passive — it doesn't reach into game state, world pushes to it.
+**Consequences:** Currently only the axe uses this system. Any future tool toggle must call `hud.set_equipped_slot()` to light up its slot. There is no auto-detection; it's explicit push-from-world.
+**Testing:** Play-tested 2026-05-15: axe slot shows gold border on equip, clears on unequip. Selected (bucket) slot shows white border at all times. Both indicators visible simultaneously.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -705,3 +731,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-15 | Permission allowlist: added Bash(Get-ChildItem *) to .claude/settings.json. |
 | 2026-05-15 | Bug fix: world.gd `_on_wood_chopped()` and `_grant_starting_items()` used `/root/Inventory` (non-existent) instead of `/root/InventoryManager`. Fixed both. Wood now correctly awarded on chop and at game start. |
 | 2026-05-15 | Interact key rebound E→Space; HUD SPC prompt replaces key_e.png TextureRect. ADR-046 added. |
+| 2026-05-15 | Architecture hardening: 6 structural fixes — starting-items guard, named InputMap actions (npc_trade/equip_toggle), drying_rack InventoryManager fix, ItemEntry class, interactable priority list, player.facing enum. ADR-047 added. |
+| 2026-05-15 | Hotbar equipped-slot indicator: _slot_style now takes selected+equipped bools; white border = selected slot, gold border = equipped tool slot; world.gd notifies HUD via set_equipped_slot() on axe toggle. ADR-048 added. |

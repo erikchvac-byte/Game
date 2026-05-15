@@ -6,7 +6,7 @@ func _ready() -> void:
 	cam.limit_top = 0
 	cam.limit_right = 160
 	cam.limit_bottom = 128
-	$Player.facing = "up"
+	($Player as CharacterBody2D).facing = ($Player as CharacterBody2D).Facing.UP
 	TransitionManager.fade_from_black(0.4)
 	await get_tree().create_timer(0.5).timeout
 	$ExitDoor.body_entered.connect(_on_exit_entered)

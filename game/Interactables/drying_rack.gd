@@ -58,7 +58,7 @@ func add_plant() -> void:
 
 
 func _award_and_reset() -> void:
-	var inv := get_node_or_null("/root/Inventory")
+	var inv := get_node_or_null("/root/InventoryManager")
 	if inv and inv.has_method("add_item"):
 		inv.add_item("bud", PRODUCTS[randi() % PRODUCTS.size()])
 	_count = 0

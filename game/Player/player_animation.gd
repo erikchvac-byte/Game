@@ -5,7 +5,7 @@ var _current_anim := ""
 func _process(_delta: float) -> void:
 	var player := get_parent()
 
-	var dir: String = player.facing
+	var dir: String = player.facing_name()
 	var suffix := "_bucket" if player.carrying_water else ""
 	var anim: String
 	if player.is_moving:
@@ -13,7 +13,7 @@ func _process(_delta: float) -> void:
 	else:
 		anim = "idle_" + dir + suffix
 
-	flip_h = (dir == "side" and player.facing_left)
+	flip_h = (player.facing == player.Facing.SIDE and player.facing_left)
 
 	if anim != _current_anim:
 		_current_anim = anim

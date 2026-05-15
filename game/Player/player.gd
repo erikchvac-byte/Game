@@ -1,15 +1,23 @@
 extends CharacterBody2D
 
+enum Facing { DOWN, UP, SIDE }
+
 const WALK_SPEED := 60.0
 const RUN_SPEED := 110.0
 
-var facing := "down"
+var facing: Facing = Facing.DOWN
 var is_moving := false
 var is_running := false
 var facing_left := false
 var carrying_water := false
 var equipped_tool: String = ""
-var auto_walk := Vector2.ZERO  # when non-zero, overrides player input
+var auto_walk := Vector2.ZERO
+
+func facing_name() -> String:
+	match facing:
+		Facing.UP: return "up"
+		Facing.SIDE: return "side"
+		_: return "down"
 
 func _physics_process(_delta: float) -> void:
 	var dir: Vector2
@@ -33,7 +41,7 @@ func _physics_process(_delta: float) -> void:
 
 func _update_facing(dir: Vector2) -> void:
 	if abs(dir.y) >= abs(dir.x):
-		facing = "down" if dir.y > 0.0 else "up"
+		facing = Facing.DOWN if dir.y > 0.0 else Facing.UP
 	else:
-		facing = "side"
+		facing = Facing.SIDE
 		facing_left = dir.x < 0.0

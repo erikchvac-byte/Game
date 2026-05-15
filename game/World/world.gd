@@ -2,7 +2,7 @@ extends Node2D
 
 const NPC_TRADE_RADIUS := 36.0
 
-var _interactable: Node = null
+var _interactables: Array[Node] = []
 var _npc_trade_active := false
 
 
@@ -28,12 +28,15 @@ func _on_wood_chopped() -> void:
 
 
 func _grant_starting_items() -> void:
+	if Engine.has_meta("starting_items_granted"):
+		return
 	var inv := get_node_or_null("/root/InventoryManager")
 	if not inv:
 		return
 	inv.add_item("axe", preload("res://GameAssets/Tools/tool_axe.png"))
 	inv.add_item("bud", preload("res://GameAssets/Bud/dry_bud.png"))
 	inv.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
+	Engine.set_meta("starting_items_granted", true)
 
 
 func _process(_delta: float) -> void:
@@ -64,15 +67,22 @@ func _update_npc_proximity() -> void:
 func _input(event: InputEvent) -> void:
 	if not (event is InputEventKey) or not event.pressed or event.echo:
 		return
-	if event.keycode == KEY_T and _npc_trade_active:
+	if event.is_action_pressed("npc_trade") and _npc_trade_active:
 		_handle_npc_trade()
 		return
-	if event.keycode == KEY_C:
+	if event.is_action_pressed("equip_toggle"):
 		_handle_axe_toggle()
 		return
 	if event.is_action_pressed("interact"):
-		if _interactable and _interactable.has_method("interact"):
-			_interactable.interact($Player as CharacterBody2D)
+		var target := _get_nearest_interactable()
+		if target and target.has_method("interact"):
+			var player := $Player as CharacterBody2D
+			if target.has_method("can_interact") and not target.can_interact(player):
+				var hud := get_node_or_null("/root/HUD")
+				if hud:
+					hud.show_toast("Equip axe first (C)", 1.5)
+			else:
+				target.interact(player)
 
 
 func _handle_axe_toggle() -> void:
@@ -83,6 +93,16 @@ func _handle_axe_toggle() -> void:
 	if not player:
 		return
 	player.equipped_tool = "" if player.equipped_tool == "axe" else "axe"
+	var hud := get_node_or_null("/root/HUD")
+	if hud:
+		var slot_idx := -1
+		if player.equipped_tool != "":
+			for i in range(1, 48):
+				var item = inv_mgr.get_slot(i)
+				if item != null and item.key == player.equipped_tool:
+					slot_idx = i
+					break
+		hud.set_equipped_slot(slot_idx)
 
 
 func _handle_npc_trade() -> void:
@@ -95,19 +115,38 @@ func _handle_npc_trade() -> void:
 			hud.show_toast("No product available", 2.0)
 
 
+func _get_nearest_interactable() -> Node:
+	if _interactables.is_empty():
+		return null
+	if _interactables.size() == 1:
+		return _interactables[0]
+	var player := $Player as Node2D
+	var best: Node = null
+	var best_dist := INF
+	for node in _interactables:
+		var n2d := node as Node2D
+		if n2d == null:
+			continue
+		var d: float = player.global_position.distance_squared_to(n2d.global_position)
+		if d < best_dist:
+			best_dist = d
+			best = node
+	return best
+
+
 func _on_interactable_entered(node: Node) -> void:
-	_interactable = node
+	if not _interactables.has(node):
+		_interactables.append(node)
 	var hud := get_node_or_null("/root/HUD")
 	if hud:
 		hud.show_interact_prompt(true)
 
 
 func _on_interactable_exited(node: Node) -> void:
-	if _interactable == node:
-		_interactable = null
+	_interactables.erase(node)
 	var hud := get_node_or_null("/root/HUD")
 	if hud:
-		hud.show_interact_prompt(false)
+		hud.show_interact_prompt(_interactables.size() > 0)
 
 
 func _on_npc_door_entered(body: Node2D) -> void:

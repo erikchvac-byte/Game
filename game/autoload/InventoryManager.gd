@@ -6,6 +6,15 @@ const MAX_STACK := 16
 
 signal slot_changed(index: int, item: Variant)
 
+class ItemEntry:
+	var key: String
+	var tex: Texture2D
+	var count: int
+	func _init(k: String, t: Texture2D) -> void:
+		key = k
+		tex = t
+		count = 1
+
 var _slots: Array = []
 
 
@@ -16,7 +25,7 @@ func _ready() -> void:
 func add_item(key: String, tex: Texture2D) -> bool:
 	# Stack into existing hotbar slot first
 	for i in range(1, HOTBAR_SLOTS):
-		var item = _slots[i]
+		var item: ItemEntry = _slots[i]
 		if item != null and item.key == key and item.count < MAX_STACK:
 			item.count += 1
 			slot_changed.emit(i, item)
@@ -24,13 +33,13 @@ func add_item(key: String, tex: Texture2D) -> bool:
 	# Open hotbar slot
 	for i in range(1, HOTBAR_SLOTS):
 		if _slots[i] == null:
-			_slots[i] = {key = key, tex = tex, count = 1}
+			_slots[i] = ItemEntry.new(key, tex)
 			slot_changed.emit(i, _slots[i])
 			return true
 	# Stack into existing grid slot
 	var off := HOTBAR_SLOTS
 	for i in range(GRID_SLOTS):
-		var item = _slots[off + i]
+		var item: ItemEntry = _slots[off + i]
 		if item != null and item.key == key and item.count < MAX_STACK:
 			item.count += 1
 			slot_changed.emit(off + i, item)
@@ -38,7 +47,7 @@ func add_item(key: String, tex: Texture2D) -> bool:
 	# Open grid slot
 	for i in range(GRID_SLOTS):
 		if _slots[off + i] == null:
-			_slots[off + i] = {key = key, tex = tex, count = 1}
+			_slots[off + i] = ItemEntry.new(key, tex)
 			slot_changed.emit(off + i, _slots[off + i])
 			return true
 	return false
