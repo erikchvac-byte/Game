@@ -644,6 +644,31 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-056: Mouse Navigation Stuck Detection
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** The right-click nav system (ADR-055) had no termination guard for unreachable targets. Right-clicking inside a building or against a wall caused `_nav_active = true` permanently — `move_and_slide()` slides the player along the collision surface at full walk speed (velocity ≠ 0) so the `ARRIVE_DIST` check never fires. The player would grind against obstacles indefinitely ("unhinged" behavior).
+**Decision:** Add two variables (`_nav_best_dist: float = INF`, `_nav_stuck_time: float = 0.0`) and a constant (`NAV_STUCK_MAX = 1.0` s) to `world.gd`. Each `_process(delta)` tick: if `dist` improved by >0.5 px vs best, reset stuck timer; otherwise accumulate delta. If stuck for ≥1 s, call `_cancel_navigation()`. Also call `_cancel_navigation()` at the top of `_on_right_click()` when `_nav_active` is true, so re-clicking while navigating resets all state cleanly.
+**Rationale:** Velocity-based stuck detection doesn't work here — `move_and_slide()` returns full slide velocity even against a wall. Progress-toward-target is the correct metric. Delta-based timing (not frame count) ensures consistent behavior at any frame rate.
+**Consequences:** Player stops at the closest reachable point to any blocked click target after ≤1 s. Legitimate long-distance navigation is unaffected (player makes continuous progress, stuck timer never accumulates). Serves as a secondary fallback for tree nav if `ChopArea.body_entered` somehow misses.
+**Testing:** `execute_game_script` confirmed: right-click at (280, 155) (inside bakery) → player slid against wall → `_nav_active = false`, `auto_walk = (0,0)` after ~1 s. Regression: terrain nav (stopped at 4.3 px from target) and tree nav (chop fired on arrival) both unaffected.
+
+---
+
+## ADR-055: Right-Click Mouse Navigation and Contextual Harvest
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** All world interaction was keyboard-only. Right-click mouse input had no behavior.
+**Decision:** Add right-click navigation to `world.gd` with three behaviors:
+1. Right-click empty terrain → walk player to clicked world position, stop within 5px.
+2. Right-click an unchoppped tree (within 22px radius) → walk player to tree, auto-`interact()` on ChopArea entry if axe equipped; stop silently if not.
+3. Keyboard input while navigating cancels mouse nav immediately.
+**Rationale:** Implemented entirely in `world.gd` — no changes to `player.gd`, `choppable_tree.gd`, or any other file. Used existing `auto_walk` var on player (already supported) and existing `interactable_entered` signal to detect when player enters tree range. Click-to-tree detection uses same `choppable_trees` group already iterated in `_ready()`. `_nav_active` bool + `_nav_target_pos`/`_nav_target_node`/`_nav_pending_interact` state tracked in `world.gd`. `_update_mouse_navigation()` called from `_process()`. Right-click handled in `_input()` before the key-only early return, marked handled with `set_input_as_handled()`.
+**Consequences:** Right-click now navigates. Keyboard still works (cancels mouse nav on first directional press). Space-chop, C-equip, scroll slot, NPC trade, door transitions — all unaffected. Chopped trees skipped in click detection via `_is_chopped` check. Invalid node guard via `is_instance_valid()`.
+**Testing:** `execute_game_script` direct calls confirmed all three paths: (1) terrain walk → arrived at (416, 251) targeting (420, 250), nav_active=false; (2) tree with axe → chop_count=1 after arrival; (3) tree without axe → arrived at tree range, chop_count=0.
+
+---
+
 ## ADR-054: Mouse Interaction Pipeline Fix — Auto-Equip on Slot Select + Scroll Direction
 **Status:** Accepted
 **Date:** 2026-05-15
@@ -835,3 +860,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-15 | Structural refactor validation: 14/14 checks pass across tool registry + tree group + all regression systems. CLAUDE.md Notes section added (session context, permissions reference). ADR-052 added. |
 | 2026-05-15 | HUD mouse filter fix: MOUSE_FILTER_IGNORE added to all non-interactive Panel/Control nodes in hud.gd (TopBar, Hotbar, EPromptArea, SpacePrompt, TPrompt, 12 Slot Panels, Toast, WaterGem, WaterMeter). Mouse wheel slot cycling now works anywhere on screen. ADR-053 added. |
 | 2026-05-15 | Mouse interaction pipeline fix: scroll direction corrected; slot_selected signal added to hud.gd; world.gd._on_hud_slot_selected() auto-equips equippable tools on slot selection. Full chop chain via mouse now works. ADR-054 added. |
+| 2026-05-15 | Right-click mouse navigation: terrain walk-to-point (stops within 5px), tree targeting with auto-interact if axe equipped (stops silently if not), keyboard cancels nav. All in world.gd using existing auto_walk + interactable_entered pipeline. ADR-055 added. |
+| 2026-05-15 | Mouse nav stuck detection: _nav_best_dist + _nav_stuck_time (delta-based, 1.0 s) added to world.gd. Cancels nav when player makes no progress toward target — fixes infinite wall-grinding on blocked clicks. _on_right_click now cancels previous nav before starting new one. ADR-056 added. |

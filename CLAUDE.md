@@ -7,7 +7,7 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** Mouse interaction pipeline fix — scroll direction corrected, `slot_selected` signal added to hud.gd, `world.gd._on_hud_slot_selected()` auto-equips tools on scroll/slot-select, full chop chain via mouse validated (ADR-054, 2026-05-15). Previously: HUD mouse filter fix (ADR-053), structural refactor validation 14/14 (ADR-052).
+- **Last completed:** Mouse nav stuck detection — `_nav_best_dist` + `_nav_stuck_time` (delta, 1.0 s threshold) added to `world.gd`; cancels nav when player makes no progress; fixes infinite wall-grinding on blocked clicks (ADR-056, 2026-05-15). Previously: right-click nav (ADR-055), mouse pipeline (ADR-054), HUD mouse filter (ADR-053).
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
 - **Space bug fix:** Pressing Space near a tree without the axe equipped now shows toast `"Equip axe first (C)"` instead of silently failing. Press C to equip, then Space to chop.
@@ -193,8 +193,9 @@
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
 ### Session end — 2026-05-15
-- **Mouse interaction complete.** Scroll direction fixed. `hud.slot_selected` signal wired to `world._on_hud_slot_selected()` — scrolling to an equippable slot now auto-equips it, scrolling off unequips. Full chain: scroll → equip → Space → chop all validated.
-- **Auto-equip behavior:** scroll/number-key to a slot containing an equippable tool sets `player.equipped_tool`. Scroll away sets it back to `""`. C key (toggle) still works independently.
+- **Right-click navigation complete.** Right-click terrain → player walks to position. Right-click tree (unchoppped, within 22px) → player walks to ChopArea, auto-chops once if axe equipped, stops silently if not. Keyboard input cancels nav mid-walk.
+- **Right-click implementation pattern:** All in `world.gd`. State: `_nav_active`, `_nav_target_pos`, `_nav_target_node`, `_nav_pending_interact`, `_nav_best_dist` (INF), `_nav_stuck_time` (0.0). `_update_mouse_navigation(delta)` called from `_process(delta)`. Arrival: terrain via `dist < ARRIVE_DIST (5px)`; tree via `_interactables.has(_nav_target_node)` (ChopArea signal). Stuck detection: if dist doesn't improve by >0.5px, accumulate delta; cancel after `NAV_STUCK_MAX (1.0s)` — prevents infinite wall-grinding on blocked clicks. `_on_right_click` calls `_cancel_navigation()` first if already navigating.
+- **Auto-equip behavior (from ADR-054):** scroll/number-key to a slot containing an equippable tool sets `player.equipped_tool`. Scroll away sets it back to `""`. C key (toggle) still works independently.
 - **Next feature candidates (pick one):** Teal house collision fix (door gap + side walls) is the lowest-risk warmup. Cave entrance rigging is the biggest next milestone.
 - **Pending editor restart note:** `_inv_mgr` is fetched via `get_node_or_null("/root/InventoryManager")` in world.gd `_ready()`. After a fresh Godot editor start this resolves fine — note is about replacing it with bare `InventoryManager` name eventually (after confirming autoload is declared in project.godot, not added at runtime).
 - **Wood icon is a placeholder.** `rock3.png` used for wood. Replace with a real wood sprite when available.
