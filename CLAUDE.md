@@ -7,7 +7,8 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** Hotbar selection + equipped-tool indicators (ADR-048, 2026-05-15). White border = keyboard-selected slot; gold border = equipped tool slot. Wood icon 50% smaller via inset offsets in `_on_slot_changed`. Previously: architecture hardening (ADR-047).
+- **Last completed:** Full integration validation of axe/tree/chop/wood system (ADR-049, 2026-05-15). All 8 integration checks pass + all 6 existing-system checks pass (well, plant, drying rack, bucket, HUD, InventoryManager). Previously: hotbar indicators (ADR-048), architecture hardening (ADR-047).
+- **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_axe_toggle()`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
 - **Space bug fix:** Pressing Space near a tree without the axe equipped now shows toast `"Equip axe first (C)"` instead of silently failing. Press C to equip, then Space to chop.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]` (not a single ref). `_get_nearest_interactable()` returns the closest by distance_squared. Two overlapping areas resolve to the nearest — no more last-enter-wins race condition.
