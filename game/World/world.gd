@@ -19,6 +19,9 @@ var _inv_mgr: Node
 
 func _ready() -> void:
 	_inv_mgr = get_node_or_null("/root/InventoryManager")
+	var hud := get_node_or_null("/root/HUD")
+	if hud:
+		hud.slot_selected.connect(_on_hud_slot_selected)
 	$DoorEntrance.body_entered.connect(_on_door_entered)
 	get_tree().create_timer(0.5).timeout.connect(func(): $NPCHomeDoor.body_entered.connect(_on_npc_door_entered))
 	$Well.connect("interactable_entered", _on_interactable_entered)
@@ -94,6 +97,32 @@ func _input(event: InputEvent) -> void:
 					hud.show_toast("Equip axe first (C)", 1.5)
 			else:
 				target.interact(player)
+
+
+func _on_hud_slot_selected(index: int) -> void:
+	if not _inv_mgr:
+		return
+	var player := get_node_or_null("Player") as CharacterBody2D
+	if not player:
+		return
+	var item = _inv_mgr.get_slot(index)
+	var new_tool := ""
+	if item != null and (item.key in EQUIPPABLE_TOOLS):
+		new_tool = item.key
+	if player.equipped_tool == new_tool:
+		return
+	player.equipped_tool = new_tool
+	var hud := get_node_or_null("/root/HUD")
+	if not hud:
+		return
+	if new_tool == "":
+		hud.set_equipped_slot(-1)
+	else:
+		for i in range(1, _HOTBAR_SLOTS):
+			var s = _inv_mgr.get_slot(i)
+			if s != null and s.key == new_tool:
+				hud.set_equipped_slot(i)
+				break
 
 
 func _handle_tool_toggle(tool_key: String) -> void:

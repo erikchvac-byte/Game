@@ -644,6 +644,21 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-054: Mouse Interaction Pipeline Fix — Auto-Equip on Slot Select + Scroll Direction
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** Mouse scroll worked visually (white border moved) but `player.equipped_tool` was never updated. `select_slot()` in `hud.gd` was cosmetic-only. Result: scrolling to axe slot showed white border but axe was never equipped — tree `can_interact()` always returned false, showing "Equip axe first (C)" even after scrolling to the axe. Scroll direction was also inverted (WHEEL_UP went left/lower-index instead of right/higher-index).
+**Decision:**
+1. Fix scroll direction in `hud.gd:_unhandled_input` — swap WHEEL_UP/WHEEL_DOWN operations.
+2. Add `signal slot_selected(index: int)` to `hud.gd`; emit it in `select_slot()`.
+3. In `world.gd._ready()`, connect `HUD.slot_selected` to new `_on_hud_slot_selected(index)`.
+4. `_on_hud_slot_selected` checks slot content via `_inv_mgr.get_slot(index)`: if key is in `EQUIPPABLE_TOOLS`, set `player.equipped_tool` and call `hud.set_equipped_slot()`; otherwise unequip.
+**Rationale:** The source of truth for equip state is `player.equipped_tool`. `hud.gd` has no path to it — a signal to `world.gd` keeps the existing architecture clean (HUD owns display, world owns game state). Auto-equip on any slot selection (scroll or number key) is consistent and matches typical game behavior.
+**Consequences:** Scrolling to an equippable tool slot auto-equips it. Scrolling off unequips. The C key (toggle) still works but is now supplementary. Both white (selected) and gold (equipped) borders reflect correctly.
+**Testing:** `execute_game_script` confirmed: `select_slot(1)` → `equipped_tool='axe'`, `_equipped_slot=1`; `select_slot(2)` → `equipped_tool=''`, `_equipped_slot=-1`; `select_slot(1)` again → `can_interact=true`; 3 chops → wood count incremented. Screenshot: gold border on axe slot, tree chopped to stump.
+
+---
+
 ## ADR-053: HUD Mouse Filter Fix — MOUSE_FILTER_IGNORE on All Non-Interactive Panels
 **Status:** Accepted
 **Date:** 2026-05-15
@@ -819,3 +834,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-15 | Tree group registration: choppable_tree.gd self-registers to "choppable_trees" group; world.gd uses get_nodes_in_group() instead of hardcoded [$Tree1...$Tree4] array. New trees require no script edits. ADR-051 added. |
 | 2026-05-15 | Structural refactor validation: 14/14 checks pass across tool registry + tree group + all regression systems. CLAUDE.md Notes section added (session context, permissions reference). ADR-052 added. |
 | 2026-05-15 | HUD mouse filter fix: MOUSE_FILTER_IGNORE added to all non-interactive Panel/Control nodes in hud.gd (TopBar, Hotbar, EPromptArea, SpacePrompt, TPrompt, 12 Slot Panels, Toast, WaterGem, WaterMeter). Mouse wheel slot cycling now works anywhere on screen. ADR-053 added. |
+| 2026-05-15 | Mouse interaction pipeline fix: scroll direction corrected; slot_selected signal added to hud.gd; world.gd._on_hud_slot_selected() auto-equips equippable tools on slot selection. Full chop chain via mouse now works. ADR-054 added. |

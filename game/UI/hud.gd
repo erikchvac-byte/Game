@@ -19,6 +19,8 @@ var _bucket_tex_empty: Texture2D
 var _bucket_tex_full: Texture2D
 var _equipped_slot: int = -1
 
+signal slot_selected(index: int)
+
 
 func _ready() -> void:
 	layer = 10
@@ -258,9 +260,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			KEY_0: select_slot(9)
 	elif event is InputEventMouseButton and event.pressed:
 		if event.button_index == MOUSE_BUTTON_WHEEL_UP:
-			select_slot((selected_slot - 1 + SLOT_COUNT) % SLOT_COUNT)
-		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
 			select_slot((selected_slot + 1) % SLOT_COUNT)
+		elif event.button_index == MOUSE_BUTTON_WHEEL_DOWN:
+			select_slot((selected_slot - 1 + SLOT_COUNT) % SLOT_COUNT)
 
 
 # ── Public API ────────────────────────────────────────────────────────────────
@@ -276,6 +278,7 @@ func set_water(current: int, max_val: int = -1) -> void:
 func select_slot(index: int) -> void:
 	selected_slot = clampi(index, 0, SLOT_COUNT - 1)
 	_refresh_hotbar_selection()
+	slot_selected.emit(selected_slot)
 
 
 func set_slot_texture(slot: int, tex: Texture2D) -> void:

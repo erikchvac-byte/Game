@@ -7,7 +7,7 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** HUD mouse filter fix — MOUSE_FILTER_IGNORE on all non-interactive panels in hud.gd; mouse wheel slot cycling now works anywhere on screen (ADR-053, 2026-05-15). Previously: structural refactor validation 14/14 (ADR-052), tool registry generalization (ADR-050), tree group auto-registration (ADR-051).
+- **Last completed:** Mouse interaction pipeline fix — scroll direction corrected, `slot_selected` signal added to hud.gd, `world.gd._on_hud_slot_selected()` auto-equips tools on scroll/slot-select, full chop chain via mouse validated (ADR-054, 2026-05-15). Previously: HUD mouse filter fix (ADR-053), structural refactor validation 14/14 (ADR-052).
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
 - **Space bug fix:** Pressing Space near a tree without the axe equipped now shows toast `"Equip axe first (C)"` instead of silently failing. Press C to equip, then Space to chop.
@@ -193,7 +193,8 @@
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
 ### Session end — 2026-05-15
-- **Architecture is clean.** EQUIPPABLE_TOOLS dict + tree group registration validated 14/14. No regressions. Ready to build features on top.
+- **Mouse interaction complete.** Scroll direction fixed. `hud.slot_selected` signal wired to `world._on_hud_slot_selected()` — scrolling to an equippable slot now auto-equips it, scrolling off unequips. Full chain: scroll → equip → Space → chop all validated.
+- **Auto-equip behavior:** scroll/number-key to a slot containing an equippable tool sets `player.equipped_tool`. Scroll away sets it back to `""`. C key (toggle) still works independently.
 - **Next feature candidates (pick one):** Teal house collision fix (door gap + side walls) is the lowest-risk warmup. Cave entrance rigging is the biggest next milestone.
 - **Pending editor restart note:** `_inv_mgr` is fetched via `get_node_or_null("/root/InventoryManager")` in world.gd `_ready()`. After a fresh Godot editor start this resolves fine — note is about replacing it with bare `InventoryManager` name eventually (after confirming autoload is declared in project.godot, not added at runtime).
 - **Wood icon is a placeholder.** `rock3.png` used for wood. Replace with a real wood sprite when available.
