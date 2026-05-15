@@ -7,7 +7,7 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** Structural refactor validation — 14/14 checks pass (ADR-052, 2026-05-15). Tool registry generalized (EQUIPPABLE_TOOLS dict, ADR-050) + tree group auto-registration (ADR-051). Previously: full integration validation ADR-049, hotbar indicators ADR-048, architecture hardening ADR-047.
+- **Last completed:** HUD mouse filter fix — MOUSE_FILTER_IGNORE on all non-interactive panels in hud.gd; mouse wheel slot cycling now works anywhere on screen (ADR-053, 2026-05-15). Previously: structural refactor validation 14/14 (ADR-052), tool registry generalization (ADR-050), tree group auto-registration (ADR-051).
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
 - **Space bug fix:** Pressing Space near a tree without the axe equipped now shows toast `"Equip axe first (C)"` instead of silently failing. Press C to equip, then Space to chop.

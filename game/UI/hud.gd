@@ -33,6 +33,7 @@ func _ready() -> void:
 func _build_top_bar() -> void:
 	var bar := Panel.new()
 	bar.name = "TopBar"
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.add_theme_stylebox_override("panel", _flat(Color(0.07, 0.07, 0.09, 0.90)))
 	bar.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
 	bar.offset_bottom = TOP_BAR_H
@@ -54,6 +55,7 @@ func _build_top_bar() -> void:
 	w_gem.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	w_gem.custom_minimum_size = Vector2(10.0, 10.0)
 	w_gem.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	w_gem.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	w_sec.add_child(w_gem)
 	_water_tp = TextureProgressBar.new()
 	_water_tp.custom_minimum_size = Vector2(48.0, 8.0)
@@ -68,6 +70,7 @@ func _build_top_bar() -> void:
 	_water_tp.texture_progress = _bar_tex
 	_water_tp.tint_under = Color(0.08, 0.15, 0.30)
 	_water_tp.tint_progress = Color(0.24, 0.54, 1.0)
+	_water_tp.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	w_sec.add_child(_water_tp)
 
 	_refresh_water_bar()
@@ -78,6 +81,7 @@ func _build_top_bar() -> void:
 func _build_hotbar() -> void:
 	var bar := Panel.new()
 	bar.name = "Hotbar"
+	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.add_theme_stylebox_override("panel", _flat(Color(0.07, 0.07, 0.09, 0.90)))
 	bar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	bar.offset_top = -HOTBAR_H
@@ -93,12 +97,14 @@ func _build_hotbar() -> void:
 	# Dedicated space prompt zone — fixed 28px left column
 	var e_container := Control.new()
 	e_container.name = "EPromptArea"
+	e_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	e_container.custom_minimum_size = Vector2(28, 0)
 	e_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	main_hbox.add_child(e_container)
 
 	_e_prompt = Panel.new()
 	_e_prompt.name = "SpacePrompt"
+	_e_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_e_prompt.visible = false
 	_e_prompt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_e_prompt.offset_left = 2.0
@@ -128,6 +134,7 @@ func _build_hotbar() -> void:
 
 	_t_prompt = Panel.new()
 	_t_prompt.name = "TPrompt"
+	_t_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_t_prompt.visible = false
 	_t_prompt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_t_prompt.offset_left = 2.0
@@ -170,6 +177,7 @@ func _build_hotbar() -> void:
 	for i in range(SLOT_COUNT):
 		var slot := Panel.new()
 		slot.name = "Slot%d" % i
+		slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.custom_minimum_size = Vector2(24, 14)
 		slot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 		slot.add_theme_stylebox_override("panel", _slot_style(false, false))
@@ -206,6 +214,7 @@ func _build_hotbar() -> void:
 func _build_toast() -> void:
 	_toast_panel = Panel.new()
 	_toast_panel.name = "Toast"
+	_toast_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_toast_panel.visible = false
 	_toast_panel.custom_minimum_size = Vector2(96, 12)
 	var s := StyleBoxFlat.new()

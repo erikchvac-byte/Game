@@ -644,6 +644,17 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-053: HUD Mouse Filter Fix — MOUSE_FILTER_IGNORE on All Non-Interactive Panels
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** Mouse wheel hotbar slot cycling (`hud.gd:_unhandled_input`) silently failed whenever the cursor was positioned over the hotbar or top bar. The feature worked mid-screen but not over the HUD strips where the cursor naturally rests.
+**Decision:** Set `mouse_filter = Control.MOUSE_FILTER_IGNORE` on all non-interactive Control nodes built procedurally in `hud.gd`: TopBar Panel, Hotbar Panel, EPromptArea Control, SpacePrompt Panel, TPrompt Panel, all 12 Slot Panels, Toast Panel, WaterGem TextureRect, and WaterMeter TextureProgressBar.
+**Rationale:** In Godot 4, any Control node with `MOUSE_FILTER_STOP` (the default) calls `accept_event()` when the cursor is over it, marking the InputEvent as handled. `_unhandled_input` is only called for events that are NOT marked handled. Because the slot Panels covered the full hotbar strip, every mouse wheel event in that region was consumed before reaching `_unhandled_input`. Setting `MOUSE_FILTER_IGNORE` on display-only nodes lets events pass through to `_unhandled_input` regardless of cursor position. The inventory `dim` ColorRect retains `MOUSE_FILTER_STOP` (intentional — blocks clicks through the inventory overlay).
+**Consequences:** Wheel scrolling now works anywhere on screen. No interactive UI elements exist in the HUD, so `MOUSE_FILTER_IGNORE` is correct for every node changed.
+**Testing:** `execute_game_script` confirmed: all changed nodes report `mouse_filter=2`; simulated wheel-down advanced `selected_slot` from 3→4; screenshot confirmed white border moved to correct slot.
+
+---
+
 ## ADR-052: Structural Refactor Validation — Tool Registry + Tree Group
 **Status:** Accepted
 **Date:** 2026-05-15
@@ -807,3 +818,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-15 | Tool registry refactor: replaced _handle_axe_toggle() with _handle_tool_toggle(tool_key), added EQUIPPABLE_TOOLS const dict, cached _inv_mgr in _ready(), fixed slot search range(1,48)→range(1,12). ADR-050 added. |
 | 2026-05-15 | Tree group registration: choppable_tree.gd self-registers to "choppable_trees" group; world.gd uses get_nodes_in_group() instead of hardcoded [$Tree1...$Tree4] array. New trees require no script edits. ADR-051 added. |
 | 2026-05-15 | Structural refactor validation: 14/14 checks pass across tool registry + tree group + all regression systems. CLAUDE.md Notes section added (session context, permissions reference). ADR-052 added. |
+| 2026-05-15 | HUD mouse filter fix: MOUSE_FILTER_IGNORE added to all non-interactive Panel/Control nodes in hud.gd (TopBar, Hotbar, EPromptArea, SpacePrompt, TPrompt, 12 Slot Panels, Toast, WaterGem, WaterMeter). Mouse wheel slot cycling now works anywhere on screen. ADR-053 added. |
