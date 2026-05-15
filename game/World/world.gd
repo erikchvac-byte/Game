@@ -22,13 +22,13 @@ func _ready() -> void:
 
 
 func _on_wood_chopped() -> void:
-	var inv := get_node_or_null("/root/Inventory")
+	var inv := get_node_or_null("/root/InventoryManager")
 	if inv:
 		inv.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
 
 
 func _grant_starting_items() -> void:
-	var inv := get_node_or_null("/root/Inventory")
+	var inv := get_node_or_null("/root/InventoryManager")
 	if not inv:
 		return
 	inv.add_item("axe", preload("res://GameAssets/Tools/tool_axe.png"))

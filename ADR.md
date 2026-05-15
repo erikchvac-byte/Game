@@ -605,6 +605,19 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-046: Interact Key — Spacebar (was E), SPC Prompt in HUD
+**Status:** Accepted
+**Date:** 2026-05-15
+**Context:** The `interact` input action was bound to E. User requested spacebar to activate equipped tools and interactables — a more natural "use item in hand" mapping. The HUD E-prompt (`key_e.png` TextureRect) needed to reflect the new key.
+**Decision:**
+- `project.godot`: `interact` action keycode changed from 69 (E) to 32 (Space). All interactables (well, plant, drying rack, choppable trees) now respond to Space.
+- `hud.gd`: `_e_prompt` changed from `TextureRect` (key_e.png) to a `Panel` + `Label` styled identically to the T-prompt (dark bg, amber border, amber text). Label text = "SPC". Container widened from 20px to 28px to fit the three-character label.
+**Rationale:** Single keycode change propagates automatically to all interactable handlers via the named action. Styled label avoids needing a new spacebar PNG asset and matches the existing T-prompt aesthetic.
+**Consequences:** E key no longer does anything in-world. All prior "Press E" UX cues now read as "SPC" in HUD. No changes to world.gd, individual interactable scripts, or the interactable router pattern (ADR-023).
+**Testing:** Play-tested 2026-05-15: SPC prompt appeared when player stood next to Tree1 with axe equipped. Tree chopped to stump in 3 hits via scripted interact() calls. Wood count 1→2 confirmed in hotbar.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -690,3 +703,5 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-14 | Choppable tree scenes: 4 Sprite2D trees + 4 Stump Sprite2Ds replaced with choppable_tree.tscn instances. Each tracks own chop counter, transitions tree→stump, emits wood_chopped. ADR-045 added. |
 | 2026-05-15 | Choppable tree live play test confirmed — all 4 trees chop correctly, 3-hit counter, tree→stump, wood granted. Axe-equip guard verified. ADR-045 testing updated. |
 | 2026-05-15 | Permission allowlist: added Bash(Get-ChildItem *) to .claude/settings.json. |
+| 2026-05-15 | Bug fix: world.gd `_on_wood_chopped()` and `_grant_starting_items()` used `/root/Inventory` (non-existent) instead of `/root/InventoryManager`. Fixed both. Wood now correctly awarded on chop and at game start. |
+| 2026-05-15 | Interact key rebound E→Space; HUD SPC prompt replaces key_e.png TextureRect. ADR-046 added. |

@@ -9,7 +9,7 @@ var water_max: int = 10
 var selected_slot: int = 0
 
 var _water_tp: TextureProgressBar
-var _e_prompt: TextureRect
+var _e_prompt: Panel
 var _t_prompt: Panel
 var _slots: Array = []
 var _toast_panel: Panel
@@ -89,22 +89,40 @@ func _build_hotbar() -> void:
 	main_hbox.add_theme_constant_override("separation", 0)
 	bar.add_child(main_hbox)
 
-	# Dedicated E prompt zone — fixed 20px left column
+	# Dedicated space prompt zone — fixed 28px left column
 	var e_container := Control.new()
 	e_container.name = "EPromptArea"
-	e_container.custom_minimum_size = Vector2(20, 0)
+	e_container.custom_minimum_size = Vector2(28, 0)
 	e_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	main_hbox.add_child(e_container)
 
-	_e_prompt = TextureRect.new()
-	_e_prompt.name = "EPrompt"
-	_e_prompt.texture = load("res://GameAssets/UI/key_e.png")
-	_e_prompt.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
-	_e_prompt.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+	_e_prompt = Panel.new()
+	_e_prompt.name = "SpacePrompt"
 	_e_prompt.visible = false
 	_e_prompt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	_e_prompt.offset_left = 3.0
-	_e_prompt.offset_right = -3.0
+	_e_prompt.offset_left = 2.0
+	_e_prompt.offset_right = -2.0
+	var spc_style := StyleBoxFlat.new()
+	spc_style.bg_color = Color(0.13, 0.13, 0.16, 0.95)
+	spc_style.border_width_left = 1
+	spc_style.border_width_right = 1
+	spc_style.border_width_top = 1
+	spc_style.border_width_bottom = 1
+	spc_style.border_color = Color(0.60, 0.55, 0.35)
+	spc_style.corner_radius_top_left = 2
+	spc_style.corner_radius_top_right = 2
+	spc_style.corner_radius_bottom_left = 2
+	spc_style.corner_radius_bottom_right = 2
+	_e_prompt.add_theme_stylebox_override("panel", spc_style)
+	var spc_label := Label.new()
+	spc_label.text = "SPC"
+	spc_label.add_theme_font_size_override("font_size", 6)
+	spc_label.add_theme_color_override("font_color", Color(0.95, 0.88, 0.55))
+	spc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	spc_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	spc_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	spc_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_e_prompt.add_child(spc_label)
 	e_container.add_child(_e_prompt)
 
 	_t_prompt = Panel.new()
