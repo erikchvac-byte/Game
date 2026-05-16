@@ -653,6 +653,47 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 **Consequences:** New chop/trade frames are 56×56 (old walk/idle are 64×64) — minor size difference at scale=0.5 (28px vs 32px display). The 4 remaining NewStates animations (push, jump, eating, pull_object) are present in the project but not yet wired to any game state — reserved for future use. Player facing snaps to NPC direction while in trade range; walking out of range restores normal movement-based facing.
 **Testing:** Chop animation confirmed transparent, triggers on Space and right-click nav. Trade animation confirmed transparent, triggers on T-key trade. Player and NPC face each other confirmed visually from both vertical and horizontal positioning.
 
+## ADR-060: Trade Reliability Fixes — Double-Trigger Guard + Gem Icon
+**Status:** Accepted
+**Date:** 2026-05-17
+**Context:** Two bugs reported after ADR-059 landed:
+1. **Broken gem icon** — `Date-time-Coin.png` (introduced ADR-057 as placeholder) is a large UI sprite sheet. At 24×14 px hotbar slot size it renders as an unrecognizable colored mess. Player couldn't identify it as the trade reward.
+2. **"No product available" overwriting success toast** — `_npc_trade_active` is set by `_update_npc_proximity()` in step 1 of `_process()`. The nav auto-trade fires in step 2. `_npc_trade_active` remains `true` for one full frame after the trade completes (proximity clears it on the *next* frame). Any second trigger within that window — T-key press or re-clicking the NPC — called `_handle_npc_trade()` again. The failure toast ("No product available") overwrote the success toast, leaving the player seeing the gem icon but a failure message.
+**Decision:**
+1. Replace `GEM_TEX` in `npc_grey_hoodie.gd` with `res://GameAssets/Items/Gems/gem_ruby.png` — a clean round gem sprite that reads clearly at any hotbar size.
+2. Add `_npc.is_interactable()` guard to both `_handle_npc_trade()` trigger points in `world.gd`:
+   - T-key path (`_input`): `if … and _npc != null and _npc.is_interactable()`
+   - Nav arrival path (`_update_mouse_navigation`): `if pending and _npc.is_interactable()`
+**Rationale:** `is_interactable()` is a real-time property check with no frame lag (unlike `_npc_trade_active` which has a one-frame update delay). Adding it at both call sites blocks the second call the instant the first trade sets `_trade_completed = true`. The gem icon fix uses an existing in-project asset that scales cleanly.
+**Consequences:** Double-trigger is impossible regardless of input speed. Re-clicking the NPC after a completed trade is silently ignored rather than showing a misleading toast. `gem_ruby.png` key in InventoryManager is still `"gem"` — no stacking conflict.
+**Testing:** `execute_game_script` confirmed: first `_handle_npc_trade()` → `slot2=gem`, `_trade_completed=true`, `is_interactable()=false`; second attempt blocked (`_npc_trade_active=true` but `is_interactable=false`). Screenshot: ruby gem shows as clear red sphere in hotbar slot.
+
+---
+
+## ADR-059: NPC Right-Click Navigation and Auto-Trade
+**Status:** Accepted
+**Date:** 2026-05-17
+**Context:** Right-click navigation (ADR-055) only handled terrain and choppable trees. Clicking on or near the NPC did nothing — player could not click-to-navigate to the NPC to initiate a trade.
+**Decision:** Extend the existing `_on_right_click()` target resolution system with an NPC check at highest priority (before tree scan). In `_update_mouse_navigation()`, add a dedicated NPC arrival branch before the `_interactables.has()` check. Changes are entirely in `world.gd` — no new nodes, signals, or pipelines.
+- `_on_right_click`: if `_npc` is visible and click lands within `NPC_TRADE_RADIUS` (36 px) of NPC, set NPC as nav target with `pending=true`, return early (skips tree/terrain checks).
+- `_update_mouse_navigation` NPC branch: each frame, update `_nav_target_pos` to track NPC's current position (handles NPC patrol movement). When `player.distance_to(npc) ≤ NPC_TRADE_RADIUS`, cancel nav and fire `_handle_npc_trade()`.
+**Rationale:** Reuses all existing nav state (`_nav_target_pos`, `_nav_target_node`, `_nav_pending_interact`, `_nav_best_dist`, `_nav_stuck_time`). NPC doesn't use an Area2D/`_interactables` pattern so a separate arrival check was needed; tracking `_nav_target_pos` each frame allows the player to chase a moving NPC. Priority order (NPC > tree > terrain) matches the spec and is enforced by early return positioning in `_on_right_click`.
+**Consequences:** Clicking within 36 px of a visible NPC always targets the NPC for trade — even if a tree is also nearby. NPC click radius equals trade radius (36 px), intentionally generous. If NPC enters home mid-navigation (`visible=false`), the `_on_right_click` guard prevents re-targeting but in-progress nav completes (arrives at last known NPC pos and fires trade if NPC is still interactable).
+**Testing:** `execute_game_script`: right-click at NPC pos → `nav_active=true`, `target_node=GreyHoodie`, `pending=true`; after 4s walk → `nav_active=false`, `dist=35.0`, `trade_completed=true`, `slot2=gem`. Tree nav and terrain nav regression-tested: both unaffected.
+
+---
+
+## ADR-058: Hotbar Selection Behavioral Fix — Gold Border Tracks Selected Slot
+**Status:** Accepted
+**Date:** 2026-05-17
+**Context:** The hotbar had two separate concepts: `selected_slot` (white border, keyboard cursor) and `_equipped_slot` (gold border, active tool). `_on_hud_slot_selected()` in `world.gd` had an early return `if _player.equipped_tool == new_tool: return` that fired when scrolling between any two non-tool slots (both yield `new_tool = ""`). `set_equipped_slot()` was never called, leaving the gold border frozen at the previous position rather than tracking the selection cursor.
+**Decision:** Remove the early return. Conditionally update `equipped_tool` only when it changes (`if _player.equipped_tool != new_tool`). Always call `_hud.set_equipped_slot(index)` at the end of `_on_hud_slot_selected()` so the gold border tracks every slot selection unconditionally.
+**Rationale:** The gold border is the active-item indicator. It should always match the selection cursor. The old early return was an optimization that broke the visual contract — skipping `set_equipped_slot` when the tool state didn't change meant the visual could drift from the selection.
+**Consequences:** Gold border follows the selected slot at all times, including empty slots and non-tool items. `equipped_tool` still only carries the tool key string when the selected slot contains a registered tool; empty/non-tool selection correctly clears it. C-key toggle still works independently (sets `_equipped_slot` directly via `_handle_tool_toggle`).
+**Testing:** `execute_game_script`: scrolling 0→1→2→3→4 confirmed `selected==equipped` at every step including non-tool slots. Screenshot: axe slot (slot 1) shows gold bg + bright gold border when selected.
+
+---
+
 ## ADR-056: Mouse Navigation Stuck Detection
 **Status:** Accepted
 **Date:** 2026-05-15
@@ -872,3 +913,6 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-15 | Right-click mouse navigation: terrain walk-to-point (stops within 5px), tree targeting with auto-interact if axe equipped (stops silently if not), keyboard cancels nav. All in world.gd using existing auto_walk + interactable_entered pipeline. ADR-055 added. |
 | 2026-05-15 | Mouse nav stuck detection: _nav_best_dist + _nav_stuck_time (delta-based, 1.0 s) added to world.gd. Cancels nav when player makes no progress toward target — fixes infinite wall-grinding on blocked clicks. _on_right_click now cancels previous nav before starting new one. ADR-056 added. |
 | 2026-05-16 | Player chop + trade animations integrated: 66 PixelLab frames stripped of baked olive-green background (PowerShell pixel replacement), added to erik_sprites.tres (chop_down/up/side 16fr@12fps, trade_down/up/side 6fr@8fps, all non-looping). is_chopping/is_trading flags in player.gd, player_animation.gd handles state priority via animation_finished reset. world.gd triggers on Space/right-click chop and NPC trade. Date-time-Coin.png replaces WaterGem.png as trade reward gem icon. _face_player_toward() added to world.gd — player auto-faces NPC when in trade range and idle. ADR-057 added. |
+| 2026-05-17 | Hotbar selection behavioral fix: _on_hud_slot_selected() early return removed; set_equipped_slot(index) always called; gold border now tracks selected slot unconditionally, including non-tool and empty slots. ADR-058 added. |
+| 2026-05-17 | NPC right-click nav-to-trade: _on_right_click() checks NPC first at highest priority (within NPC_TRADE_RADIUS); _update_mouse_navigation() NPC arrival branch tracks NPC position and fires _handle_npc_trade() on range entry. Interaction priority: NPC > tree > terrain. ADR-059 added. |
+| 2026-05-17 | Trade reliability fixes: gem_ruby.png replaces Date-time-Coin.png as trade reward icon (Date-time-Coin was a large UI sprite unreadable at hotbar size). is_interactable() guard added to both _handle_npc_trade() trigger points (T-key and nav arrival) — blocks double-trigger within the one-frame _npc_trade_active lag window that caused "No product available" to overwrite the success toast. ADR-060 added. |

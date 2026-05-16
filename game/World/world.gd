@@ -98,7 +98,7 @@ func _input(event: InputEvent) -> void:
 		return
 	if not (event is InputEventKey) or not event.pressed or event.echo:
 		return
-	if event.is_action_pressed("npc_trade") and _npc_trade_active:
+	if event.is_action_pressed("npc_trade") and _npc_trade_active and _npc != null and _npc.is_interactable():
 		_handle_npc_trade()
 		return
 	for tool_key: String in EQUIPPABLE_TOOLS:
@@ -124,15 +124,10 @@ func _on_hud_slot_selected(index: int) -> void:
 	var new_tool := ""
 	if item != null and (item.key in EQUIPPABLE_TOOLS):
 		new_tool = item.key
-	if _player.equipped_tool == new_tool:
-		return
-	_player.equipped_tool = new_tool
-	if not _hud:
-		return
-	if new_tool == "":
-		_hud.set_equipped_slot(-1)
-	else:
-		_hud.set_equipped_slot(_find_equipped_slot(new_tool))
+	if _player.equipped_tool != new_tool:
+		_player.equipped_tool = new_tool
+	if _hud:
+		_hud.set_equipped_slot(index)
 
 
 func _handle_tool_toggle(tool_key: String) -> void:
@@ -183,6 +178,15 @@ func _on_right_click(world_pos: Vector2) -> void:
 		return
 	if _nav_active:
 		_cancel_navigation()
+	# NPC — highest priority
+	if _npc != null and (_npc as Node2D).visible:
+		var d := (_npc as Node2D).global_position.distance_to(world_pos)
+		if d < NPC_TRADE_RADIUS:
+			_nav_active = true
+			_nav_target_pos = (_npc as Node2D).global_position
+			_nav_target_node = _npc
+			_nav_pending_interact = true
+			return
 	var best_tree: Node = null
 	var best_dist := CLICK_TREE_RADIUS
 	for tree in get_tree().get_nodes_in_group("choppable_trees"):
@@ -212,6 +216,15 @@ func _update_mouse_navigation(delta: float) -> void:
 	if _nav_target_node != null and not is_instance_valid(_nav_target_node):
 		_cancel_navigation()
 		return
+	# NPC arrival: track NPC position and trigger trade when in range
+	if _nav_target_node == _npc and _npc != null:
+		_nav_target_pos = (_npc as Node2D).global_position
+		if _player.global_position.distance_to(_nav_target_pos) <= NPC_TRADE_RADIUS:
+			var pending := _nav_pending_interact
+			_cancel_navigation()
+			if pending and _npc.is_interactable():
+				_handle_npc_trade()
+			return
 	if _nav_target_node != null and _interactables.has(_nav_target_node):
 		var pending := _nav_pending_interact
 		var target := _nav_target_node
