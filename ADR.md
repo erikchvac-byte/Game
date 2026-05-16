@@ -644,6 +644,15 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-057: Player Chop and Trade Animations — PixelLab NeoAnima Integration
+**Status:** Accepted
+**Date:** 2026-05-16
+**Context:** Player had no animation for tree chopping or NPC trading — both interactions played no visual feedback. PixelLab generated a set of directional action animations (axe chop, trade/object-swap, push, jump, eating) exported as individual frame PNGs at 56×56 px. Trade gem reward used WaterGem.png placeholder. PixelLab frames were exported with a solid olive-green background (R=201,G=215,B=143,A=255) rather than transparent.
+**Decision:** Integrate chop and trade animations into the player SpriteFrames. Strip the baked-in background color from all 66 frames via PowerShell pixel replacement. Add `is_chopping` and `is_trading` flags to `player.gd`; `player_animation.gd` checks them before walk/idle; `animation_finished` resets both. `world.gd` sets `is_chopping=true` on Space-key and right-click tree interact; `is_trading=true` on successful NPC trade. Added `_face_player_toward(target: Node2D)` helper in `world.gd` — called each frame from `_update_npc_proximity()` when player is in trade range and not moving, so player always faces the NPC; NPC already uses `face_toward()`. New gem reward icon: `Date-time-Coin.png` replaces `WaterGem.png` in `npc_grey_hoodie.gd`.
+**Rationale:** Minimal footprint — no new nodes, no refactor. Flags on player + `animation_finished` signal is the idiomatic one-shot animation pattern in Godot. Pixel-stripping in PowerShell avoids adding external tooling dependencies. Facing from `_update_npc_proximity()` is the natural location — proximity already drives NPC facing, symmetry demanded the same for the player.
+**Consequences:** New chop/trade frames are 56×56 (old walk/idle are 64×64) — minor size difference at scale=0.5 (28px vs 32px display). The 4 remaining NewStates animations (push, jump, eating, pull_object) are present in the project but not yet wired to any game state — reserved for future use. Player facing snaps to NPC direction while in trade range; walking out of range restores normal movement-based facing.
+**Testing:** Chop animation confirmed transparent, triggers on Space and right-click nav. Trade animation confirmed transparent, triggers on T-key trade. Player and NPC face each other confirmed visually from both vertical and horizontal positioning.
+
 ## ADR-056: Mouse Navigation Stuck Detection
 **Status:** Accepted
 **Date:** 2026-05-15
@@ -862,3 +871,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-15 | Mouse interaction pipeline fix: scroll direction corrected; slot_selected signal added to hud.gd; world.gd._on_hud_slot_selected() auto-equips equippable tools on slot selection. Full chop chain via mouse now works. ADR-054 added. |
 | 2026-05-15 | Right-click mouse navigation: terrain walk-to-point (stops within 5px), tree targeting with auto-interact if axe equipped (stops silently if not), keyboard cancels nav. All in world.gd using existing auto_walk + interactable_entered pipeline. ADR-055 added. |
 | 2026-05-15 | Mouse nav stuck detection: _nav_best_dist + _nav_stuck_time (delta-based, 1.0 s) added to world.gd. Cancels nav when player makes no progress toward target — fixes infinite wall-grinding on blocked clicks. _on_right_click now cancels previous nav before starting new one. ADR-056 added. |
+| 2026-05-16 | Player chop + trade animations integrated: 66 PixelLab frames stripped of baked olive-green background (PowerShell pixel replacement), added to erik_sprites.tres (chop_down/up/side 16fr@12fps, trade_down/up/side 6fr@8fps, all non-looping). is_chopping/is_trading flags in player.gd, player_animation.gd handles state priority via animation_finished reset. world.gd triggers on Space/right-click chop and NPC trade. Date-time-Coin.png replaces WaterGem.png as trade reward gem icon. _face_player_toward() added to world.gd — player auto-faces NPC when in trade range and idle. ADR-057 added. |

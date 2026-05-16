@@ -7,7 +7,7 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** Mouse nav stuck detection — `_nav_best_dist` + `_nav_stuck_time` (delta, 1.0 s threshold) added to `world.gd`; cancels nav when player makes no progress; fixes infinite wall-grinding on blocked clicks (ADR-056, 2026-05-15). Previously: right-click nav (ADR-055), mouse pipeline (ADR-054), HUD mouse filter (ADR-053).
+- **Last completed:** Player chop + trade animations integrated + trade facing fix (ADR-057, 2026-05-16). 66 PixelLab frames had baked olive-green bg (R=201,G=215,B=143) stripped via PowerShell pixel replacement. `chop_down/up/side` (16fr@12fps, non-loop) and `trade_down/up/side` (6fr@8fps, non-loop) added to `erik_sprites.tres`. `player.gd` gains `is_chopping`/`is_trading` bool flags; `player_animation.gd` checks them first; `animation_finished` resets both. `world.gd` sets `is_chopping=true` on Space-key and right-click tree interact, `is_trading=true` on successful NPC trade. `_face_player_toward()` in `world.gd` orients player toward NPC when in trade range and not moving — player and NPC always face each other. `Date-time-Coin.png` replaces `WaterGem.png` as trade gem reward icon. New frames at `res://GameAssets/ErikPlayerNeoAnima/chop_{south/north/side}/` and `trade_{south/north/side}/`. Previously: mouse nav stuck detection (ADR-056, 2026-05-15).
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
 - **Space bug fix:** Pressing Space near a tree without the axe equipped now shows toast `"Equip axe first (C)"` instead of silently failing. Press C to equip, then Space to chop.
@@ -192,14 +192,15 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-15
-- **Right-click navigation complete.** Right-click terrain → player walks to position. Right-click tree (unchoppped, within 22px) → player walks to ChopArea, auto-chops once if axe equipped, stops silently if not. Keyboard input cancels nav mid-walk.
-- **Right-click implementation pattern:** All in `world.gd`. State: `_nav_active`, `_nav_target_pos`, `_nav_target_node`, `_nav_pending_interact`, `_nav_best_dist` (INF), `_nav_stuck_time` (0.0). `_update_mouse_navigation(delta)` called from `_process(delta)`. Arrival: terrain via `dist < ARRIVE_DIST (5px)`; tree via `_interactables.has(_nav_target_node)` (ChopArea signal). Stuck detection: if dist doesn't improve by >0.5px, accumulate delta; cancel after `NAV_STUCK_MAX (1.0s)` — prevents infinite wall-grinding on blocked clicks. `_on_right_click` calls `_cancel_navigation()` first if already navigating.
-- **Auto-equip behavior (from ADR-054):** scroll/number-key to a slot containing an equippable tool sets `player.equipped_tool`. Scroll away sets it back to `""`. C key (toggle) still works independently.
+### Session end — 2026-05-16
+- **Chop + trade animations live.** Player plays `chop_down/up/side` when chopping (Space or right-click nav) and `trade_down/up/side` on successful NPC trade. Both are one-shot (non-looping), reset via `animation_finished`. Frames from PixelLab ErikPlayerNeoAnima export; baked olive-green bg (R=201,G=215,B=143) stripped in PowerShell before import.
+- **Trade facing.** `_face_player_toward()` in `world.gd` orients the player toward the NPC whenever in trade range and standing still. Both characters always face each other on approach.
+- **Trade icon.** `Date-time-Coin.png` replaces `WaterGem.png` as the gem reward icon in `npc_grey_hoodie.gd` (`GEM_TEX`). `WaterGem.png` in hud.gd (water gauge icon) is unrelated — left as-is.
+- **Unused NeoAnima states.** Push, Jump, Eating, Pull_Object animations are in `res://GameAssets/ErikPlayerNeoAnima/` source but not imported or wired — reserved for future features.
+- **Auto-equip behavior (from ADR-054):** scroll/number-key to a slot with an equippable tool sets `player.equipped_tool`. Scroll away clears it. C key (toggle) works independently.
 - **Next feature candidates (pick one):** Teal house collision fix (door gap + side walls) is the lowest-risk warmup. Cave entrance rigging is the biggest next milestone.
-- **Pending editor restart note:** `_inv_mgr` is fetched via `get_node_or_null("/root/InventoryManager")` in world.gd `_ready()`. After a fresh Godot editor start this resolves fine — note is about replacing it with bare `InventoryManager` name eventually (after confirming autoload is declared in project.godot, not added at runtime).
+- **Pending editor restart note:** `_inv_mgr` is fetched via `get_node_or_null("/root/InventoryManager")` in world.gd `_ready()`. Replace with bare `InventoryManager` after confirming autoload is in project.godot (not added at runtime).
 - **Wood icon is a placeholder.** `rock3.png` used for wood. Replace with a real wood sprite when available.
-- **WaterGem.png** is placeholder for gem/currency. Needs a dedicated sprite.
 
 ### Permissions Allowlist (as of 2026-05-15)
 All Godot MCP and filesystem MCP tools are pre-approved in `.claude/settings.json`. No prompts expected for any of these:

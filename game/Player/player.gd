@@ -12,6 +12,8 @@ var facing_left := false
 var carrying_water := false
 var equipped_tool: String = ""
 var auto_walk := Vector2.ZERO
+var is_chopping := false
+var is_trading := false
 
 func facing_name() -> String:
 	match facing:

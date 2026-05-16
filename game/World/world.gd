@@ -12,12 +12,14 @@ const EQUIPPABLE_TOOLS := {
 }
 
 # Hotbar slot count must match InventoryManager.HOTBAR_SLOTS.
-# Only hotbar slots map to HUD display, so the search is capped here.
 const _HOTBAR_SLOTS := 12
 
 var _interactables: Array[Node] = []
 var _npc_trade_active := false
 var _inv_mgr: Node
+var _hud: Node
+var _player: CharacterBody2D
+var _npc: Node
 
 var _nav_active := false
 var _nav_target_pos := Vector2.ZERO
@@ -29,9 +31,11 @@ var _nav_stuck_time: float = 0.0
 
 func _ready() -> void:
 	_inv_mgr = get_node_or_null("/root/InventoryManager")
-	var hud := get_node_or_null("/root/HUD")
-	if hud:
-		hud.slot_selected.connect(_on_hud_slot_selected)
+	_hud = get_node_or_null("/root/HUD")
+	_player = get_node_or_null("Player") as CharacterBody2D
+	_npc = get_node_or_null("GreyHoodie")
+	if _hud:
+		_hud.slot_selected.connect(_on_hud_slot_selected)
 	$DoorEntrance.body_entered.connect(_on_door_entered)
 	get_tree().create_timer(0.5).timeout.connect(func(): $NPCHomeDoor.body_entered.connect(_on_npc_door_entered))
 	$Well.connect("interactable_entered", _on_interactable_entered)
@@ -68,28 +72,27 @@ func _process(delta: float) -> void:
 
 
 func _update_npc_proximity() -> void:
-	var player := get_node_or_null("Player") as CharacterBody2D
-	var npc := get_node_or_null("GreyHoodie")
-	if not player or not npc:
+	if not _player or not _npc:
 		return
-	var dist: float = player.global_position.distance_to(npc.global_position)
+	var dist: float = _player.global_position.distance_to(_npc.global_position)
 	var in_range: bool = dist <= NPC_TRADE_RADIUS
-	var can_trade: bool = in_range and npc.is_interactable()
+	var can_trade: bool = in_range and _npc.is_interactable()
 
-	npc.call("set_player_nearby", in_range)
+	_npc.call("set_player_nearby", in_range)
 	if in_range:
-		npc.call("face_toward", player.global_position)
+		_npc.call("face_toward", _player.global_position)
+		if not _player.is_moving and not _player.is_chopping and not _player.is_trading:
+			_face_player_toward(_npc as Node2D)
 
 	if can_trade == _npc_trade_active:
 		return
 	_npc_trade_active = can_trade
-	var hud := get_node_or_null("/root/HUD")
-	if hud:
-		hud.show_trade_prompt(_npc_trade_active)
+	if _hud:
+		_hud.show_trade_prompt(_npc_trade_active)
 
 
 func _input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT and event.pressed:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_on_right_click(get_global_mouse_position())
 		get_viewport().set_input_as_handled()
 		return
@@ -105,68 +108,56 @@ func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
 		var target := _get_nearest_interactable()
 		if target and target.has_method("interact"):
-			var player := $Player as CharacterBody2D
-			if target.has_method("can_interact") and not target.can_interact(player):
-				var hud := get_node_or_null("/root/HUD")
-				if hud:
-					hud.show_toast("Equip axe first (C)", 1.5)
+			if target.has_method("can_interact") and not target.can_interact(_player):
+				if _hud:
+					_hud.show_toast("Equip axe first (C)", 1.5)
 			else:
-				target.interact(player)
+				if target.is_in_group("choppable_trees") and _player:
+					_player.is_chopping = true
+				target.interact(_player)
 
 
 func _on_hud_slot_selected(index: int) -> void:
-	if not _inv_mgr:
-		return
-	var player := get_node_or_null("Player") as CharacterBody2D
-	if not player:
+	if not _inv_mgr or not _player:
 		return
 	var item = _inv_mgr.get_slot(index)
 	var new_tool := ""
 	if item != null and (item.key in EQUIPPABLE_TOOLS):
 		new_tool = item.key
-	if player.equipped_tool == new_tool:
+	if _player.equipped_tool == new_tool:
 		return
-	player.equipped_tool = new_tool
-	var hud := get_node_or_null("/root/HUD")
-	if not hud:
+	_player.equipped_tool = new_tool
+	if not _hud:
 		return
 	if new_tool == "":
-		hud.set_equipped_slot(-1)
+		_hud.set_equipped_slot(-1)
 	else:
-		for i in range(1, _HOTBAR_SLOTS):
-			var s = _inv_mgr.get_slot(i)
-			if s != null and s.key == new_tool:
-				hud.set_equipped_slot(i)
-				break
+		_hud.set_equipped_slot(_find_equipped_slot(new_tool))
 
 
 func _handle_tool_toggle(tool_key: String) -> void:
-	if not _inv_mgr or not _inv_mgr.has_item(tool_key):
+	if not _inv_mgr or not _inv_mgr.has_item(tool_key) or not _player:
 		return
-	var player := get_node_or_null("Player") as CharacterBody2D
-	if not player:
-		return
-	player.equipped_tool = "" if player.equipped_tool == tool_key else tool_key
-	var hud := get_node_or_null("/root/HUD")
-	if hud:
-		var slot_idx := -1
-		if player.equipped_tool != "":
-			for i in range(1, _HOTBAR_SLOTS):
-				var item = _inv_mgr.get_slot(i)
-				if item != null and item.key == player.equipped_tool:
-					slot_idx = i
-					break
-		hud.set_equipped_slot(slot_idx)
+	_player.equipped_tool = "" if _player.equipped_tool == tool_key else tool_key
+	if _hud:
+		var slot_idx := -1 if _player.equipped_tool == "" else _find_equipped_slot(_player.equipped_tool)
+		_hud.set_equipped_slot(slot_idx)
+
+
+func _find_equipped_slot(tool_key: String) -> int:
+	for i in range(1, _HOTBAR_SLOTS):
+		var item = _inv_mgr.get_slot(i)
+		if item != null and item.key == tool_key:
+			return i
+	return -1
 
 
 func _handle_npc_trade() -> void:
-	var success: bool = $GreyHoodie.attempt_trade()
-	var hud := get_node_or_null("/root/HUD")
-	if hud:
-		if success:
-			hud.show_toast("Traded: +1 Gem", 2.5)
-		else:
-			hud.show_toast("No product available", 2.0)
+	var success: bool = _npc.attempt_trade()
+	if success and _player:
+		_player.is_trading = true
+	if _hud:
+		_hud.show_toast("Traded: +1 Gem" if success else "No product available", 2.5 if success else 2.0)
 
 
 func _get_nearest_interactable() -> Node:
@@ -174,14 +165,13 @@ func _get_nearest_interactable() -> Node:
 		return null
 	if _interactables.size() == 1:
 		return _interactables[0]
-	var player := $Player as Node2D
 	var best: Node = null
 	var best_dist := INF
 	for node in _interactables:
 		var n2d := node as Node2D
 		if n2d == null:
 			continue
-		var d: float = player.global_position.distance_squared_to(n2d.global_position)
+		var d: float = _player.global_position.distance_squared_to(n2d.global_position)
 		if d < best_dist:
 			best_dist = d
 			best = node
@@ -189,11 +179,10 @@ func _get_nearest_interactable() -> Node:
 
 
 func _on_right_click(world_pos: Vector2) -> void:
-	var player := get_node_or_null("Player") as CharacterBody2D
-	if not player:
+	if not _player:
 		return
 	if _nav_active:
-		_cancel_navigation(player)
+		_cancel_navigation()
 	var best_tree: Node = null
 	var best_dist := CLICK_TREE_RADIUS
 	for tree in get_tree().get_nodes_in_group("choppable_trees"):
@@ -206,44 +195,33 @@ func _on_right_click(world_pos: Vector2) -> void:
 		if d < best_dist:
 			best_dist = d
 			best_tree = tree
+	_nav_active = true
 	if best_tree != null:
-		_nav_active = true
 		_nav_target_pos = (best_tree as Node2D).global_position
 		_nav_target_node = best_tree
 		_nav_pending_interact = true
 	else:
-		_nav_active = true
 		_nav_target_pos = world_pos
 		_nav_target_node = null
 		_nav_pending_interact = false
 
 
 func _update_mouse_navigation(delta: float) -> void:
-	if not _nav_active:
-		return
-	var player := get_node_or_null("Player") as CharacterBody2D
-	if not player:
-		return
-	var kb_dir := Vector2(
-		Input.get_axis("ui_left", "ui_right"),
-		Input.get_axis("ui_up", "ui_down")
-	)
-	if kb_dir.length_squared() > 0.0:
-		_cancel_navigation(player)
+	if not _nav_active or not _player:
 		return
 	if _nav_target_node != null and not is_instance_valid(_nav_target_node):
-		_cancel_navigation(player)
+		_cancel_navigation()
 		return
 	if _nav_target_node != null and _interactables.has(_nav_target_node):
 		var pending := _nav_pending_interact
 		var target := _nav_target_node
-		_cancel_navigation(player)
+		_cancel_navigation()
 		if pending:
-			_do_nav_interact(player, target)
+			_do_nav_interact(_player, target)
 		return
-	var dist := player.global_position.distance_to(_nav_target_pos)
+	var dist := _player.global_position.distance_to(_nav_target_pos)
 	if dist < ARRIVE_DIST:
-		_cancel_navigation(player)
+		_cancel_navigation()
 		return
 	if dist < _nav_best_dist - 0.5:
 		_nav_best_dist = dist
@@ -251,18 +229,19 @@ func _update_mouse_navigation(delta: float) -> void:
 	else:
 		_nav_stuck_time += delta
 		if _nav_stuck_time >= NAV_STUCK_MAX:
-			_cancel_navigation(player)
+			_cancel_navigation()
 			return
-	player.auto_walk = (_nav_target_pos - player.global_position).normalized()
+	_player.auto_walk = (_nav_target_pos - _player.global_position).normalized()
 
 
-func _cancel_navigation(player: CharacterBody2D) -> void:
+func _cancel_navigation() -> void:
 	_nav_active = false
 	_nav_target_node = null
 	_nav_pending_interact = false
 	_nav_best_dist = INF
 	_nav_stuck_time = 0.0
-	player.auto_walk = Vector2.ZERO
+	if _player:
+		_player.auto_walk = Vector2.ZERO
 
 
 func _do_nav_interact(player: CharacterBody2D, target: Node) -> void:
@@ -270,31 +249,41 @@ func _do_nav_interact(player: CharacterBody2D, target: Node) -> void:
 		return
 	if target.has_method("can_interact") and not target.can_interact(player):
 		return
+	if target.is_in_group("choppable_trees"):
+		player.is_chopping = true
 	target.interact(player)
+
+
+func _face_player_toward(target: Node2D) -> void:
+	if not _player or not target:
+		return
+	var diff := target.global_position - _player.global_position
+	if abs(diff.x) >= abs(diff.y):
+		_player.facing = _player.Facing.SIDE
+		_player.facing_left = diff.x < 0.0
+	else:
+		_player.facing = _player.Facing.DOWN if diff.y > 0.0 else _player.Facing.UP
 
 
 func _on_interactable_entered(node: Node) -> void:
 	if not _interactables.has(node):
 		_interactables.append(node)
-	var hud := get_node_or_null("/root/HUD")
-	if hud:
-		hud.show_interact_prompt(true)
+	if _hud:
+		_hud.show_interact_prompt(true)
 
 
 func _on_interactable_exited(node: Node) -> void:
 	_interactables.erase(node)
-	var hud := get_node_or_null("/root/HUD")
-	if hud:
-		hud.show_interact_prompt(_interactables.size() > 0)
+	if _hud:
+		_hud.show_interact_prompt(_interactables.size() > 0)
 
 
 func _on_npc_door_entered(body: Node2D) -> void:
 	if body.name != "Player":
 		return
 	$NPCHomeDoor.body_entered.disconnect(_on_npc_door_entered)
-	var player := get_node_or_null("Player") as CharacterBody2D
-	if player:
-		player.auto_walk = Vector2(0, -1)
+	if _player:
+		_player.auto_walk = Vector2(0, -1)
 	await TransitionManager.fade_to_black(0.4)
 	get_tree().change_scene_to_file("res://World/NPCHome/interior.tscn")
 
@@ -303,9 +292,8 @@ func _on_door_entered(body: Node2D) -> void:
 	if body.name != "Player":
 		return
 	$DoorEntrance.body_entered.disconnect(_on_door_entered)
-	var player := get_node_or_null("Player") as CharacterBody2D
-	if player:
-		player.auto_walk = Vector2(0, -1)
+	if _player:
+		_player.auto_walk = Vector2(0, -1)
 	var bakery := $PlayerHome as AnimatedSprite2D
 	bakery.play("open")
 	while bakery.frame < 4:
