@@ -7,19 +7,17 @@
 [ext_resource type="Texture2D" uid="uid://c1kj7cpn6wu31" path="res://GameAssets/Rocks/rock_grey_cluster.png" id="45_8kjm2"]
 [ext_resource type="SpriteFrames" uid="uid://bdowx3l78eemq" path="res://GameAssets/Buildings/special/house_grey_teal_frames.tres" id="45_h4hkh"]
 [ext_resource type="Texture2D" uid="uid://cvmbhu2io20hk" path="res://GameAssets/Trees/log_fallen_brown.png" id="45_i52kj"]
-[ext_resource type="Texture2D" uid="uid://flgai26e04l7" path="res://GameAssets/Objects/RedCapMushroom.png" id="45_xu702"]
 [ext_resource type="Script" uid="uid://c2rgwc7pyf36p" path="res://NPCs/npc_grey_hoodie.gd" id="46_xu702"]
 [ext_resource type="SpriteFrames" uid="uid://b0rvlem6tvcb3" path="res://GameAssets/NPCs/GreyHoodie/grey_hoodie_sprites.tres" id="47_i363k"]
 [ext_resource type="Texture2D" uid="uid://cvef32hudv7jo" path="res://GameAssets/Caves/CaveEntrance/cave_entrance_arch_stone.png" id="48_dlis5"]
-[ext_resource type="Texture2D" uid="uid://b84id3rsykn03" path="res://GameAssets/Trees/tree_willow_weeping.png" id="48_n40p1"]
 [ext_resource type="Texture2D" uid="uid://n6fr5m4wldrm" path="res://GameAssets/Objects/BigMushroomStump.png" id="49_h4hkh"]
 [ext_resource type="Texture2D" uid="uid://buq3o7ig25tmw" path="res://GameAssets/Trees/tree_pine_bushy_b.png" id="52_3gnva"]
 [ext_resource type="Texture2D" uid="uid://bgkahretu6fd7" path="res://GameAssets/Trees/tree_pine_narrow.png" id="53_i5ake"]
 [ext_resource type="Texture2D" uid="uid://cpgt5c4ifh1r2" path="res://GameAssets/Trees/tree_ginkgo.png" id="54_dmovf"]
 [ext_resource type="Texture2D" uid="uid://c12wls7f3a65v" path="res://GameAssets/Trees/tree_oak_green.png" id="55_m1472"]
 [ext_resource type="Texture2D" uid="uid://c7tvu8mv80woj" path="res://GameAssets/Trees/log_brown_short.png" id="56_eyejc"]
-[ext_resource type="PackedScene" uid="uid://b8x5174l3wq0i" path="res://World/ChoppableTree/choppable_tree.tscn" id="choptree_scene"]
 [ext_resource type="Texture2D" uid="uid://b6gp3wtyvi25x" path="res://GameAssets/Buildings/shops/shop_bakery_open.png" id="bakery_open"]
+[ext_resource type="PackedScene" uid="uid://b8x5174l3wq0i" path="res://World/ChoppableTree/choppable_tree.tscn" id="choptree_scene"]
 [ext_resource type="Texture2D" uid="uid://dcplhewp24tmq" path="res://GameAssets/Objects/DryingRacks/rack_new_empty.png" id="drack1_tex"]
 [ext_resource type="Script" uid="uid://23aaem0eoxrt" path="res://Interactables/drying_rack.gd" id="drack_script"]
 [ext_resource type="Script" uid="uid://cy7rdet47ajip" path="res://World/object_shadow.gd" id="obj_shadow_script"]
@@ -42,6 +40,17 @@
 [ext_resource type="Texture2D" uid="uid://g7abrk5toela" path="res://GameAssets/PlantsGrow/PurplePunchOne/Purple32.png" id="pp_16"]
 [ext_resource type="Texture2D" uid="uid://ck84anyp5v4ho" path="res://GameAssets/PlantsGrow/PurplePunchOne/Purple33.png" id="pp_17"]
 [ext_resource type="Script" uid="uid://dc3pnquhauaai" path="res://Interactables/well.gd" id="well_script"]
+[ext_resource type="Texture2D" uid="uid://xfodkbqi2w0a" path="res://GameAssets/Willow/willow_f0.png" id="willow_f0"]
+[ext_resource type="Texture2D" uid="uid://cxv2xuguy6la8" path="res://GameAssets/Willow/willow_f1.png" id="willow_f1"]
+[ext_resource type="Texture2D" uid="uid://p16qmrjgjgje" path="res://GameAssets/Willow/willow_f2.png" id="willow_f2"]
+[ext_resource type="Texture2D" uid="uid://bu8qukmkjf13b" path="res://GameAssets/Willow/willow_f3.png" id="willow_f3"]
+[ext_resource type="Texture2D" uid="uid://bhx5bedlfsh2u" path="res://GameAssets/Willow/willow_f4.png" id="willow_f4"]
+[ext_resource type="Texture2D" uid="uid://4fl747yfx0fo" path="res://GameAssets/Willow/willow_f5.png" id="willow_f5"]
+[ext_resource type="Texture2D" uid="uid://0igrdv2or4s1" path="res://GameAssets/Willow/willow_f6.png" id="willow_f6"]
+[ext_resource type="Texture2D" uid="uid://bqxyc52i7dne6" path="res://GameAssets/Willow/willow_f7.png" id="willow_f7"]
+[ext_resource type="Texture2D" uid="uid://b7g2ftyuysdve" path="res://GameAssets/Willow/willow_f8.png" id="willow_f8"]
+[ext_resource type="Texture2D" uid="uid://inuq3s4oqqdd" path="res://GameAssets/Willow/willow_idle.png" id="willow_idle"]
+[ext_resource type="Script" uid="uid://ciy6hj2sxk2o2" path="res://World/WillowTree/willow_tree.gd" id="willow_tree_script"]
 [ext_resource type="Texture2D" uid="uid://b8iyfgg5pkv8y" path="res://GameAssets/WellWater/WellWater1.png" id="ww_1"]
 [ext_resource type="Texture2D" uid="uid://nh0y02mr1kmo" path="res://GameAssets/WellWater/WellWater2.png" id="ww_2"]
 [ext_resource type="Texture2D" uid="uid://b8qgraorufudo" path="res://GameAssets/WellWater/WellWater3.png" id="ww_3"]
@@ -279,8 +288,54 @@ size = Vector2(44, 10)
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_dlis5"]
 size = Vector2(50, 22)
 
+[sub_resource type="SpriteFrames" id="WillowFrames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("willow_idle")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("willow_f0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("willow_f1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("willow_f2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("willow_f3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("willow_f4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("willow_f5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("willow_f6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("willow_f7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("willow_f8")
+}],
+"loop": false,
+"name": &"shake",
+"speed": 8.0
+}]
+
+[sub_resource type="CircleShape2D" id="WillowProxShape"]
+radius = 17.0
+
 [sub_resource type="CircleShape2D" id="CircleShape2D_h4hkh"]
-radius = 7.0
+radius = 7.4067616
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o2cvn"]
 size = Vector2(85, 55.5)
@@ -339,11 +394,6 @@ visible = false
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Well/WellArea" unique_id=770063340]
 shape = SubResource("WellAreaShape")
-
-[node name="WellPrompt" type="Sprite2D" parent="Well" unique_id=1502258637]
-position = Vector2(0, -18)
-scale = Vector2(0.5, 0.5)
-texture = ExtResource("41_s5cut")
 
 [node name="Shadow" type="Node2D" parent="Well" unique_id=2101001002]
 script = ExtResource("obj_shadow_script")
@@ -465,10 +515,26 @@ scale = Vector2(0.48000032, 1)
 position = Vector2(0, 18)
 shape = SubResource("RectangleShape2D_dlis5")
 
-[node name="TreeWillowWeeping" type="Sprite2D" parent="." unique_id=1732131370]
-position = Vector2(472.99997, 48.000004)
+[node name="TreeWillowWeeping" type="Node2D" parent="." unique_id=1732131370]
+position = Vector2(467, 97)
 scale = Vector2(2.975, 2.5)
-texture = ExtResource("48_n40p1")
+script = ExtResource("willow_tree_script")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="TreeWillowWeeping" unique_id=2111111001]
+position = Vector2(-2.6890655, -3.2000012)
+scale = Vector2(0.505, 0.505)
+sprite_frames = SubResource("WillowFrames")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="ProximityArea" type="Area2D" parent="TreeWillowWeeping" unique_id=2111111002]
+position = Vector2(-8.403351, -3.2000015)
+scale = Vector2(1, 0.712)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TreeWillowWeeping/ProximityArea" unique_id=2111111003]
+position = Vector2(4.369748, -1.1235955)
+scale = Vector2(0.30084032, 2.5955052)
+shape = SubResource("WillowProxShape")
 
 [node name="Shadow" type="Node2D" parent="TreeWillowWeeping" unique_id=514637950]
 show_behind_parent = true
@@ -484,13 +550,9 @@ position = Vector2(2.6503067, -24.875912)
 scale = Vector2(0.64718115, 1.7118204)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TreeWillowWeeping/TreeCollider" unique_id=1025713762]
-position = Vector2(-1.9141104, 14.890511)
+position = Vector2(-10.327746, 14.064508)
+scale = Vector2(-2.021038, 1.2572073)
 shape = SubResource("CircleShape2D_h4hkh")
-
-[node name="RedCapMushroom" type="Sprite2D" parent="TreeWillowWeeping" unique_id=466595522]
-position = Vector2(2.9447858, 11.912409)
-scale = Vector2(0.13190198, 0.17153281)
-texture = ExtResource("45_xu702")
 
 [node name="HouseTwostoryTeal" type="AnimatedSprite2D" parent="." unique_id=1938115166]
 texture_filter = 1
@@ -516,6 +578,7 @@ shadow_size = Vector2(65, 10)
 cast_length = 30.0
 
 [node name="BigMushroomStump" type="Sprite2D" parent="." unique_id=1859861714]
+visible = false
 position = Vector2(472, 141)
 texture = ExtResource("49_h4hkh")
 
@@ -637,35 +700,34 @@ position = Vector2(534, 125)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPCHomeDoor" unique_id=798263946]
 shape = SubResource("RectangleShape2D_i5ake")
 
-[node name="Tree1" parent="." instance=ExtResource("choptree_scene")]
+[node name="Tree1" parent="." unique_id=324092375 instance=ExtResource("choptree_scene")]
 position = Vector2(42, 213)
 tree_texture = ExtResource("52_3gnva")
 stump_texture = ExtResource("56_eyejc")
 tree_visual_scale = Vector2(1.5, 1.5)
-stump_offset = Vector2(-14.0, 45.0)
-stump_visual_scale = Vector2(0.5, 0.5)
+stump_offset = Vector2(-14, 45)
 
-[node name="Tree2" parent="." instance=ExtResource("choptree_scene")]
+[node name="Tree2" parent="." unique_id=425777483 instance=ExtResource("choptree_scene")]
 position = Vector2(93, 237)
 tree_texture = ExtResource("53_i5ake")
 stump_texture = ExtResource("56_eyejc")
 tree_visual_scale = Vector2(1.545, 1.545)
-stump_offset = Vector2(-4.0, 41.0)
+stump_offset = Vector2(-4, 41)
 stump_visual_scale = Vector2(0.6, 0.6)
 
-[node name="Tree3" parent="." instance=ExtResource("choptree_scene")]
+[node name="Tree3" parent="." unique_id=1090580049 instance=ExtResource("choptree_scene")]
 position = Vector2(161, 202)
 tree_texture = ExtResource("54_dmovf")
 stump_texture = ExtResource("56_eyejc")
-tree_visual_scale = Vector2(2.0, 2.0)
-stump_offset = Vector2(13.0, 46.0)
+tree_visual_scale = Vector2(2, 2)
+stump_offset = Vector2(13, 46)
 stump_visual_scale = Vector2(0.56, 0.88)
 
-[node name="Tree4" parent="." instance=ExtResource("choptree_scene")]
+[node name="Tree4" parent="." unique_id=1712278908 instance=ExtResource("choptree_scene")]
 position = Vector2(260, 240)
 tree_texture = ExtResource("55_m1472")
 stump_texture = ExtResource("56_eyejc")
-tree_visual_scale = Vector2(2.0, 2.0)
-stump_offset = Vector2(-8.0, 41.0)
-stump_visual_scale = Vector2(1.0, 0.56)
+tree_visual_scale = Vector2(2, 2)
+stump_offset = Vector2(-8, 41)
+stump_visual_scale = Vector2(1, 0.56)
 stump_flip_h = true

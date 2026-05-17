@@ -653,6 +653,20 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 **Consequences:** New chop/trade frames are 56×56 (old walk/idle are 64×64) — minor size difference at scale=0.5 (28px vs 32px display). The 4 remaining NewStates animations (push, jump, eating, pull_object) are present in the project but not yet wired to any game state — reserved for future use. Player facing snaps to NPC direction while in trade range; walking out of range restores normal movement-based facing.
 **Testing:** Chop animation confirmed transparent, triggers on Space and right-click nav. Trade animation confirmed transparent, triggers on T-key trade. Player and NPC face each other confirmed visually from both vertical and horizontal positioning.
 
+## ADR-061: Willow Tree Proximity Animation
+**Status:** Accepted
+**Date:** 2026-05-17
+**Context:** The `TreeWillowWeeping` node (beside the NPC house) was a static `Sprite2D` using the old `tree_willow_weeping.png`. New PixelLab-generated assets at `GameAssets/willow/default/` provide a 96×96 idle frame plus a 9-frame "shake" animation. Request: replace the static sprite with the animated asset and add proximity-triggered one-shot behavior (plays once on player enter, holds last frame, resets only after player leaves AND 120s elapses, then re-enters).
+**Decision:**
+1. Copy willow assets to `game/GameAssets/Willow/`: `willow_idle.png` + `willow_f0.png`–`willow_f8.png` (10 files).
+2. Create `res://World/WillowTree/willow_tree.gd` — `extends Node2D` with `ProximityArea` body-entered/exited signals and `animation_finished` to hold the last frame.
+3. In `world.tscn`: replace `TreeWillowWeeping` `Sprite2D` root with `Node2D` (same position, same scale `(2.975, 2.5)`, `willow_tree.gd` script). Add `AnimatedSprite2D` child (SpriteFrames inline sub_resource: `"idle"` 1fr loop + `"shake"` 9fr non-loop @8fps). Add `ProximityArea` Area2D child (CircleShape2D radius=17 in local space, ~50px world). Preserve all existing children (Shadow, TreeCollider, RedCapMushroom) with unchanged positions/scales.
+**Rationale:** Keeping scale on the Node2D root means all existing children inherit the same transform as before — no position/scale recalculation needed. Radius=17 in scaled space gives ≈50px world proximity, which feels responsive without triggering from long range. The 120s reset matches a "the tree settled down after a while" narrative beat.
+**Consequences:** Old `tree_willow_weeping.png` ext_resource ref (`48_n40p1`) is now unused in `world.tscn` (orphaned ext_resource — harmless). The `AnimatedSprite2D` `idle` animation plays before the player is nearby, and the `shake` animation plays and holds exactly once per approach+120s-gap cycle.
+**Testing:** Live playtest confirmed: `animation=shake`, `frame=8`, `is_playing=false`, `_played=true` — animation triggered on proximity entry, held on final frame, not looping. NPC house and surrounding interactions unaffected.
+
+---
+
 ## ADR-060: Trade Reliability Fixes — Double-Trigger Guard + Gem Icon
 **Status:** Accepted
 **Date:** 2026-05-17
@@ -916,3 +930,4 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-17 | Hotbar selection behavioral fix: _on_hud_slot_selected() early return removed; set_equipped_slot(index) always called; gold border now tracks selected slot unconditionally, including non-tool and empty slots. ADR-058 added. |
 | 2026-05-17 | NPC right-click nav-to-trade: _on_right_click() checks NPC first at highest priority (within NPC_TRADE_RADIUS); _update_mouse_navigation() NPC arrival branch tracks NPC position and fires _handle_npc_trade() on range entry. Interaction priority: NPC > tree > terrain. ADR-059 added. |
 | 2026-05-17 | Trade reliability fixes: gem_ruby.png replaces Date-time-Coin.png as trade reward icon (Date-time-Coin was a large UI sprite unreadable at hotbar size). is_interactable() guard added to both _handle_npc_trade() trigger points (T-key and nav arrival) — blocks double-trigger within the one-frame _npc_trade_active lag window that caused "No product available" to overwrite the success toast. ADR-060 added. |
+| 2026-05-17 | Willow tree proximity animation: TreeWillowWeeping replaced Sprite2D root with Node2D + willow_tree.gd. New PixelLab assets (willow_idle.png + willow_f0–f8.png, 96×96) loaded as inline SpriteFrames. AnimatedSprite2D plays "shake" once on player proximity entry, holds final frame, resets after player exits + 120s. CircleShape2D ProximityArea radius=17 (≈50px world). ADR-061 added. |
