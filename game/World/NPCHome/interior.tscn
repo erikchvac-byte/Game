@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dyesovrngsuel" path="res://Player/player.tscn" id="1_player"]
 [ext_resource type="Script" path="res://World/NPCHome/interior.gd" id="2_script"]
-[ext_resource type="TileSet" uid="uid://c1tcob13w2fpk" path="res://World/PlayerHome/interior_tileset.tres" id="3_tileset"]
+[ext_resource type="TileSet" uid="uid://c1tcob13w2fpk" path="res://resources/tilesets/interior_tileset.tres" id="3_tileset"]
 
 [sub_resource type="RectangleShape2D" id="NorthWall"]
 size = Vector2(160, 16)

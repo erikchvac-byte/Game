@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dkaick7afwhnc"]
 
-[ext_resource type="Texture2D" uid="uid://bx8ncd8opph0q" path="res://GameAssets/interior/tiles.PNG" id="1_cse3y"]
-[ext_resource type="Texture2D" uid="uid://dn442ajvs1dd7" path="res://GameAssets/interior/atlas_32x32.png" id="2_62ajy"]
+[ext_resource type="Texture2D" uid="uid://bx8ncd8opph0q" path="res://assets/tiles/interior/tiles.png" id="1_cse3y"]
+[ext_resource type="Texture2D" uid="uid://dn442ajvs1dd7" path="res://assets/tiles/interior/atlas_32x32.png" id="2_62ajy"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_gusq2"]
 texture = ExtResource("1_cse3y")

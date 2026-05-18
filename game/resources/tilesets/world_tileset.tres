@@ -1,10 +1,10 @@
 [gd_resource type="TileSet" format=3 uid="uid://nk6run28bicj"]
 
-[ext_resource type="Texture2D" uid="uid://dobwmh1v4d057" path="res://GameAssets/Tiles/fivegrass.png" id="3_5060s"]
-[ext_resource type="Texture2D" uid="uid://hqn12dgj8fe6" path="res://GameAssets/Beach/Tiles/Tiles.png" id="3_xb6uu"]
-[ext_resource type="Texture2D" uid="uid://cugf0bogxb4oh" path="res://World/[32x32_Tileset/atlas.png" id="4_5060s"]
-[ext_resource type="Texture2D" uid="uid://dauc6r0c5p8p7" path="res://GameAssets/Tiles/mabeyfive.png" id="4_ajjhx"]
-[ext_resource type="Texture2D" uid="uid://dkfc14of7o4js" path="res://GameAssets/Tiles/town-grass-tile.png" id="4_c0le5"]
+[ext_resource type="Texture2D" uid="uid://dobwmh1v4d057" path="res://assets/tiles/fivegrass.png" id="3_5060s"]
+[ext_resource type="Texture2D" uid="uid://hqn12dgj8fe6" path="res://assets/tiles/beach_tiles.png" id="3_xb6uu"]
+[ext_resource type="Texture2D" uid="uid://cugf0bogxb4oh" path="res://assets/tiles/atlas_32x32.png" id="4_5060s"]
+[ext_resource type="Texture2D" uid="uid://dauc6r0c5p8p7" path="res://assets/tiles/mabeyfive.png" id="4_ajjhx"]
+[ext_resource type="Texture2D" uid="uid://dkfc14of7o4js" path="res://assets/tiles/town-grass-tile.png" id="4_c0le5"]
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_wr8cr"]
 load_path = "res://.godot/imported/Tile.png-8c4f8b9145d51e24d1a14366c75728d0.ctex"

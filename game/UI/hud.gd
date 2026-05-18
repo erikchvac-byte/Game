@@ -52,7 +52,7 @@ func _build_top_bar() -> void:
 	var w_sec := _hbox(Control.SIZE_EXPAND_FILL, BoxContainer.ALIGNMENT_BEGIN, 2)
 	hbox.add_child(w_sec)
 	var w_gem := TextureRect.new()
-	w_gem.texture = load("res://GameAssets/UI/WaterGem.png")
+	w_gem.texture = load("res://assets/ui/WaterGem.png")
 	w_gem.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 	w_gem.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 	w_gem.custom_minimum_size = Vector2(10.0, 10.0)
@@ -67,7 +67,7 @@ func _build_top_bar() -> void:
 	_water_tp.max_value = 1.0
 	_water_tp.value = 1.0
 	_water_tp.fill_mode = TextureProgressBar.FILL_LEFT_TO_RIGHT
-	var _bar_tex: Texture2D = load("res://GameAssets/UI/WaterMeterBar.png")
+	var _bar_tex: Texture2D = load("res://assets/ui/WaterMeterBar.png")
 	_water_tp.texture_under = _bar_tex
 	_water_tp.texture_progress = _bar_tex
 	_water_tp.tint_under = Color(0.08, 0.15, 0.30)
@@ -172,8 +172,8 @@ func _build_hotbar() -> void:
 	hbox.add_theme_constant_override("separation", 1)
 	main_hbox.add_child(hbox)
 
-	_bucket_tex_empty = load("res://GameAssets/UI/bucket_empty.png")
-	_bucket_tex_full = load("res://GameAssets/UI/bucket_full.png")
+	_bucket_tex_empty = load("res://assets/ui/bucket_empty.png")
+	_bucket_tex_full = load("res://assets/ui/bucket_full.png")
 
 	_slots = []
 	for i in range(SLOT_COUNT):

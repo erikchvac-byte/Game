@@ -667,6 +667,27 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 
 ---
 
+## ADR-062: Asset Reorganization — Canonical res://assets/ + res://resources/ Layout
+**Status:** Accepted
+**Date:** 2026-05-17
+**Context:** All project assets lived under `res://GameAssets/` in a flat, ad-hoc structure with mixed naming conventions (numbered, hash-suffixed, mixed-case folders). After the Phase 1 audit (227 VERIFIED_USED / 879 VERIFIED_UNUSED), a structured reorganization was needed to separate used assets from noise.
+**Decision:** Execute a full move of 227 VERIFIED_USED PNGs + 5 .tres resource files to a semantically organized tree:
+- `res://assets/characters/{erik,grey_hoodie}/` — player + NPC sprite frames
+- `res://assets/nature/{trees/willow,bushes/purple_punch_one,rocks,stumps}/` — world flora/geology
+- `res://assets/props/{well,drying_rack,bud,items}/` — interactive object graphics
+- `res://assets/ui/` — HUD elements
+- `res://assets/tiles/interior/` — tileset source PNGs
+- `res://assets/structures/{houses,shops}/` — building sprites
+- `res://assets/effects/` — reserved for future effects
+- `res://resources/{tilesets,characters,structures}/` — .tres SpriteFrames + tileset resources
+- `res://assets/_review_required/` — UNKNOWN assets quarantined for review
+For each PNG: moved PNG + its `.import` file together (preserving UID); updated `source_file=` inside moved `.import`. Updated all path strings in 13 .tscn/.tres/.gd files. Special case: `[32x32_Tileset/atlas.png` — `[` in path requires `mcp__filesystem__move_file` (GDScript `globalize_path()` fails on `[`). Special case: `erik_sprites.tres` — prefix replacement incorrectly routed it to `assets/characters/`; caught and corrected to `resources/characters/`.
+**Rationale:** Semantic grouping makes assets discoverable by purpose. Separating `.tres` resource files into `resources/` from raw PNGs in `assets/` follows the Godot convention. UIDs are preserved — Godot resolves by UID even before a filesystem scan, so the game is not broken mid-operation. Keeping `.import` with its PNG is the critical invariant for UID integrity.
+**Consequences:** 879 VERIFIED_UNUSED assets remain in legacy `GameAssets/` folders — cleanup is Phase 2 (separate decision). 4 bud duplicate pairs deferred (need art replacement before move). `retiledmap.tscn` still has updated paths but is a scratch scene — not deleted. `project_reorganization_plan.md` documents the full mapping; `project_move_log.md` documents the execution.
+**Testing:** `ResourceLoader.exists()` confirmed OK for 16 spot-checked resources spanning all subsystems. Godot filesystem scan completed with no errors. `atlas_32x32.png.import` auto-regenerated with new ctex hash (expected behavior).
+
+---
+
 ## ADR-060: Trade Reliability Fixes — Double-Trigger Guard + Gem Icon
 **Status:** Accepted
 **Date:** 2026-05-17
@@ -931,3 +952,8 @@ All files renamed to snake_case descriptive names. Imported via `EditorInterface
 | 2026-05-17 | NPC right-click nav-to-trade: _on_right_click() checks NPC first at highest priority (within NPC_TRADE_RADIUS); _update_mouse_navigation() NPC arrival branch tracks NPC position and fires _handle_npc_trade() on range entry. Interaction priority: NPC > tree > terrain. ADR-059 added. |
 | 2026-05-17 | Trade reliability fixes: gem_ruby.png replaces Date-time-Coin.png as trade reward icon (Date-time-Coin was a large UI sprite unreadable at hotbar size). is_interactable() guard added to both _handle_npc_trade() trigger points (T-key and nav arrival) — blocks double-trigger within the one-frame _npc_trade_active lag window that caused "No product available" to overwrite the success toast. ADR-060 added. |
 | 2026-05-17 | Willow tree proximity animation: TreeWillowWeeping replaced Sprite2D root with Node2D + willow_tree.gd. New PixelLab assets (willow_idle.png + willow_f0–f8.png, 96×96) loaded as inline SpriteFrames. AnimatedSprite2D plays "shake" once on player proximity entry, holds final frame, resets after player exits + 120s. CircleShape2D ProximityArea radius=17 (≈50px world). ADR-061 added. |
+| 2026-05-17 | Phase 1 asset audit completed (read-only). Report written to project_asset_audit.md. Key findings: 1,106 in-project PNGs, 227 VERIFIED_USED, 879 VERIFIED_UNUSED (all imported), 52 confirmed duplicate pairs, 0 broken references. Top cleanup candidates: shop_apothecary_alt.png (confirmed byte-identical to main), ErikPlayer/animations/Walk_v2/ (24 files, exact dups of root walk_* frames), Town/ + Village/ folders (~200 legacy numbered sprites, zero scene refs). Permission allowlist updated: added PowerShell(Write-Output *). |
+| 2026-05-17 | Asset reorganization executed: 227 VERIFIED_USED PNGs + 5 .tres resources moved from GameAssets/ flat layout to res://assets/{characters,nature,props,ui,tiles,structures}/ + res://resources/{characters,tilesets,structures}/. 13 .tscn/.tres/.gd files updated for new paths. UNKNOWN assets quarantined to res://assets/_review_required/. All 16 spot-checked resources pass ResourceLoader.exists(). Plan at project_reorganization_plan.md, log at project_move_log.md. ADR-062 added. |
+| 2026-05-17 | Full project verification pass. Status: CLEAN_WITH_REVIEW_ITEMS. 21/21 key files present; 79 ext_resource entries scanned across 6 scenes (1 stale path, UID-resolved); all groups verified end-to-end; all 23 canonical assets confirmed with .import files. 5 low-severity review items: icon.svg missing, willow_idle stale path in world.tscn:52 (UID resolves), 4 legacy bud preloads (deferred), tile_bit_tools nested UID duplicates, hud.gd INT_AS_ENUM_WITHOUT_CAST. Report at final_asset_health_report.md. |
+| 2026-05-17 | Housekeeping: R1 resolved — GameAssets/Rocks/18.png copied to game/icon.png; project.godot config/icon updated from icon.svg to icon.png. R2 resolved — world.tscn:52 willow_idle path updated from res://GameAssets/Willow/willow_idle.png to res://assets/_review_required/willow_idle.png (UID uid://inuq3s4oqqdd preserved). |
+| 2026-05-17 | BOM incident + fix: project failed to load with "Parse Error: Expected '['" on main.tscn + 6 .tres files. Root cause: PowerShell 5.1 default encoding writes UTF-8 BOM (EF BB BF) which Godot's text resource parser cannot handle. 16 files affected: main.tscn, world.tscn, player.tscn, 2 interior.tscn, world.gd, hud.gd, drying_rack.gd, npc_grey_hoodie.gd, retiledmap.tscn, 5 .tres in resources/, tileset_32x32.tres. Fixed by stripping BOM bytes via System.IO.File::WriteAllBytes(). Rule added to CLAUDE.md: always use WriteAllBytes or no-BOM UTF8 encoding for Godot files written from PowerShell. |

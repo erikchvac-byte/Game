@@ -52,7 +52,7 @@ func _ready() -> void:
 
 func _on_wood_chopped() -> void:
 	if _inv_mgr:
-		_inv_mgr.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
+		_inv_mgr.add_item("wood", preload("res://assets/props/items/rock3.png"))
 
 
 func _grant_starting_items() -> void:
@@ -60,9 +60,9 @@ func _grant_starting_items() -> void:
 		return
 	if not _inv_mgr:
 		return
-	_inv_mgr.add_item("axe", preload("res://GameAssets/Tools/tool_axe.png"))
+	_inv_mgr.add_item("axe", preload("res://assets/props/items/tool_axe.png"))
 	_inv_mgr.add_item("bud", preload("res://GameAssets/Bud/dry_bud.png"))
-	_inv_mgr.add_item("wood", preload("res://GameAssets/Caves/Rocks/rock3.png"))
+	_inv_mgr.add_item("wood", preload("res://assets/props/items/rock3.png"))
 	Engine.set_meta("starting_items_granted", true)
 
 

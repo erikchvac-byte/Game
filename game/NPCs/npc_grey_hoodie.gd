@@ -6,7 +6,7 @@ const TRADE_PAUSE := 1.5
 const ENTER_HOME_DURATION := 1.0
 const NPC_DOOR_IDX := 1
 
-const GEM_TEX := preload("res://GameAssets/Items/Gems/gem_ruby.png")
+const GEM_TEX := preload("res://assets/props/items/gem_ruby.png")
 
 var _waypoints := [Vector2(112.0, 150.0), Vector2(534.0, 158.0)]
 var _target_idx := 1

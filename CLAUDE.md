@@ -7,7 +7,7 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** Willow tree proximity animation (ADR-061, 2026-05-17): `TreeWillowWeeping` converted from static `Sprite2D` to animated `Node2D` with `willow_tree.gd`. New PixelLab 96×96 assets — `willow_idle.png` + 9-frame shake animation. `AnimatedSprite2D` plays "shake" once on player proximity entry (Area2D radius≈50px world), holds final frame, resets only after player exits AND 120s elapse. All existing children (Shadow, TreeCollider, RedCapMushroom) preserved unchanged. Previously: three interaction improvements (ADR-058/059/060, 2026-05-17).
+- **Last completed:** BOM purge (2026-05-17). 16 .tscn/.tres/.gd files had UTF-8 BOM prepended by PowerShell 5.1 during the asset reorganization — caused `Parse Error: Expected '['` at line 1 on project load. Stripped via `[System.IO.File]::WriteAllBytes()`. main.tscn now loads cleanly. Also: R1 (icon.png) + R2 (willow_idle path) resolved this session.
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
 - **Space bug fix:** Pressing Space near a tree without the axe equipped now shows toast `"Equip axe first (C)"` instead of silently failing. Press C to equip, then Space to chop.
@@ -16,13 +16,14 @@
 - **Tool pattern (generalized):** `player.equipped_tool: String` (empty = nothing equipped). C → `world._handle_tool_toggle("axe")`. `EQUIPPABLE_TOOLS` dict in world.gd maps `item_key → InputMap_action`. Adding a new equippable tool = 1 line in the dict + 1 InputMap action. HUD gold highlight via `hud.set_equipped_slot(slot_idx)`. Slot search limited to `range(1, _HOTBAR_SLOTS)` (hotbar only).
 - **Hotbar indicators:** `hud._slot_style(selected, equipped)` — gold border = selected slot (also active item). `hud.set_equipped_slot(index)` is the push API; called on every slot selection in `_on_hud_slot_selected` (not just tool slots). `_on_slot_changed` applies 50% inset for `key == "wood"` (rock3.png placeholder is oversized).
 - **NPC right-click trade:** Left-click within `NPC_TRADE_RADIUS` (36px) of visible NPC targets the NPC for nav. `_update_mouse_navigation` tracks NPC position each frame and fires `_handle_npc_trade()` on arrival. Priority in `_on_right_click`: NPC > tree > terrain. `is_interactable()` guard on both T-key and nav arrival prevents double-trigger within the one-frame `_npc_trade_active` lag window.
-- **Trade gem icon:** `res://GameAssets/Items/Gems/gem_ruby.png` — clean round red gem, readable at any hotbar size. Key in InventoryManager = `"gem"`.
+- **Trade gem icon:** `res://assets/props/items/gem_ruby.png` — clean round red gem, readable at any hotbar size. Key in InventoryManager = `"gem"`.
 - **player.facing:** Now `enum Facing { DOWN, UP, SIDE }`. Use `player.facing_name()` to get animation string. Interior scripts assign `($Player as CharacterBody2D).Facing.UP`.
 - **Pending editor restart:** InventoryManager accessed via `get_node_or_null("/root/InventoryManager")` (added post-startup). After Godot restart, replace with bare `InventoryManager` name.
 - **Tree scene pattern:** `res://World/ChoppableTree/choppable_tree.tscn` — self-registers to group `"choppable_trees"` in `_ready()`. Exported vars: `tree_texture`, `stump_texture`, `tree_visual_scale`, `stump_offset`, `stump_visual_scale`, `stump_flip_h`, `chops_required`. New trees = duplicate scene + drop in world — zero world.gd changes needed. Signals: `interactable_entered/exited` (SPC prompt), `wood_chopped` (grants wood via world.gd).
-- **Wood placeholder:** `res://GameAssets/Caves/Rocks/rock3.png` used as wood icon. Key = `"wood"`. Stacks by key in InventoryManager. Granted at start (once) + on each chop.
+- **Wood placeholder:** `res://assets/props/items/rock3.png` used as wood icon. Key = `"wood"`. Stacks by key in InventoryManager. Granted at start (once) + on each chop.
 - **Drying rack:** `_award_and_reset()` calls `/root/InventoryManager` (fixed from old `/root/Inventory`). Bud rewards land in inventory.
 - **Next up:** Teal house collision refinement (door gap + side walls); cave entrance rigging; roof overlay for teal house in Overhead; dedup `shop_apothecary_alt.png`. Town/ and Village/ folders (~250 files each) still use numbered/mixed-case names — next naming pass.
+- **PowerShell encoding lesson:** PowerShell 5.1 writes UTF-8 with BOM by default. Godot cannot parse .tscn/.tres/.gd files that start with a BOM — use `[System.IO.File]::WriteAllBytes()` or `WriteAllText(path, content, [Text.Encoding]::UTF8)` (no-BOM). Never use `Out-File` or `Set-Content` for Godot resource files.
 - **Godot autosave lesson:** Close scene in editor before editing .tscn on disk. Pattern: `open_scene("other.tscn")` → edit file → `open_scene("world.tscn")`. UID must be restored in .tscn ext_resource entries for renamed assets (Godot strips uid field for broken paths).
 - **Camera lesson:** World node in main.tscn sits at position (195,88). Camera2D limits must be in **global** coords: left=195, top=88, right=835, bottom=584. Always add World offset when setting camera limits.
 - **NPC position lesson:** Any NPC script that stores waypoints as world-local coords MUST use `position` (local) not `global_position`. Using `global_position` offsets all targets by the World node's (195,88) global offset, sending NPCs off-map.
@@ -52,17 +53,19 @@
 
 ## Asset Layout
 - Source assets: `C:/Users/erikc/Dev/Game/GameAssets/` (~800 PNGs)
-- In-project assets: `res://GameAssets/` (same tree, copied into `game/`)
-- **Village buildings**: `res://GameAssets/Buildings/` — snake_case named, imported (ADR-031)
-  - `houses/` — 8 residential: `house_twostory_a/b/c.png`, `house_cottage_stone.png`, `house_stone_teal.png`, `house_stone_brown.png`, `house_twostory_teal.png`, `house_farm_cozy.png`
-  - `shops/` — 4 commercial: `shop_bakery_main.png`, `shop_general_small.png`, `shop_apothecary_main.png`, `shop_apothecary_alt.png` *(alt = duplicate, pending dedup)*
-  - `special/` — 1 landmark: `building_tavern_main.png`
-- **Erik player sprites**: `res://GameAssets/ErikPlayer/` — 64×64 px
-  - Idle: `idle_south/north/east.png` (1 frame each)
-  - Walk: `walk_south/north/east/west_0-3.png` (4 frames each, PixelLab generated)
-  - SpriteFrames: `erik_sprites.tres`
+- In-project assets (VERIFIED_USED): `res://assets/` + `res://resources/` (reorganized 2026-05-17, ADR-062)
+- In-project legacy (VERIFIED_UNUSED): `res://GameAssets/` — 879 PNGs still here pending Phase 2 cleanup
+- **Active building assets**: `res://assets/structures/`
+  - `shops/` — bakery: `shop_bakery_main.png`, `shop_bakery_open.png`
+  - `houses/` — teal house animation: `house_grey_teal_animation.png`
+  - `cave_entrance_arch_stone.png`
+- **Erik player sprites**: `res://assets/characters/erik/` — 64×64 px
+  - Idle: `idle_south/north/east.png` (1 frame each); bucket variants same pattern
+  - Walk: `walk_south/north/east_{0-5}.png` (6 frames each)
+  - Chop/trade animations: `chop_{north,side,south}/`, `trade_{north,side,south}/`
+  - SpriteFrames: `res://resources/characters/erik_sprites.tres`
   - Scale: `0.5` on AnimatedSprite2D node
-- Ground tiles: `res://GameAssets/Tiles/` — 16×16 px
+- Ground tiles: `res://assets/tiles/` — 16×16 px
 
 ## Player Scene Architecture (ADR-002, ADR-003, ADR-013)
 - Root: `CharacterBody2D`, `motion_mode = MOTION_MODE_FLOATING`
@@ -194,13 +197,16 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-17
-- **Willow tree animation live.** `TreeWillowWeeping` is now an animated Node2D with `willow_tree.gd`. Player proximity triggers "shake" once; holds final frame (frame 8). Reset gate: player must exit AND 120s must elapse before re-entry triggers again. Assets at `res://GameAssets/Willow/` (willow_idle.png + willow_f0–f8.png). Script at `res://World/WillowTree/willow_tree.gd`.
-- **Willow scale note.** `AnimatedSprite2D` inherits parent Node2D scale `(2.975, 2.5)`. ProximityArea CircleShape2D radius=17 (local) ≈ 50px world. TreeCollider, Shadow, RedCapMushroom children unchanged.
-- **Unused NeoAnima states.** Push, Jump, Eating, Pull_Object animations are in `res://GameAssets/ErikPlayerNeoAnima/` source but not imported or wired — reserved for future features.
-- **Next feature candidates (pick one):** Teal house collision fix (door gap + side walls) is the lowest-risk warmup. Cave entrance rigging is the biggest next milestone.
-- **Pending editor restart note:** `_inv_mgr` is fetched via `get_node_or_null("/root/InventoryManager")` in world.gd `_ready()`. Replace with bare `InventoryManager` after confirming autoload is in project.godot (not added at runtime).
-- **Wood icon is a placeholder.** `rock3.png` used for wood. Replace with a real wood sprite when available.
+### Session end — 2026-05-17 (BOM purge + housekeeping)
+- **BOM incident resolved.** 16 .tscn/.tres/.gd files had UTF-8 BOM prepended by PowerShell 5.1 during the prior reorganization — caused `Parse Error: Expected '['` on project load. Stripped via `System.IO.File::WriteAllBytes()`. Project loads cleanly. Lesson documented in PowerShell encoding lesson note above.
+- **R1 resolved.** `icon.png` (GameAssets/Rocks/18.png rock sprite) added; `project.godot` config/icon updated.
+- **R2 resolved.** `world.tscn:52` willow_idle path updated to `res://assets/_review_required/willow_idle.png`.
+- **R3 — legacy bud preloads (deferred).** `world.gd:64` + `drying_rack.gd:10,11,15,17` use `res://GameAssets/Bud/` paths. Files exist, functional. Deferred until art replacement.
+- **R4 — tile_bit_tools UID duplicates.** Nested copy at `tile_bit_tools/tile_bit_tools/` causing 34 editor warnings. Remove to clean up.
+- **R5 — hud.gd:379 INT_AS_ENUM_WITHOUT_CAST.** Cast `align as HBoxContainer.AlignmentMode` to resolve.
+- **Pending editor restart note:** `_inv_mgr` fetched via `get_node_or_null("/root/InventoryManager")` in world.gd. Replace with bare `InventoryManager` after confirming autoload is in project.godot.
+- **Wood icon is a placeholder.** `res://assets/props/items/rock3.png` used for wood key. Replace with real wood sprite.
+- **Phase 2 cleanup pending.** 879 VERIFIED_UNUSED PNGs in legacy `res://GameAssets/`. Next: `cleanup_candidates.md` grouping into SAFE_TO_ARCHIVE / REVIEW_FIRST / UNCERTAIN.
 
 ### Permissions Allowlist (as of 2026-05-15)
 All Godot MCP and filesystem MCP tools are pre-approved in `.claude/settings.json`. No prompts expected for any of these:

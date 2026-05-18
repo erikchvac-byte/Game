@@ -1,19 +1,19 @@
 extends Sprite2D
 
 const TEXTURES := [
-	preload("res://GameAssets/Objects/DryingRacks/rack_new_empty.png"),
-	preload("res://GameAssets/Objects/DryingRacks/rack_new_3plants.png"),
-	preload("res://GameAssets/Objects/DryingRacks/rack_new_2plants.png"),
-	preload("res://GameAssets/Objects/DryingRacks/rack_new_1plant.png"),
+	preload("res://assets/props/drying_rack/rack_new_empty.png"),
+	preload("res://assets/props/drying_rack/rack_new_3plants.png"),
+	preload("res://assets/props/drying_rack/rack_new_2plants.png"),
+	preload("res://assets/props/drying_rack/rack_new_1plant.png"),
 ]
 const PRODUCTS := [
 	preload("res://GameAssets/Objects/herb_bundle_dried.png"),
 	preload("res://GameAssets/Bud/hang_dry.png"),
-	preload("res://GameAssets/Bud/plant_green.png"),
-	preload("res://GameAssets/Bud/plant_green_2.png"),
-	preload("res://GameAssets/Bud/plant_purple.png"),
+	preload("res://assets/props/bud/plant_green.png"),
+	preload("res://assets/props/bud/plant_green_2.png"),
+	preload("res://assets/props/bud/plant_purple.png"),
 	preload("res://GameAssets/Bud/weed_plant.png"),
-	preload("res://GameAssets/Bud/weed_plant_2.png"),
+	preload("res://assets/props/bud/weed_plant_2.png"),
 	preload("res://GameAssets/Bud/dry_bud.png"),
 ]
 const DRY_DURATION := 5.0

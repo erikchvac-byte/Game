@@ -2,7 +2,7 @@
 
 [ext_resource type="PackedScene" uid="uid://dn5yyumw6kj3j" path="res://World/world.tscn" id="1_world"]
 [ext_resource type="Script" uid="uid://oa1n61k237qq" path="res://main.gd" id="3_maingd"]
-[ext_resource type="Texture2D" uid="uid://c0fej5yjwixo6" path="res://GameAssets/Buildings/shops/shop_bakery_main.png" id="4_house"]
+[ext_resource type="Texture2D" uid="uid://c0fej5yjwixo6" path="res://assets/structures/shops/shop_bakery_main.png" id="4_house"]
 [ext_resource type="Script" uid="uid://cq7ikygxeo6y1" path="res://autoload/DayNightCycle.gd" id="dnc_script"]
 
 [node name="Main" type="Node2D" unique_id=1407496713]

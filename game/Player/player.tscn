@@ -1,7 +1,7 @@
 [gd_scene format=3 uid="uid://dyesovrngsuel"]
 
 [ext_resource type="Script" uid="uid://4x4ple146p0l" path="res://Player/player.gd" id="1_4ntmi"]
-[ext_resource type="SpriteFrames" uid="uid://dvg68liok8ecu" path="res://GameAssets/ErikPlayer/erik_sprites.tres" id="2_erik"]
+[ext_resource type="SpriteFrames" uid="uid://dvg68liok8ecu" path="res://resources/characters/erik_sprites.tres" id="2_erik"]
 [ext_resource type="Script" uid="uid://kuqmgkfk44xu" path="res://Player/player_animation.gd" id="3_btcbx"]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_4ntmi"]
