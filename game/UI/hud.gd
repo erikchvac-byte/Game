@@ -376,7 +376,7 @@ func _flat(color: Color) -> StyleBoxFlat:
 func _hbox(h_flags: int, align: int, sep: int) -> HBoxContainer:
 	var hb := HBoxContainer.new()
 	hb.size_flags_horizontal = h_flags
-	hb.alignment = align
+	hb.alignment = align as HBoxContainer.AlignmentMode
 	hb.add_theme_constant_override("separation", sep)
 	return hb
 

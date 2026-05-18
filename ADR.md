@@ -688,6 +688,28 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-063: BOM Purge — PowerShell 5.1 UTF-8 BOM Breaks Godot Text Resources
+**Status:** Accepted
+**Date:** 2026-05-17
+**Context:** After the ADR-062 asset reorganization (which used PowerShell `Set-Content`/`Out-File` to write `.tscn`/`.tres`/`.gd` files), the project failed to load with `Parse Error: Expected '['` at line 1 of `main.tscn` and 15 other files. Root cause: PowerShell 5.1 default encoding is UTF-16 LE, but when writing text via redirection it emits UTF-8 with BOM (`EF BB BF`). Godot's text resource parser treats the first character as the file header and chokes on `0xEF`.
+**Decision:** Strip BOM bytes from all 16 affected files using `[System.IO.File]::WriteAllBytes(path, content_without_bom)`. Establish rule: never use `Out-File`, `Set-Content`, or PowerShell string redirection for Godot resource files.
+**Rationale:** `WriteAllBytes` writes exactly the bytes provided — no encoding layer, no BOM. `[Text.Encoding]::UTF8` (without `new UTF8Encoding(true)`) also works. This is the only safe pattern on PS 5.1.
+**Consequences:** Rule documented in CLAUDE.md. Future edits to `.tscn`/`.tres`/`.gd` must use the Write/Edit tools (which handle encoding correctly) or `WriteAllBytes`. Direct PowerShell writes to Godot resource files are prohibited.
+**Testing:** All 16 files confirmed BOM-free after strip. `main.tscn` loads cleanly. Project boots without parse errors.
+
+---
+
+## ADR-064: Phase 2 Asset Cleanup — SAFE_TO_ARCHIVE Pass
+**Status:** Accepted
+**Date:** 2026-05-18
+**Context:** After ADR-062 reorganization, 879 VERIFIED_UNUSED PNGs remained in `game/GameAssets/`. The `cleanup_candidates.md` analysis classified them into SAFE_TO_ARCHIVE (~366), REVIEW_FIRST (~463), and UNCERTAIN (~20). This ADR covers the SAFE_TO_ARCHIVE execution.
+**Decision:** Move all 18 SAFE_TO_ARCHIVE groups (confirmed zero references, confirmed duplicates or legacy content) from `game/GameAssets/` to `C:/Users/erikc/Dev/Game/_archived/` — outside the Godot project directory so Godot does not import them. PNG + `.import` sidecars moved together. REVIEW_FIRST and UNCERTAIN items remain in `game/GameAssets/` pending further decisions.
+**Rationale:** Archive rather than delete preserves recovery options if a file was mis-classified. Moving outside `game/` removes them from Godot's import scan, eliminating editor noise. The 18 groups were verified zero-referenced via `grep` across all `.tscn`/`.tres`/`.gd` files before moving.
+**Consequences:** `game/GameAssets/` reduced from ~879 PNGs to ~487 PNGs. ~366 files now in `_archived/`. REVIEW_FIRST assets (unplaced buildings, future animations, interior furnishings, planned tools) remain accessible in `game/GameAssets/`. Also fixed: `hud.gd:379` `INT_AS_ENUM_WITHOUT_CAST` — cast `align as HBoxContainer.AlignmentMode`. `R2` (willow_idle stale path) was already resolved in prior session.
+**Testing:** Archive contains 691 files (366 PNGs + 325 .import sidecars). `game/GameAssets/` confirmed 487 PNGs remaining. No active scene references were disturbed (confirmed by prior audit).
+
+---
+
 ## ADR-060: Trade Reliability Fixes — Double-Trigger Guard + Gem Icon
 **Status:** Accepted
 **Date:** 2026-05-17
@@ -956,4 +978,5 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-17 | Asset reorganization executed: 227 VERIFIED_USED PNGs + 5 .tres resources moved from GameAssets/ flat layout to res://assets/{characters,nature,props,ui,tiles,structures}/ + res://resources/{characters,tilesets,structures}/. 13 .tscn/.tres/.gd files updated for new paths. UNKNOWN assets quarantined to res://assets/_review_required/. All 16 spot-checked resources pass ResourceLoader.exists(). Plan at project_reorganization_plan.md, log at project_move_log.md. ADR-062 added. |
 | 2026-05-17 | Full project verification pass. Status: CLEAN_WITH_REVIEW_ITEMS. 21/21 key files present; 79 ext_resource entries scanned across 6 scenes (1 stale path, UID-resolved); all groups verified end-to-end; all 23 canonical assets confirmed with .import files. 5 low-severity review items: icon.svg missing, willow_idle stale path in world.tscn:52 (UID resolves), 4 legacy bud preloads (deferred), tile_bit_tools nested UID duplicates, hud.gd INT_AS_ENUM_WITHOUT_CAST. Report at final_asset_health_report.md. |
 | 2026-05-17 | Housekeeping: R1 resolved — GameAssets/Rocks/18.png copied to game/icon.png; project.godot config/icon updated from icon.svg to icon.png. R2 resolved — world.tscn:52 willow_idle path updated from res://GameAssets/Willow/willow_idle.png to res://assets/_review_required/willow_idle.png (UID uid://inuq3s4oqqdd preserved). |
-| 2026-05-17 | BOM incident + fix: project failed to load with "Parse Error: Expected '['" on main.tscn + 6 .tres files. Root cause: PowerShell 5.1 default encoding writes UTF-8 BOM (EF BB BF) which Godot's text resource parser cannot handle. 16 files affected: main.tscn, world.tscn, player.tscn, 2 interior.tscn, world.gd, hud.gd, drying_rack.gd, npc_grey_hoodie.gd, retiledmap.tscn, 5 .tres in resources/, tileset_32x32.tres. Fixed by stripping BOM bytes via System.IO.File::WriteAllBytes(). Rule added to CLAUDE.md: always use WriteAllBytes or no-BOM UTF8 encoding for Godot files written from PowerShell. |
+| 2026-05-17 | BOM incident + fix: project failed to load with "Parse Error: Expected '['" on main.tscn + 6 .tres files. Root cause: PowerShell 5.1 default encoding writes UTF-8 BOM (EF BB BF) which Godot's text resource parser cannot handle. 16 files affected: main.tscn, world.tscn, player.tscn, 2 interior.tscn, world.gd, hud.gd, drying_rack.gd, npc_grey_hoodie.gd, retiledmap.tscn, 5 .tres in resources/, tileset_32x32.tres. Fixed by stripping BOM bytes via System.IO.File::WriteAllBytes(). Rule added to CLAUDE.md: always use WriteAllBytes or no-BOM UTF8 encoding for Godot files written from PowerShell. ADR-063 added. |
+| 2026-05-18 | Phase 2 asset cleanup: SAFE_TO_ARCHIVE pass executed. 18 confirmed-zero-reference groups (~366 PNGs + .import sidecars) moved from game/GameAssets/ to _archived/ outside project. game/GameAssets/ reduced to 487 PNGs (REVIEW_FIRST + UNCERTAIN retained). hud.gd:379 INT_AS_ENUM_WITHOUT_CAST fixed (align as HBoxContainer.AlignmentMode). ADR-064 added. |
