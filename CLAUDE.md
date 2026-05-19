@@ -7,7 +7,10 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** Pine/maple/fir choppable tree species wired with chop+fall animations (2026-05-18). ADR-068 added.
+- **Last completed:** Tileset housekeeping — atlas_32x32 region fix + 48×48 beach tiles + town-grass-tile transparency (2026-05-19).
+  - **atlas_32x32 (source 6):** was registered at region_size=(16,16); fixed to (32,32). Cleared 264 stale tile registrations, re-registered 72 tiles (8 cols × 9 rows for 256×288 image). ✅
+  - **Beach tiles 48×48 (source 7):** `GameAssets/Beach/Tiles/Tiles.png` (192×112) copied to `res://assets/tiles/beach_tiles_48x48.png`, added as new atlas source with region_size=(48,48), 8 tiles (4×2). ✅
+  - **town-grass-tile transparency:** dark-grey background color (52,55,62,255) replaced with alpha=0 on 6,182 pixels via PIL. Backup saved as `.bak`. ✅
   - **Species trees (ADR-068):** `choppable_tree_pine/maple/fir.tscn` created as standalone scenes with inline `SpriteFrames` (9-frame chop + 9-frame fall, 10/8 fps). `choppable_tree.gd` updated to play `ChopAnim` on final chop then transition to stump. Tree1/2/3 in world.tscn replaced with TreePine/TreeMaple/TreeFir at same positions. Tree4 (oak) + WillowTree unchanged. Playtested: chop animation → fall animation → stump → wood granted. ✅
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
@@ -204,6 +207,13 @@
 
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
+
+### Session end — 2026-05-19 (Tileset housekeeping)
+- **atlas_32x32 fixed.** region_size was (16,16); now (32,32). 72 tiles registered for 256×288 image.
+- **Beach 48×48 tiles added.** `res://assets/tiles/beach_tiles_48x48.png` → world_tileset source 7.
+- **town-grass-tile transparency fixed.** Background color (52,55,62) → alpha 0 on 6,182 pixels. Backup at `.bak`.
+- **Cave tiles pending.** `GameAssets/Caves/Tiles/Tiles.png` (208×192) has irregular layout — 208/48 is not exact. Needs clarification before adding.
+- **Tileset editor grey background** — just click the checkerboard toggle button in the tile picker toolbar. Editor-only preference, not a file issue.
 
 ### Session end — 2026-05-18 (Pine/Maple/Fir species trees + chop animations)
 - **Species tree scenes done.** `choppable_tree_pine/maple/fir.tscn` at `res://World/ChoppableTree/`. All have inline SpriteFrames (chop + fall). TreePine/Maple/Fir replace Tree1/2/3 in world.tscn. Playtested ✅.
