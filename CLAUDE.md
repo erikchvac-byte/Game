@@ -7,7 +7,7 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** Phase 2 asset cleanup (2026-05-18). SAFE_TO_ARCHIVE pass: ~366 confirmed-zero-reference PNGs + .import sidecars moved from `game/GameAssets/` to `_archived/` outside the project. `game/GameAssets/` now 487 PNGs (REVIEW_FIRST + UNCERTAIN retained). `hud.gd:379` INT_AS_ENUM_WITHOUT_CAST fixed. ADR-063 (BOM purge) + ADR-064 (archive pass) added.
+- **Last completed:** TempAssetHolding integration (2026-05-18). Full verification-first inspection of 54 PNGs (PixelLab garden/plant batch, 154×154 px). 36 files copied to `res://assets/_review_required/` with semantic names — 15 dirt patches (incl. 9-frame pulse animation), 20 plant sprites (cannabis stages/variants/planters + 4 cardinal herb plants), 1 stump-with-door structure. 15 duplicates remain in TempAssetHolding. 2 source files not found (garden gate + ancient coin). ADR-065 added.
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
 - **Space bug fix:** Pressing Space near a tree without the axe equipped now shows toast `"Equip axe first (C)"` instead of silently failing. Press C to equip, then Space to chop.
@@ -197,14 +197,15 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-18 (Phase 2 cleanup)
+### Session end — 2026-05-18 (TempAssetHolding integration)
+- **36 new assets in `_review_required/`** — need Godot `scan()` import before usable in scenes. Call `EditorInterface.get_resource_filesystem().scan()` or reopen project.
+- **2 source files not found** — `Crops_in_a_dirt_patch_Garden (1)/` (garden gate) and `dirt coin/` (ancient coin) not present in TempAssetHolding tree. May be from a different PixelLab export batch. If found, name them `garden_gate_entrance.png` → `structures/` and `coin_ancient_on_dirt.png` → `props/`.
+- **15 duplicates remain in TempAssetHolding** — confirmed byte-identical, safe to delete when desired.
 - **R3 — legacy bud preloads (deferred).** `world.gd:64` + `drying_rack.gd:10,11,15,17` use `res://GameAssets/Bud/` paths. Files exist, functional. Deferred until art replacement.
 - **R4 — tile_bit_tools UID duplicates.** Nested copy at `tile_bit_tools/tile_bit_tools/` causing 34 editor warnings. Remove to clean up.
-- **SAFE_TO_ARCHIVE complete.** 18 groups (~366 PNGs) moved to `_archived/` outside project. `game/GameAssets/` now 487 PNGs (REVIEW_FIRST + UNCERTAIN only).
 - **Pending editor restart note:** `_inv_mgr` fetched via `get_node_or_null("/root/InventoryManager")` in world.gd. Replace with bare `InventoryManager` after confirming autoload is in project.godot.
 - **Wood icon is a placeholder.** `res://assets/props/items/rock3.png` used for wood key. Replace with real wood sprite.
-- **UNCERTAIN items need investigation:** UNCERTAIN-006 (RedCapMushroom texture source), UNCERTAIN-007 (tilemaplayer_icon.png plugin ref), UNCERTAIN-008 (purple_jack — planned or abandoned?), UNCERTAIN-009 (retiledmap.tscn — scratch or needed?).
-- **Next development priorities:** Teal house collision refinement (door gap + side walls); cave entrance rigging; REVIEW-011 (NPC trade-receive animation, directly wirable); UNCERTAIN-001/002 (bud reward art — 2 identical image pairs need replacement art).
+- **Next development priorities:** Teal house collision refinement (door gap + side walls); cave entrance rigging; REVIEW-011 (NPC trade-receive animation, directly wirable); wire new garden/plant assets into world scene.
 
 ### Permissions Allowlist (as of 2026-05-15)
 All Godot MCP and filesystem MCP tools are pre-approved in `.claude/settings.json`. No prompts expected for any of these:

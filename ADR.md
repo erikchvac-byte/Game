@@ -710,6 +710,22 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-065: TempAssetHolding Integration — Garden & Plant Assets
+**Status:** Accepted
+**Date:** 2026-05-18
+**Context:** `C:\Users\erikc\Dev\Game\GameAssets\TempAssetHolding\` contained a PixelLab-generated batch of 54 PNG files (prompt: "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden", exported 2026-05-18T17:02). All assets are 154×154 px AI-generated art — intentionally large-format for garden props. A full visual inspection was required before integration.
+**Decision:** Verification-first inspection of all 54 files. Result: 22 NEW_UNIQUE_ASSET, 17 UNCERTAIN (confirmed intentional large-format), 15 DUPLICATE. 36 files copied to `res://assets/_review_required/` with semantic names. Originals preserved in TempAssetHolding. 2 source folders not found in current tree (`Crops_in_a_dirt_patch_Garden (1)` / garden gate and `dirt coin` / ancient coin) — assumed from a different export batch, not integrated.
+**Rationale:** Verification-first rule: no file moved without visual inspection of actual pixel content. 154×154 px is valid for large garden props — Godot renders sprites at any placed scale. UNCERTAIN items approved as intentional large-format assets by user confirmation.
+**Consequences:**
+- `_review_required/dirt_patches/` — 4 square patch variants + long horizontal + long seeded + 9-frame pulse animation (15 files)
+- `_review_required/plants/` — 20 plant sprites: cannabis stage_1/2/3, compact, silver/silver_b, mid_a/b/c, round_crown, dark_outline, dense, flowering_purple; planter_type_a/b/c; herb_type_a/b/c/d (cardinal directions from default_7)
+- `_review_required/structures/` — `stump_door_dwelling.png` (ancient stump with carved hobbit-style door)
+- All assets need Godot `scan()` import before they're usable in scenes
+- 15 exact duplicates remain in TempAssetHolding — safe to delete when confirmed
+**Testing:** PowerShell Get-ChildItem count confirmed 36 files across 3 subdirectories (15 + 1 + 20).
+
+---
+
 ## ADR-060: Trade Reliability Fixes — Double-Trigger Guard + Gem Icon
 **Status:** Accepted
 **Date:** 2026-05-17
@@ -980,3 +996,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-17 | Housekeeping: R1 resolved — GameAssets/Rocks/18.png copied to game/icon.png; project.godot config/icon updated from icon.svg to icon.png. R2 resolved — world.tscn:52 willow_idle path updated from res://GameAssets/Willow/willow_idle.png to res://assets/_review_required/willow_idle.png (UID uid://inuq3s4oqqdd preserved). |
 | 2026-05-17 | BOM incident + fix: project failed to load with "Parse Error: Expected '['" on main.tscn + 6 .tres files. Root cause: PowerShell 5.1 default encoding writes UTF-8 BOM (EF BB BF) which Godot's text resource parser cannot handle. 16 files affected: main.tscn, world.tscn, player.tscn, 2 interior.tscn, world.gd, hud.gd, drying_rack.gd, npc_grey_hoodie.gd, retiledmap.tscn, 5 .tres in resources/, tileset_32x32.tres. Fixed by stripping BOM bytes via System.IO.File::WriteAllBytes(). Rule added to CLAUDE.md: always use WriteAllBytes or no-BOM UTF8 encoding for Godot files written from PowerShell. ADR-063 added. |
 | 2026-05-18 | Phase 2 asset cleanup: SAFE_TO_ARCHIVE pass executed. 18 confirmed-zero-reference groups (~366 PNGs + .import sidecars) moved from game/GameAssets/ to _archived/ outside project. game/GameAssets/ reduced to 487 PNGs (REVIEW_FIRST + UNCERTAIN retained). hud.gd:379 INT_AS_ENUM_WITHOUT_CAST fixed (align as HBoxContainer.AlignmentMode). ADR-064 added. |
+| 2026-05-18 | TempAssetHolding integration: full verification-first inspection of 54 PNGs (PixelLab batch, 154×154 px garden/plant assets). 36 files copied to res://assets/_review_required/ with semantic names (15 dirt patches, 1 structure, 20 plants). 15 duplicates left in TempAssetHolding. 2 source files not found (garden gate + ancient coin). stump_door_dwelling.png (new: stump with carved door), cannabis_planter_type_a/b/c (new: planter box variants). ADR-065 added. |
