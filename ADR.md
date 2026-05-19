@@ -726,6 +726,75 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-066: TempAssetHolding Second Pass — Tree Chop Animations + Stump Dissolve
+**Status:** Accepted
+**Date:** 2026-05-19
+**Context:** `TempAssetHolding` received a new batch of PixelLab assets after the ADR-065 pass, all exported 2026-05-19. Batch contains: 3 choppable-tree variants (Pine/Maple/Fir) with multi-sequence animations, 2 stump animation sets, 7 seamless 64×64 dirt tiles, and 30 new garden crop patch variants.
+**Decision:** Verification-first inspection of all files. 4 asset groups classified INTEGRATE_NOW, remainder to ResolvedReview.
+**Rationale:** Tree chop animations directly extend the existing `choppable_tree.tscn` pattern (exported `tree_texture` + `stump_texture` vars). Stump dissolve fills a missing post-chop effect slot. The 30 garden variants are REVIEW_REQUIRED since 6+ representative samples are already in the project and the additional variants exceed immediate need.
+**Consequences:**
+- `res://assets/nature/trees/tree_pine_3.png` — 96×96 pine static
+- `res://assets/nature/trees/pine_chop/` — 9 frames (chop animation)
+- `res://assets/nature/trees/pine_fall/` — 9 frames (fall animation)
+- `res://assets/nature/trees/tree_maple.png` — 96×96 maple static
+- `res://assets/nature/trees/maple_chop/` — 9 frames
+- `res://assets/nature/trees/maple_fall/` — 9 frames (leaves blowing)
+- `res://assets/nature/trees/maple_hit_fall/` — 9 frames (3-hit then fall)
+- `res://assets/nature/trees/tree_fir.png` — 96×96 fir static
+- `res://assets/nature/trees/fir_chop/` — 9 frames
+- `res://assets/nature/trees/fir_fall/` — 9 frames
+- `res://assets/nature/stumps/stump_round.png` — 96×96 round stump static
+- `res://assets/nature/stumps/stump_round_dissolve/` — 16 frames (spiral disappear)
+- All 71 files auto-imported by live Godot editor (verified .import files present)
+- StumpAnima3 (2 alt stumps) → ResolvedReview/REVIEW_REQUIRED
+- stumpanimaGone (64×64 seamless dirt tiles) → ResolvedReview/REVIEW_REQUIRED
+- 30 garden crop variants (default/ through default_29/) → ResolvedReview/REVIEW_REQUIRED
+- 15 staging duplicates (64x64Dirt, dirty22, longdirtStumpDoor, Pulsing dirt) → ResolvedReview/STAGING_DUPLICATE
+- TempAssetHolding root is now empty (only ResolvedReview/ remains)
+**Testing:** PowerShell verified 9 PNGs + 9 .import files in each animation folder; 16 PNG + 16 .import in stump_round_dissolve; all 4 static sprites have .import sidecar. `temp_asset_reconciliation_report.md` generated.
+
+---
+
+## ADR-067: _review_required Cleanup — All Assets Routed to Permanent Locations
+**Status:** Accepted
+**Date:** 2026-05-19
+**Context:** `res://assets/_review_required/` contained 36 assets from the ADR-065 session that needed routing to their correct permanent project folders before they could be referenced in scenes.
+**Decision:** Route every asset by visual inspection to its correct permanent folder.
+**Rationale:** _review_required is a transit zone, not a permanent home. Leaving assets there makes them hard to find and reference. Now that we know what each file is, routing to canonical folders makes them discoverable and wirable.
+**Consequences:**
+- `grey_hoodie_rotations/` (8 directional statics) → `res://assets/characters/grey_hoodie/rotations/`
+- `purple_jack/` (8 directional statics, female character) → `res://assets/characters/purple_jack/`
+- `player_character_alt/` (full player sprite set, 59×49, Axe/Bow/Idle/Walk/Run etc + player_sprites.tres) → `res://assets/characters/player_alt/`
+- `plants/cannabis/` (13 cannabis variants: stage_1/2/3, planter_a/b/c, mid_a/b/c, compact, silver, round_crown, dark_outline, dense, flowering_purple) → `res://assets/nature/plants/cannabis/`
+- `plants/herbs/` (herb_type_a/b/c/d) → `res://assets/nature/plants/herbs/`
+- `dirt_patches/` (4 square variants + 2 long patches + 9-frame pulse anim) → `res://assets/props/garden/`
+- `RedCapMushroom.png` → `res://assets/nature/rocks/`
+- `structures/stump_door_dwelling.png` → `res://assets/structures/`
+- `tileset_32x32/` (66 tiles + 2 .tres resources) → `res://assets/tiles/32x32/`
+- `Tile.png` (16×16 main game atlas) → `res://assets/tiles/`
+- `willow_idle.png` → `res://assets/_archived/` (superseded by willow/willow_f0–f8 animation set)
+- `tilemaplayer_icon.png` → `res://assets/_archived/` (Godot engine icon, not a game asset)
+- `_review_required/` is now empty and can be removed when desired
+**Testing:** PowerShell confirmed _review_required is empty. File counts verified for each destination folder.
+
+---
+
+## ADR-068: Choppable Tree Animation — Pine/Maple/Fir Species Scenes
+**Status:** Accepted
+**Date:** 2026-05-18
+**Context:** Three existing generic `ChoppableTree` instances near the player's house used placeholder textures (pine_bushy_b, pine_narrow, tree_ginkgo) with no chop/fall animations. New PixelLab assets (tree_pine_3, tree_maple, tree_fir — 96×96 static + 9-frame chop/fall sequences) were staged in `res://assets/nature/trees/` from ADR-066.
+**Decision:** Create three species-specific scenes (`choppable_tree_pine.tscn`, `choppable_tree_maple.tscn`, `choppable_tree_fir.tscn`) as standalone `.tscn` files with inline `SpriteFrames` sub-resources. Update `choppable_tree.gd` to drive a `ChopAnim` (`AnimatedSprite2D`) child — plays "chop" then "fall" on final chop, then shows stump. Replace Tree1/2/3 in `world.tscn` with the species scenes (TreePine/TreeMaple/TreeFir at same positions). Tree4 (oak) and WillowTree unchanged.
+**Rationale:** Inline `SpriteFrames` in each species scene keeps all per-species data self-contained — zero `world.gd` or `choppable_tree.gd` changes needed to add new species. Backward compat: base `choppable_tree.tscn` now has an empty `ChopAnim` node; if `sprite_frames` is null the script falls back to instant sprite-swap (Tree4 still works).
+**Consequences:**
+- New files: `World/ChoppableTree/choppable_tree_{pine,maple,fir}.tscn`
+- Animation speed: chop=10 fps, fall=8 fps (9 frames each — ~0.9s chop, ~1.1s fall)
+- Stump: `stump_round.png` at scale 0.4, offset (0, 18) — all three species share the same stump
+- Tree visual scale: 0.5 (96×96 → 48×48 in-game)
+- `world.tscn` lesson: always close scene in editor (`open_scene("main.tscn")`) before editing .tscn on disk — editor autosave overwrites external edits within seconds
+**Testing:** Played game via MCP. Chopped pine 3 times with axe — chop animation played, fall animation played, stump appeared, 2 wood granted. MapleTree and FirTree visible with correct species sprites. WillowTree and Tree4 unchanged. Screenshot confirmed.
+
+---
+
 ## ADR-060: Trade Reliability Fixes — Double-Trigger Guard + Gem Icon
 **Status:** Accepted
 **Date:** 2026-05-17
@@ -997,3 +1066,5 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-17 | BOM incident + fix: project failed to load with "Parse Error: Expected '['" on main.tscn + 6 .tres files. Root cause: PowerShell 5.1 default encoding writes UTF-8 BOM (EF BB BF) which Godot's text resource parser cannot handle. 16 files affected: main.tscn, world.tscn, player.tscn, 2 interior.tscn, world.gd, hud.gd, drying_rack.gd, npc_grey_hoodie.gd, retiledmap.tscn, 5 .tres in resources/, tileset_32x32.tres. Fixed by stripping BOM bytes via System.IO.File::WriteAllBytes(). Rule added to CLAUDE.md: always use WriteAllBytes or no-BOM UTF8 encoding for Godot files written from PowerShell. ADR-063 added. |
 | 2026-05-18 | Phase 2 asset cleanup: SAFE_TO_ARCHIVE pass executed. 18 confirmed-zero-reference groups (~366 PNGs + .import sidecars) moved from game/GameAssets/ to _archived/ outside project. game/GameAssets/ reduced to 487 PNGs (REVIEW_FIRST + UNCERTAIN retained). hud.gd:379 INT_AS_ENUM_WITHOUT_CAST fixed (align as HBoxContainer.AlignmentMode). ADR-064 added. |
 | 2026-05-18 | TempAssetHolding integration: full verification-first inspection of 54 PNGs (PixelLab batch, 154×154 px garden/plant assets). 36 files copied to res://assets/_review_required/ with semantic names (15 dirt patches, 1 structure, 20 plants). 15 duplicates left in TempAssetHolding. 2 source files not found (garden gate + ancient coin). stump_door_dwelling.png (new: stump with carved door), cannabis_planter_type_a/b/c (new: planter box variants). ADR-065 added. |
+| 2026-05-19 | TempAssetHolding second pass: new PixelLab batch (tree chop animations + stump dissolve). INTEGRATE_NOW: Pine/Maple/Fir trees (static + 2–3 animation sequences each) + round stump with 16-frame spiral dissolve → res://assets/nature/trees/ + stumps/. 71 files total, all auto-imported. 15 staging duplicates + 36 garden variants → ResolvedReview. TempAssetHolding now empty. ADR-066 added. |
+| 2026-05-19 | _review_required cleanup: all 36 assets routed to permanent locations — characters/grey_hoodie/rotations/, characters/purple_jack/, characters/player_alt/, nature/plants/cannabis/, nature/plants/herbs/, props/garden/, nature/rocks/, structures/, tiles/32x32/, tiles/Tile.png. willow_idle.png + tilemaplayer_icon.png archived (superseded/wrong folder). _review_required is now empty. ADR-067 added. |

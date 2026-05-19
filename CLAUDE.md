@@ -7,7 +7,8 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 
 ## Where We Are
-- **Last completed:** TempAssetHolding integration (2026-05-18). Full verification-first inspection of 54 PNGs (PixelLab garden/plant batch, 154×154 px). 36 files copied to `res://assets/_review_required/` with semantic names — 15 dirt patches (incl. 9-frame pulse animation), 20 plant sprites (cannabis stages/variants/planters + 4 cardinal herb plants), 1 stump-with-door structure. 15 duplicates remain in TempAssetHolding. 2 source files not found (garden gate + ancient coin). ADR-065 added.
+- **Last completed:** Pine/maple/fir choppable tree species wired with chop+fall animations (2026-05-18). ADR-068 added.
+  - **Species trees (ADR-068):** `choppable_tree_pine/maple/fir.tscn` created as standalone scenes with inline `SpriteFrames` (9-frame chop + 9-frame fall, 10/8 fps). `choppable_tree.gd` updated to play `ChopAnim` on final chop then transition to stump. Tree1/2/3 in world.tscn replaced with TreePine/TreeMaple/TreeFir at same positions. Tree4 (oak) + WillowTree unchanged. Playtested: chop animation → fall animation → stump → wood granted. ✅
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
 - **Space bug fix:** Pressing Space near a tree without the axe equipped now shows toast `"Equip axe first (C)"` instead of silently failing. Press C to equip, then Space to chop.
@@ -59,6 +60,13 @@
   - `shops/` — bakery: `shop_bakery_main.png`, `shop_bakery_open.png`
   - `houses/` — teal house animation: `house_grey_teal_animation.png`
   - `cave_entrance_arch_stone.png`
+  - `stump_door_dwelling.png` — ancient stump with carved door (prop/structure)
+- **Tree + stump assets** (NEW — 2026-05-19):
+  - Static: `res://assets/nature/trees/tree_pine_3.png`, `tree_maple.png`, `tree_fir.png` (96×96 each)
+  - Animations: `trees/pine_chop/`, `pine_fall/`, `maple_chop/`, `maple_fall/`, `maple_hit_fall/`, `fir_chop/`, `fir_fall/` — 9 frames each
+  - Stump static: `res://assets/nature/stumps/stump_round.png` (96×96)
+  - Stump dissolve: `res://assets/nature/stumps/stump_round_dissolve/` — 16 frames
+  - All auto-imported; not yet wired to ChoppableTree scenes
 - **Erik player sprites**: `res://assets/characters/erik/` — 64×64 px
   - Idle: `idle_south/north/east.png` (1 frame each); bucket variants same pattern
   - Walk: `walk_south/north/east_{0-5}.png` (6 frames each)
@@ -197,15 +205,20 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-18 (TempAssetHolding integration)
-- **36 new assets in `_review_required/`** — need Godot `scan()` import before usable in scenes. Call `EditorInterface.get_resource_filesystem().scan()` or reopen project.
-- **2 source files not found** — `Crops_in_a_dirt_patch_Garden (1)/` (garden gate) and `dirt coin/` (ancient coin) not present in TempAssetHolding tree. May be from a different PixelLab export batch. If found, name them `garden_gate_entrance.png` → `structures/` and `coin_ancient_on_dirt.png` → `props/`.
-- **15 duplicates remain in TempAssetHolding** — confirmed byte-identical, safe to delete when desired.
+### Session end — 2026-05-18 (Pine/Maple/Fir species trees + chop animations)
+- **Species tree scenes done.** `choppable_tree_pine/maple/fir.tscn` at `res://World/ChoppableTree/`. All have inline SpriteFrames (chop + fall). TreePine/Maple/Fir replace Tree1/2/3 in world.tscn. Playtested ✅.
+- **Chop animation pattern.** `choppable_tree.gd` drives `ChopAnim` (AnimatedSprite2D): on final chop → play "chop" → on finish play "fall" → on finish show stump + emit `wood_chopped`. Base scene fallback: if `ChopAnim.sprite_frames` is null, instant-swap (Tree4 oak still works).
+- **Stump dissolve not yet wired.** `stump_round_dissolve/` (16 frames) is imported but not used — stump is currently static. Wire as future polish.
+- **player_character_alt available.** Full sprite set (Axe/Bow/Idle/Walk/Run etc + `player_sprites.tres`) at `res://assets/characters/player_alt/`. 59×49 px, 3-directional. Can be wired as an alternate player skin or NPC.
+- **purple_jack + grey_hoodie rotations available.** 8-directional character statics in `res://assets/characters/purple_jack/` and `res://assets/characters/grey_hoodie/rotations/`. Ready to wire as NPCs.
+- **Cannabis + herb plants ready.** `res://assets/nature/plants/cannabis/` (13 variants) + `herbs/` (4). Use for drying rack reward textures or world decoration.
+- **Garden dirt patches ready.** `res://assets/props/garden/` — 5 static patches + 9-frame pulse animation. Use for garden plot prop placement.
+- **tileset_32x32 ready.** 66 individual 32×32 tile PNGs + 2 .tres resources at `res://assets/tiles/32x32/`. Ready for new tilemaps.
 - **R3 — legacy bud preloads (deferred).** `world.gd:64` + `drying_rack.gd:10,11,15,17` use `res://GameAssets/Bud/` paths. Files exist, functional. Deferred until art replacement.
 - **R4 — tile_bit_tools UID duplicates.** Nested copy at `tile_bit_tools/tile_bit_tools/` causing 34 editor warnings. Remove to clean up.
 - **Pending editor restart note:** `_inv_mgr` fetched via `get_node_or_null("/root/InventoryManager")` in world.gd. Replace with bare `InventoryManager` after confirming autoload is in project.godot.
 - **Wood icon is a placeholder.** `res://assets/props/items/rock3.png` used for wood key. Replace with real wood sprite.
-- **Next development priorities:** Teal house collision refinement (door gap + side walls); cave entrance rigging; REVIEW-011 (NPC trade-receive animation, directly wirable); wire new garden/plant assets into world scene.
+- **Next development priorities:** Teal house collision refinement (door gap + side walls); cave entrance rigging; NPC trade-receive animation; stump dissolve animation.
 
 ### Permissions Allowlist (as of 2026-05-15)
 All Godot MCP and filesystem MCP tools are pre-approved in `.claude/settings.json`. No prompts expected for any of these:

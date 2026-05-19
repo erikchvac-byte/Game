@@ -1,0 +1,124 @@
+[gd_scene format=4 uid="uid://bd6tkrcsoac02"]
+
+[ext_resource type="Script" uid="uid://ky7dkjwf4uqo" path="res://World/ChoppableTree/choppable_tree.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://rr274sdr0v00" path="res://assets/nature/trees/tree_maple.png" id="2_tree"]
+[ext_resource type="Texture2D" uid="uid://bx27jiibpn1m2" path="res://assets/nature/stumps/stump_round.png" id="3_stump"]
+[ext_resource type="Texture2D" uid="uid://cvgltvtmspqqs" path="res://assets/nature/trees/maple_chop/frame_000.png" id="4_mc0"]
+[ext_resource type="Texture2D" uid="uid://c7nf5yfatoq4w" path="res://assets/nature/trees/maple_chop/frame_001.png" id="5_mc1"]
+[ext_resource type="Texture2D" uid="uid://daam0x6d7nasj" path="res://assets/nature/trees/maple_chop/frame_002.png" id="6_mc2"]
+[ext_resource type="Texture2D" uid="uid://c6pj8o6ybcxw1" path="res://assets/nature/trees/maple_chop/frame_003.png" id="7_mc3"]
+[ext_resource type="Texture2D" uid="uid://b08esm5sikjfi" path="res://assets/nature/trees/maple_chop/frame_004.png" id="8_mc4"]
+[ext_resource type="Texture2D" uid="uid://dl5vv41a05qo0" path="res://assets/nature/trees/maple_chop/frame_005.png" id="9_mc5"]
+[ext_resource type="Texture2D" uid="uid://djkbhgltxd4xv" path="res://assets/nature/trees/maple_chop/frame_006.png" id="10_mc6"]
+[ext_resource type="Texture2D" uid="uid://ddyhqogypmmcp" path="res://assets/nature/trees/maple_chop/frame_007.png" id="11_mc7"]
+[ext_resource type="Texture2D" uid="uid://dg5dvjtm71on3" path="res://assets/nature/trees/maple_chop/frame_008.png" id="12_mc8"]
+[ext_resource type="Texture2D" uid="uid://b244n0qawmrc5" path="res://assets/nature/trees/maple_fall/frame_000.png" id="13_mf0"]
+[ext_resource type="Texture2D" uid="uid://dptpilhtpofrk" path="res://assets/nature/trees/maple_fall/frame_001.png" id="14_mf1"]
+[ext_resource type="Texture2D" uid="uid://dfe44evsuin7r" path="res://assets/nature/trees/maple_fall/frame_002.png" id="15_mf2"]
+[ext_resource type="Texture2D" uid="uid://ceudl67j5jmbc" path="res://assets/nature/trees/maple_fall/frame_003.png" id="16_mf3"]
+[ext_resource type="Texture2D" uid="uid://b5kmbbjbegtwp" path="res://assets/nature/trees/maple_fall/frame_004.png" id="17_mf4"]
+[ext_resource type="Texture2D" uid="uid://cabxi6wldd628" path="res://assets/nature/trees/maple_fall/frame_005.png" id="18_mf5"]
+[ext_resource type="Texture2D" uid="uid://m5is8dv00t5y" path="res://assets/nature/trees/maple_fall/frame_006.png" id="19_mf6"]
+[ext_resource type="Texture2D" uid="uid://cg8skfpo5tknt" path="res://assets/nature/trees/maple_fall/frame_007.png" id="20_mf7"]
+[ext_resource type="Texture2D" uid="uid://b2p7ig53iwy1y" path="res://assets/nature/trees/maple_fall/frame_008.png" id="21_mf8"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_collider"]
+radius = 10.0
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_area"]
+radius = 22.0
+
+[sub_resource type="SpriteFrames" id="MapleFrames"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_mc0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_mc1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_mc2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_mc3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_mc4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_mc5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_mc6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_mc7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_mc8")
+}],
+"loop": false,
+"name": &"chop",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("13_mf0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_mf1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_mf2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_mf3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_mf4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_mf5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_mf6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_mf7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_mf8")
+}],
+"loop": false,
+"name": &"fall",
+"speed": 8.0
+}]
+
+[node name="ChoppableTree" type="Node2D"]
+script = ExtResource("1_script")
+tree_texture = ExtResource("2_tree")
+stump_texture = ExtResource("3_stump")
+tree_visual_scale = Vector2(0.5, 0.5)
+stump_offset = Vector2(0.0, 18.0)
+stump_visual_scale = Vector2(0.4, 0.4)
+
+[node name="TreeSprite" type="Sprite2D" parent="."]
+
+[node name="StumpSprite" type="Sprite2D" parent="."]
+visible = false
+
+[node name="ChopAnim" type="AnimatedSprite2D" parent="."]
+visible = false
+sprite_frames = SubResource("MapleFrames")
+scale = Vector2(0.5, 0.5)
+
+[node name="TreeCollider" type="StaticBody2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="TreeCollider"]
+shape = SubResource("CircleShape2D_collider")
+
+[node name="ChopArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ChopArea"]
+shape = SubResource("CircleShape2D_area")

@@ -16,8 +16,13 @@
 [ext_resource type="Texture2D" uid="uid://cpgt5c4ifh1r2" path="res://assets/nature/trees/tree_ginkgo.png" id="54_dmovf"]
 [ext_resource type="Texture2D" uid="uid://c12wls7f3a65v" path="res://assets/nature/trees/tree_oak_green.png" id="55_m1472"]
 [ext_resource type="Texture2D" uid="uid://c7tvu8mv80woj" path="res://assets/nature/stumps/log_brown_short.png" id="56_eyejc"]
+[ext_resource type="Texture2D" uid="uid://cqoreyctityfb" path="res://assets/tiles/32x32/tile_007.png" id="67_2hrtt"]
+[ext_resource type="Texture2D" uid="uid://1tq072ux120g" path="res://assets/props/garden/dirt_patch_long_seeded.png" id="68_g3lo7"]
 [ext_resource type="Texture2D" uid="uid://b6gp3wtyvi25x" path="res://assets/structures/shops/shop_bakery_open.png" id="bakery_open"]
 [ext_resource type="PackedScene" uid="uid://b8x5174l3wq0i" path="res://World/ChoppableTree/choppable_tree.tscn" id="choptree_scene"]
+[ext_resource type="PackedScene" uid="uid://chmlcplsqf7rr" path="res://World/ChoppableTree/choppable_tree_pine.tscn" id="pine_scene"]
+[ext_resource type="PackedScene" uid="uid://bd6tkrcsoac02" path="res://World/ChoppableTree/choppable_tree_maple.tscn" id="maple_scene"]
+[ext_resource type="PackedScene" uid="uid://bhnei4yh8rro" path="res://World/ChoppableTree/choppable_tree_fir.tscn" id="fir_scene"]
 [ext_resource type="Texture2D" uid="uid://dcplhewp24tmq" path="res://assets/props/drying_rack/rack_new_empty.png" id="drack1_tex"]
 [ext_resource type="Script" uid="uid://23aaem0eoxrt" path="res://Interactables/drying_rack.gd" id="drack_script"]
 [ext_resource type="Script" uid="uid://cy7rdet47ajip" path="res://World/object_shadow.gd" id="obj_shadow_script"]
@@ -49,7 +54,7 @@
 [ext_resource type="Texture2D" uid="uid://0igrdv2or4s1" path="res://assets/nature/trees/willow/willow_f6.png" id="willow_f6"]
 [ext_resource type="Texture2D" uid="uid://bqxyc52i7dne6" path="res://assets/nature/trees/willow/willow_f7.png" id="willow_f7"]
 [ext_resource type="Texture2D" uid="uid://b7g2ftyuysdve" path="res://assets/nature/trees/willow/willow_f8.png" id="willow_f8"]
-[ext_resource type="Texture2D" uid="uid://inuq3s4oqqdd" path="res://assets/_review_required/willow_idle.png" id="willow_idle"]
+[ext_resource type="Texture2D" uid="uid://inuq3s4oqqdd" path="res://assets/_archived/willow_idle.png" id="willow_idle"]
 [ext_resource type="Script" uid="uid://ciy6hj2sxk2o2" path="res://World/WillowTree/willow_tree.gd" id="willow_tree_script"]
 [ext_resource type="Texture2D" uid="uid://b8iyfgg5pkv8y" path="res://assets/props/well/WellWater1.png" id="ww_1"]
 [ext_resource type="Texture2D" uid="uid://nh0y02mr1kmo" path="res://assets/props/well/WellWater2.png" id="ww_2"]
@@ -707,28 +712,14 @@ position = Vector2(534, 125)
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPCHomeDoor" unique_id=798263946]
 shape = SubResource("RectangleShape2D_i5ake")
 
-[node name="Tree1" parent="." unique_id=324092375 instance=ExtResource("choptree_scene")]
+[node name="TreePine" parent="." unique_id=324092375 instance=ExtResource("pine_scene")]
 position = Vector2(42, 213)
-tree_texture = ExtResource("52_3gnva")
-stump_texture = ExtResource("56_eyejc")
-tree_visual_scale = Vector2(1.5, 1.5)
-stump_offset = Vector2(-14, 45)
 
-[node name="Tree2" parent="." unique_id=425777483 instance=ExtResource("choptree_scene")]
+[node name="TreeMaple" parent="." unique_id=425777483 instance=ExtResource("maple_scene")]
 position = Vector2(93, 237)
-tree_texture = ExtResource("53_i5ake")
-stump_texture = ExtResource("56_eyejc")
-tree_visual_scale = Vector2(1.545, 1.545)
-stump_offset = Vector2(-4, 41)
-stump_visual_scale = Vector2(0.6, 0.6)
 
-[node name="Tree3" parent="." unique_id=1090580049 instance=ExtResource("choptree_scene")]
+[node name="TreeFir" parent="." unique_id=1090580049 instance=ExtResource("fir_scene")]
 position = Vector2(161, 202)
-tree_texture = ExtResource("54_dmovf")
-stump_texture = ExtResource("56_eyejc")
-tree_visual_scale = Vector2(2, 2)
-stump_offset = Vector2(13, 46)
-stump_visual_scale = Vector2(0.56, 0.88)
 
 [node name="Tree4" parent="." unique_id=1712278908 instance=ExtResource("choptree_scene")]
 position = Vector2(260, 240)
@@ -738,3 +729,44 @@ tree_visual_scale = Vector2(2, 2)
 stump_offset = Vector2(-8, 41)
 stump_visual_scale = Vector2(1, 0.56)
 stump_flip_h = true
+
+[node name="Tile007" type="Sprite2D" parent="." unique_id=586292423]
+position = Vector2(398, 216)
+texture = ExtResource("67_2hrtt")
+
+[node name="Tile008" type="Sprite2D" parent="." unique_id=509512339]
+position = Vector2(464, 216)
+scale = Vector2(1.3125, 1)
+texture = ExtResource("67_2hrtt")
+
+[node name="Tile008" type="Sprite2D" parent="Tile008" unique_id=529146155]
+position = Vector2(425, 215)
+texture = ExtResource("67_2hrtt")
+
+[node name="Tile009" type="Sprite2D" parent="Tile008" unique_id=123925640]
+position = Vector2(-30, 1)
+texture = ExtResource("67_2hrtt")
+
+[node name="Tile008" type="Sprite2D" parent="Tile008/Tile009" unique_id=1563925213]
+position = Vector2(99.33333, 0)
+scale = Vector2(1.2306547, 1)
+texture = ExtResource("67_2hrtt")
+
+[node name="Tile008" type="Sprite2D" parent="Tile008/Tile009/Tile008" unique_id=458067872]
+position = Vector2(-32.81258, -3)
+scale = Vector2(-0.83255446, 1)
+texture = ExtResource("67_2hrtt")
+
+[node name="Tile008" type="Sprite2D" parent="Tile008/Tile009/Tile008/Tile008" unique_id=1439259209]
+position = Vector2(-30.48848, 2)
+scale = Vector2(1.34375, 1)
+texture = ExtResource("67_2hrtt")
+
+[node name="Tile009" type="Sprite2D" parent="Tile008/Tile009/Tile008" unique_id=2127754934]
+position = Vector2(26.52477, -2)
+texture = ExtResource("67_2hrtt")
+
+[node name="DirtPatchLongSeeded" type="Sprite2D" parent="." unique_id=1886602565]
+position = Vector2(79, 324)
+scale = Vector2(1.0529777, 1.2273327)
+texture = ExtResource("68_g3lo7")

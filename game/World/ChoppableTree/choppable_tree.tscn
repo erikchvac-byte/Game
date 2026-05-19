@@ -16,6 +16,9 @@ script = ExtResource("1_script")
 [node name="StumpSprite" type="Sprite2D" parent="."]
 visible = false
 
+[node name="ChopAnim" type="AnimatedSprite2D" parent="."]
+visible = false
+
 [node name="TreeCollider" type="StaticBody2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TreeCollider"]

@@ -26,6 +26,8 @@ func _ready() -> void:
 	$StumpSprite.scale = stump_visual_scale
 	$StumpSprite.flip_h = stump_flip_h
 	$StumpSprite.visible = false
+	$ChopAnim.visible = false
+	$ChopAnim.animation_finished.connect(_on_chop_anim_finished)
 	$ChopArea.body_entered.connect(_on_body_entered)
 	$ChopArea.body_exited.connect(_on_body_exited)
 
@@ -54,6 +56,24 @@ func interact(player: CharacterBody2D) -> void:
 
 func _do_chop() -> void:
 	_is_chopped = true
+	var frames: SpriteFrames = $ChopAnim.sprite_frames
+	if frames != null and frames.has_animation("chop"):
+		$TreeSprite.visible = false
+		$ChopAnim.visible = true
+		$ChopAnim.play("chop")
+	else:
+		_finish_chop()
+
+
+func _on_chop_anim_finished() -> void:
+	if $ChopAnim.animation == "chop" and $ChopAnim.sprite_frames.has_animation("fall"):
+		$ChopAnim.play("fall")
+	else:
+		_finish_chop()
+
+
+func _finish_chop() -> void:
+	$ChopAnim.visible = false
 	$TreeSprite.visible = false
 	$StumpSprite.visible = true
 	$TreeCollider/CollisionShape2D.disabled = true
