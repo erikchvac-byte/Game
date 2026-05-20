@@ -8,11 +8,12 @@
 - **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, stop and ask — do not pick a "close enough" alternative. Choosing replacement art is the user's job.
 
 ## Where We Are
-- **Last completed:** town-grass-tile overlay system + tileset rename (2026-05-19).
-  - **Overlay TileMapLayer (ADR-069):** `Overlay` TileMapLayer added to `world.tscn` as sibling of `Ground` (same `GrassBrick_OVERLAYS__tileset.tres`, renders above Ground by tree order). Paint town-grass-tile tiles on `Overlay` layer — they appear on top of existing ground without replacing it. ✅
-  - **town-grass-tile per-tile transparency (ADR-069):** 21,892 pixels made transparent across 139 tiles via per-tile corner flood-fill (Python/PIL, tolerance=6, multiple terrain bg colors handled per tile). All 256 tiles now have transparent backgrounds — only decorative graphic content remains opaque. ✅
-  - **Tileset renamed (ADR-070):** `GrassBrick_OVERLAYS__tileset.tres` → `GrassBrick_OVERLAYS__tileset.tres`. Single reference in `world.tscn` updated. ✅
-  - **Species trees (ADR-068):** `choppable_tree_pine/maple/fir.tscn` created as standalone scenes with inline `SpriteFrames` (9-frame chop + 9-frame fall, 10/8 fps). `choppable_tree.gd` updated to play `ChopAnim` on final chop then transition to stump. Tree1/2/3 in world.tscn replaced with TreePine/TreeMaple/TreeFir at same positions. Tree4 (oak) + WillowTree unchanged. Playtested: chop animation → fall animation → stump → wood granted. ✅
+- **Last completed:** Project structure cleanup + drying_rack path fixes (2026-05-20).
+  - **Structure cleanup (ADR-071):** Deleted stray root `project.godot`, `game/GameAssets/` (985 files, zero refs), orphan `22222x32.tres`. Moved 7 root art dirs into `GameAssets/`. Archived orphaned root `addons/`. Project now has clean two-tier asset structure. ✅
+  - **drying_rack.gd paths fixed:** All 4 broken `res://GameAssets/` preloads in `PRODUCTS` replaced with `res://assets/props/bud/`. Three PNGs (hang_dry, weed_plant, dry_bud) recovered from source art. `herb_bundle_dried.png` has no source — **user to supply replacement art**. ✅
+  - **Solid.png added to tileset:** Source 8 in `GrassBrick_OVERLAYS__tileset.tres` (16×16, 256 tiles). When painting Overlay tiles, scroll UP past Solid.png in source picker to reach town-grass-tile (source 5). ✅
+  - **Overlay + town-grass-tile (ADR-069/070):** `Overlay` TileMapLayer in `world.tscn`. All 256 town-grass-tile tiles have transparent backgrounds. Paint on `Overlay` layer — tiles render above Ground without replacing it. ✅
+  - **Species trees (ADR-068):** `choppable_tree_pine/maple/fir.tscn` with chop+fall animations. Playtested ✅.
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
 - **Space bug fix:** Pressing Space near a tree without the axe equipped now shows toast `"Equip axe first (C)"` instead of silently failing. Press C to equip, then Space to chop.
@@ -187,7 +188,7 @@
 - `_award_and_reset()` picks a random texture from `PRODUCTS` array (8 bud types) via `randi() % PRODUCTS.size()` and calls `Inventory.add_item(tex)`
 - `Inventory.add_item(tex)` tries hotbar (slots 1–11) first, then inventory grid (slots 0–35); stacks same texture up to 16, then opens new slot; returns false if all full (silent loss)
 - Connected in `world.gd`: `$Plant.plant_harvested.connect($DryingRack.add_plant)`
-- Assets: racks in `res://GameAssets/Objects/DryingRacks/`; 8 product textures in `res://GameAssets/Bud/` + `res://GameAssets/Objects/herb_bundle_dried.png`
+- Assets: racks in `res://assets/props/drying_rack/`; 8 product textures in `res://assets/props/bud/` + `res://assets/nature/plants/herbs/herb_plant_type_a.png` (placeholder — user to supply `herb_bundle_dried.png` replacement)
 - Collision: `DryingRackCollider` StaticBody2D → `CollisionShape2D` (RectangleShape2D 44×10) at offset (0, 26)
 - Shadow: `ground_offset=(0,26)`, `shadow_size=(28,5)`, `cast_length=18.0`; `y_sort_offset=30`
 - Plant (plant.gd) resets to frame 0 / stage 0 after emitting `plant_harvested`; no toast popups
