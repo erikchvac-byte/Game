@@ -9,7 +9,7 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Obsidian vault connected (2026-05-20). Vault at `C:\Users\erikc\Desktop\DesktopFolder\MeNew\GAME` is readable via native Glob/Grep/Read tools — no MCP config needed. Current vault file: `TREE SPRITE SIZING.md` (tree sizing standards table, see Quick Facts below).
+- **Last completed:** Full project asset inventory written to Obsidian vault (2026-05-20). `Project_Asset_Inventory.md` catalogues ~1,400 assets across game/assets/ (568 PNGs), GameAssets/ (819 PNGs), and game/resources/ (5 .tres), with status (IN_USE / AVAILABLE / STAGING / ARCHIVED), frame counts, and usage notes.
 - **Previous (2026-05-20):** world.gd broken preload fix + tileset zombie source cleanup (ADR-072).
   - **world.gd:64 fixed:** `preload("res://GameAssets/Bud/dry_bud.png")` → `res://assets/props/bud/dry_bud.png`. Was a missed path from ADR-071 cleanup that caused script parse failure (game unrunnable). ✅
   - **Tileset zombie sources removed (ADR-072):** Sources 2, 3, 4, 7 in `GrassBrick_OVERLAYS__tileset.tres` had null textures and 0 cells in use — orphaned leftovers with no texture reference. Removed via editor script. Tileset spam (~700 C++ DEBUGGER errors per run) eliminated. Active sources now: 0=Tile.png, 1=grass_stone_dirt.png, 5=town-grass-tile.png, 6=atlas_32x32.png, 8=Solid.png. ✅
@@ -223,10 +223,10 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-20 (Obsidian vault connection)
-- **Game state:** Runnable and clean (world.gd preload fixed, tileset clean — from prior session ADR-072). No game changes this session.
-- **Obsidian vault connected.** `C:\Users\erikc\Desktop\DesktopFolder\MeNew\GAME` readable via Glob/Grep/Read without any MCP config change. Vault has one file: `TREE SPRITE SIZING.md` — sizing standards table now mirrored in CLAUDE.md Quick Facts.
-- **Vault access method:** Filesystem MCP is restricted to project dir only. Use native Glob/Grep/Read tools for vault access — these have no path restrictions.
+### Session end — 2026-05-20 (Asset inventory + Obsidian vault)
+- **Game state:** Runnable and clean. No game changes this session.
+- **Asset inventory complete.** `Project_Asset_Inventory.md` written to Obsidian vault. ~1,400 assets catalogued: 568 in-project PNGs, 819 source PNGs, 5 .tres resources. Status tags (IN_USE/AVAILABLE/STAGING/ARCHIVED) on every entry.
+- **Vault access method:** Filesystem MCP is restricted to project dir only. Use native Glob/Grep/Read tools for vault at `C:\Users\erikc\Desktop\DesktopFolder\MeNew\GAME` — no path restrictions on native tools.
 - **Tileset is clean.** Active sources: 0=Tile.png, 1=grass_stone_dirt.png, 5=town-grass-tile.png, 6=atlas_32x32.png, 8=Solid.png. No zombie sources.
 - **Overlay TileMapLayer:** `Overlay` node in `world.tscn`. Scroll UP in source picker — Solid.png at bottom, town-grass-tile is source 5.
 - **Cave tiles pending.** `GameAssets/Caves/Tiles/Tiles.png` (208×192) has irregular layout — needs clarification before adding as a tileset source.
