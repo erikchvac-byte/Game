@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Y-sort offset calibration — 15 world objects (2026-05-20, ADR-073). All sprites now sort by ground contact point. Offsets set directly in world.tscn (y_sort_offset is .tscn-only, not a runtime GDScript property). Playtested ✅.
+- **Last completed:** Three standard choppable tree systems removed (2026-05-20, ADR-074). Tree1/Tree2/Tree3 nodes deleted from world.tscn; all ChoppableTree scenes/scripts/assets removed; world.gd choppable_trees group pipeline stripped. Willow fully intact. Playtest pending (confirm game loads, willow shakes, player can walk former tree locations).
+- **Previous (2026-05-20):** Y-sort offset calibration — 15 world objects (ADR-073). All sprites now sort by ground contact point. Offsets set directly in world.tscn (y_sort_offset is .tscn-only, not a runtime GDScript property). Playtested ✅.
 - **Previous (2026-05-20):** Full project asset inventory written to Obsidian vault. `Project_Asset_Inventory.md` catalogues ~1,400 assets across game/assets/ (568 PNGs), GameAssets/ (819 PNGs), and game/resources/ (5 .tres), with status (IN_USE / AVAILABLE / STAGING / ARCHIVED), frame counts, and usage notes.
 - **Previous (2026-05-20):** world.gd broken preload fix + tileset zombie source cleanup (ADR-072).
   - **world.gd:64 fixed:** `preload("res://GameAssets/Bud/dry_bud.png")` → `res://assets/props/bud/dry_bud.png`. Was a missed path from ADR-071 cleanup that caused script parse failure (game unrunnable). ✅
@@ -224,19 +225,21 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-20 (Y-sort calibration)
-- **Game state:** Runnable and clean. Y-sort now working correctly for all world objects.
-- **Y-sort fix (ADR-073):** `y_sort_offset` set on 15 nodes in world.tscn so each sprite sorts by its ground contact point, not its visual center. Key values: willow +53, bakery +35, teal house +42, trees +36/+37/+48, player +16, NPC +19. Edit pattern: `open_scene(other)` → Edit tool on world.tscn → `open_scene(world.tscn)`. y_sort_offset is .tscn-only, not accessible at runtime.
-- **HouseTwostoryTeal offset estimated.** y_sort_offset=42 was calculated geometrically (door base at 77% of sprite height, matching bakery proportion). May need slight tweaking after walking around the teal house in-editor.
-- **New world objects need y_sort_offset.** Any future prop/building/NPC added to world.tscn must have `y_sort_offset = half_sprite_height_in_world_pixels` set in the Inspector. Default is 0 which will be wrong for anything taller than ~16px.
+### Session end — 2026-05-20 (tree removal)
+- **Game state:** Runnable. Three choppable tree systems removed. Willow intact. Playtest not yet run — queue a playtest first next session to confirm no regressions.
+- **Tree removal (ADR-074):** Tree1/Tree2/Tree3 removed from world.tscn. ChoppableTree/ directory deleted entirely (base scene + 3 species scenes + script + uid). world.gd choppable_trees group signal pipeline stripped (CLICK_TREE_RADIUS, signal wiring loop, _on_wood_chopped, is_chopping triggers, tree nav search). 6 static tree PNGs + 7 animation directories + stump_round + stump_round_dissolve + log_brown_short deleted from assets. Full report in `tree_removal_report.md`.
+- **Willow confirmed untouched.** willow_tree.gd, TreeWillowWeeping node, WillowFrames SpriteFrames, ProximityArea collision, assets/nature/trees/willow/ — all intact.
+- **is_chopping flag dormant.** player.gd still has `is_chopping := false` and player_animation.gd still handles `chop_*` animations — but world.gd never sets it to true now. Safe for future use.
+- **Wood has no source.** Starting inventory still grants one wood (rock3.png placeholder). No in-game way to get more. Either add a new chopping system or remove wood from the game.
+- **tree_oak_green.png is orphaned.** At `res://assets/nature/trees/tree_oak_green.png` — not used by any scene. Not removed (not part of the three removed systems). User's call.
+- **y_sort_offset note.** Tree1/Tree2/Tree3 had offsets +36/+37/+48 that are now gone with those nodes. Willow's +53 is still set. Any new tree placed in world.tscn needs a new y_sort_offset.
+- **HouseTwostoryTeal y_sort_offset still estimated.** Value +42 may need tweaking after walking around in-editor.
 - **Tileset is clean.** Active sources: 0=Tile.png, 1=grass_stone_dirt.png, 5=town-grass-tile.png, 6=atlas_32x32.png, 8=Solid.png. No zombie sources.
 - **Overlay TileMapLayer:** `Overlay` node in `world.tscn`. Scroll UP in source picker — Solid.png at bottom, town-grass-tile is source 5.
-- **Cave tiles pending.** `GameAssets/Caves/Tiles/Tiles.png` (208×192) has irregular layout — needs clarification before adding as a tileset source.
 - **tile_bit_tools UID duplicates.** Nested copy at `tile_bit_tools/tile_bit_tools/` causing ~34 editor warnings. Remove to clean up (not yet done).
 - **Pending editor restart note:** `_inv_mgr` fetched via `get_node_or_null("/root/InventoryManager")` in world.gd. Replace with bare `InventoryManager` after confirming autoload is in project.godot.
-- **Wood icon is a placeholder.** `res://assets/props/items/rock3.png` used for wood key. Replace with real wood sprite.
 - **herb_bundle_dried.png has no source.** `herb_plant_type_a.png` is placeholder in drying rack PRODUCTS. User to supply replacement art.
-- **Next priorities:** Teal house collision refinement (door gap + side walls); cave entrance rigging; NPC trade-receive animation; stump dissolve animation.
+- **Next priorities:** Playtest tree removal (confirm clean load); teal house collision refinement; cave entrance rigging; new tree design decision.
 - **Available but unwired:** player_alt (59×49, 3-dir), purple_jack + grey_hoodie/rotations (8-dir NPCs), cannabis/herb plants (13+4 variants), garden dirt patches (5 static + 9-frame pulse), tileset_32x32 (66 tiles).
 
 ### Permissions Allowlist (as of 2026-05-15)

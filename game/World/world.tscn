@@ -11,13 +11,8 @@
 [ext_resource type="SpriteFrames" uid="uid://b0rvlem6tvcb3" path="res://resources/characters/grey_hoodie_sprites.tres" id="47_i363k"]
 [ext_resource type="Texture2D" uid="uid://cvef32hudv7jo" path="res://assets/structures/cave_entrance_arch_stone.png" id="48_dlis5"]
 [ext_resource type="Texture2D" uid="uid://n6fr5m4wldrm" path="res://assets/nature/stumps/BigMushroomStump.png" id="49_h4hkh"]
-[ext_resource type="Texture2D" uid="uid://buq3o7ig25tmw" path="res://assets/nature/trees/tree_pine_bushy_b.png" id="52_3gnva"]
-[ext_resource type="Texture2D" uid="uid://bgkahretu6fd7" path="res://assets/nature/trees/tree_pine_narrow.png" id="53_i5ake"]
-[ext_resource type="Texture2D" uid="uid://cpgt5c4ifh1r2" path="res://assets/nature/trees/tree_ginkgo.png" id="54_dmovf"]
-[ext_resource type="Texture2D" uid="uid://c7tvu8mv80woj" path="res://assets/nature/stumps/log_brown_short.png" id="56_eyejc"]
 [ext_resource type="Texture2D" uid="uid://cqoreyctityfb" path="res://assets/tiles/32x32/tile_007.png" id="67_2hrtt"]
 [ext_resource type="Texture2D" uid="uid://b6gp3wtyvi25x" path="res://assets/structures/shops/shop_bakery_open.png" id="bakery_open"]
-[ext_resource type="PackedScene" uid="uid://b8x5174l3wq0i" path="res://World/ChoppableTree/choppable_tree.tscn" id="choptree_scene"]
 [ext_resource type="Texture2D" uid="uid://dcplhewp24tmq" path="res://assets/props/drying_rack/rack_new_empty.png" id="drack1_tex"]
 [ext_resource type="Script" uid="uid://23aaem0eoxrt" path="res://Interactables/drying_rack.gd" id="drack_script"]
 [ext_resource type="Script" uid="uid://cy7rdet47ajip" path="res://World/object_shadow.gd" id="obj_shadow_script"]
@@ -731,32 +726,6 @@ position = Vector2(534, 125)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="NPCHomeDoor" unique_id=798263946]
 shape = SubResource("RectangleShape2D_i5ake")
-
-[node name="Tree1" parent="." unique_id=324092375 instance=ExtResource("choptree_scene")]
-position = Vector2(42, 213)
-y_sort_offset = 36
-tree_texture = ExtResource("52_3gnva")
-stump_texture = ExtResource("56_eyejc")
-tree_visual_scale = Vector2(1.5, 1.5)
-stump_offset = Vector2(-14, 45)
-
-[node name="Tree2" parent="." unique_id=425777483 instance=ExtResource("choptree_scene")]
-position = Vector2(93, 237)
-y_sort_offset = 37
-tree_texture = ExtResource("53_i5ake")
-stump_texture = ExtResource("56_eyejc")
-tree_visual_scale = Vector2(1.545, 1.545)
-stump_offset = Vector2(-4, 41)
-stump_visual_scale = Vector2(0.6, 0.6)
-
-[node name="Tree3" parent="." unique_id=1090580049 instance=ExtResource("choptree_scene")]
-position = Vector2(161, 202)
-y_sort_offset = 48
-tree_texture = ExtResource("54_dmovf")
-stump_texture = ExtResource("56_eyejc")
-tree_visual_scale = Vector2(2, 2)
-stump_offset = Vector2(13, 46)
-stump_visual_scale = Vector2(0.56, 0.88)
 
 [node name="Tile007" type="Sprite2D" parent="." unique_id=586292423]
 position = Vector2(406, 201)

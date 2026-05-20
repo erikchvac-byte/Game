@@ -1007,6 +1007,17 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-074: Remove Three Standard Choppable Tree Systems
+**Status:** Accepted
+**Date:** 2026-05-20
+**Context:** The three choppable tree instances in world.tscn (Tree1/Tree2/Tree3 using pine_bushy_b, pine_narrow, ginkgo textures via `choppable_tree.tscn`) are being removed entirely. The four species-variant scenes (choppable_tree_pine/maple/fir.tscn) were also standalone scenes never placed in the world. All were tied to the `choppable_trees` group signal pipeline in world.gd. The willow tree is a completely separate system (proximity animation only, no chop/wood system) and must remain.
+**Decision:** Delete all ChoppableTree files (base scene + 3 variant scenes + script + uid). Remove all 5 ext_resource entries and 3 node instances from world.tscn. Remove from world.gd: `CLICK_TREE_RADIUS` const, `choppable_trees` group signal loop, `_on_wood_chopped()`, `is_chopping` triggers, tree search in `_on_right_click`, `is_in_group` check in `_do_nav_interact`. Delete all tree/stump assets exclusively used by these systems (6 static PNGs, 7 animation directories, stump_round + dissolve, log_brown_short).
+**Rationale:** The three trees were placeholder geometry. Removing them cleans the world for redesign. The axe system (EQUIPPABLE_TOOLS, equip_toggle, HUD gold border) is generic and stays — no code changes to player.gd, player_animation.gd, InventoryManager, or HUD.
+**Consequences:** World now has no choppable trees. `is_chopping` player flag exists in player.gd/player_animation.gd but is never set from world.gd — the chop animation is dormant (not broken). The "wood" starting item remains in `_grant_starting_items()` but there is no longer any in-game source of additional wood. Willow, Well, Plant, DryingRack, NPC trade, door transitions — all unaffected.
+**Testing:** Validated via grep — zero remaining references to any removed identifiers. Detailed report in `tree_removal_report.md`. Playtest pending.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1128,3 +1139,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-20 | Obsidian vault connected at C:\Users\erikc\Desktop\DesktopFolder\MeNew\GAME — readable via native Glob/Grep/Read tools (no MCP config needed; filesystem MCP is project-scoped only). Tree sprite sizing standards from vault mirrored into CLAUDE.md. No game changes this session. |
 | 2026-05-20 | Full project asset inventory written to Obsidian vault as Project_Asset_Inventory.md. Catalogues ~1,400 assets: 568 in-project PNGs (game/assets/), 819 source PNGs (GameAssets/), 5 .tres resources. Every asset has status tag (IN_USE/AVAILABLE/STAGING/ARCHIVED), frame count for animations, and usage notes. |
 | 2026-05-20 | y_sort_offset calibrated on all 15 world objects (buildings, trees, props, characters). Sort point moved from sprite center to ground contact for each object. Willow +53, houses +35/+42, choppable trees +36/+37/+48, characters (player/NPC) +16/+19. ADR-073 added. |
+| 2026-05-20 | Three standard choppable tree systems removed (Tree1/Tree2/Tree3 + ChoppableTree scenes/scripts). Willow untouched. 6 static tree PNGs, 7 animation dirs, 2 stump assets deleted. world.gd choppable_trees signal pipeline removed. ADR-074 added. |

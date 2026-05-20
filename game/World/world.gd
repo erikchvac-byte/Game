@@ -1,7 +1,6 @@
 extends Node2D
 
 const NPC_TRADE_RADIUS := 36.0
-const CLICK_TREE_RADIUS := 22.0
 const ARRIVE_DIST := 5.0
 const NAV_STUCK_MAX := 1.0
 
@@ -43,16 +42,7 @@ func _ready() -> void:
 	$Plant.connect("interactable_entered", _on_interactable_entered)
 	$Plant.connect("interactable_exited", _on_interactable_exited)
 	$Plant.plant_harvested.connect($DryingRack.add_plant)
-	for tree in get_tree().get_nodes_in_group("choppable_trees"):
-		tree.connect("interactable_entered", _on_interactable_entered)
-		tree.connect("interactable_exited", _on_interactable_exited)
-		tree.connect("wood_chopped", _on_wood_chopped)
 	_grant_starting_items()
-
-
-func _on_wood_chopped() -> void:
-	if _inv_mgr:
-		_inv_mgr.add_item("wood", preload("res://assets/props/items/rock3.png"))
 
 
 func _grant_starting_items() -> void:
@@ -112,8 +102,6 @@ func _input(event: InputEvent) -> void:
 				if _hud:
 					_hud.show_toast("Equip axe first (C)", 1.5)
 			else:
-				if target.is_in_group("choppable_trees") and _player:
-					_player.is_chopping = true
 				target.interact(_player)
 
 
@@ -187,27 +175,10 @@ func _on_right_click(world_pos: Vector2) -> void:
 			_nav_target_node = _npc
 			_nav_pending_interact = true
 			return
-	var best_tree: Node = null
-	var best_dist := CLICK_TREE_RADIUS
-	for tree in get_tree().get_nodes_in_group("choppable_trees"):
-		if tree.get("_is_chopped") == true:
-			continue
-		var n2d := tree as Node2D
-		if n2d == null:
-			continue
-		var d := n2d.global_position.distance_to(world_pos)
-		if d < best_dist:
-			best_dist = d
-			best_tree = tree
 	_nav_active = true
-	if best_tree != null:
-		_nav_target_pos = (best_tree as Node2D).global_position
-		_nav_target_node = best_tree
-		_nav_pending_interact = true
-	else:
-		_nav_target_pos = world_pos
-		_nav_target_node = null
-		_nav_pending_interact = false
+	_nav_target_pos = world_pos
+	_nav_target_node = null
+	_nav_pending_interact = false
 
 
 func _update_mouse_navigation(delta: float) -> void:
@@ -262,8 +233,6 @@ func _do_nav_interact(player: CharacterBody2D, target: Node) -> void:
 		return
 	if target.has_method("can_interact") and not target.can_interact(player):
 		return
-	if target.is_in_group("choppable_trees"):
-		player.is_chopping = true
 	target.interact(player)
 
 
