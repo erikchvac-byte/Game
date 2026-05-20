@@ -957,6 +957,36 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-069: Overlay TileMapLayer + town-grass-tile Per-Tile Transparency
+**Status:** Accepted
+**Date:** 2026-05-19
+**Context:** town-grass-tile.png (256×256, 16×16 tiles) showed solid backgrounds when painted in the world. Two problems: (1) only one TileMapLayer existed ("Ground") — painting any tile on it replaces the existing ground tile, making overlay use impossible; (2) 139 of 256 tiles in the atlas had solid-colored backgrounds (various terrain colors: dark green, grey-stone, brick-red, light green, dirt, etc.) — even on a separate layer they would block the ground.
+**Decision:** Add an "Overlay" TileMapLayer as a sibling of Ground in world.tscn (same tileset, same z_index=0, positioned after Ground in tree order so it renders on top). Run a per-tile flood-fill pass on town-grass-tile.png: for each of the 256 16×16 tiles, seed from each corner; if the corner is opaque, flood-fill matching pixels within tolerance=6 and set alpha=0. 21,892 pixels made transparent across 139 tiles.
+**Rationale:** Separate layer is the fundamental requirement — a single TileMapLayer can only hold one tile per cell; overlay tiles must live on a higher layer. Per-tile corner flood-fill is safer than global color replacement because different tiles have different background colors (10 distinct terrain bg colors detected). Corner seeding ensures background-connected pixels are removed while isolated interior content (the decorative graphics) is preserved.
+**Consequences:** Transparent-background tiles from town-grass-tile (source 5) can now be painted on the Overlay layer, rendering on top of the existing fivegrass/mabeyfive ground without covering it. Tiles that were entirely background-colored (blank tiles) become fully transparent — invisible but selectable. Tileset renamed to GrassBrick_OVERLAYS__tileset.tres (ADR-070) to reflect its intended role.
+
+---
+
+## ADR-070: Tileset Rename — GrassBrick_OVERLAYS__tileset.tres
+**Status:** Accepted
+**Date:** 2026-05-19
+**Context:** `world_tileset.tres` was a generic name that didn't communicate the tileset's actual purpose (grass + brick terrain tiles + overlay decoration tiles). With the Overlay layer added (ADR-069), a more descriptive name was needed.
+**Decision:** Rename `res://resources/tilesets/world_tileset.tres` → `res://resources/tilesets/GrassBrick_OVERLAYS__tileset.tres`. Update the single reference in `world.tscn` ext_resource path. Trigger filesystem scan.
+**Rationale:** Only one file referenced the tileset, making this a zero-risk rename. The new name immediately communicates both the terrain contents (GrassBrick) and the overlay capability (OVERLAYS).
+**Consequences:** Any future file that references the tileset must use the new path. UID `uid://nk6run28bicj` is unchanged — Godot will resolve by UID even if the path is cached stale.
+
+---
+
+## ADR-071: Project Structure Cleanup — Remove Duplication and Stray Root Artifacts
+**Status:** Accepted
+**Date:** 2026-05-19
+**Context:** Audit revealed a three-tier asset duplication problem: repo-root `GameAssets/` (source art), `game/GameAssets/` (legacy unused copy), and `game/assets/` (canonical). A stray `project.godot` at repo root created nested-project ambiguity. Seven art experiment directories were scattered at repo root alongside docs and tooling.
+**Decision:** (1) Delete `C:\Users\erikc\Dev\Game\project.godot` (stray stub, game runs from `game/`). (2) Delete `game/GameAssets/` entirely (985 files, zero active `res://` references confirmed). (3) Delete orphan `game/assets/tiles/32x32/22222x32.tres` (empty TileSet, no references). (4) Move 7 root-level art dirs into `GameAssets/` subdirectories. (5) Archive orphaned root-level `addons/`, `screenshots/`, `states/` into `_archived/`.
+**Rationale:** `game/GameAssets/` had zero active references confirmed by grep across all .gd/.tscn/.tres files. Stray project.godot risked Godot loading the wrong project if root dir was opened in editor. Art dirs at root were structurally inconsistent with the `GameAssets/` convention already in place.
+**Consequences:** Project now has a clean two-tier asset structure: `GameAssets/` (source art) and `game/assets/` (in-project canonical). No active references broken — all verified before deletion.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1070,3 +1100,6 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-19 | _review_required cleanup: all 36 assets routed to permanent locations — characters/grey_hoodie/rotations/, characters/purple_jack/, characters/player_alt/, nature/plants/cannabis/, nature/plants/herbs/, props/garden/, nature/rocks/, structures/, tiles/32x32/, tiles/Tile.png. willow_idle.png + tilemaplayer_icon.png archived (superseded/wrong folder). _review_required is now empty. ADR-067 added. |
 | 2026-05-18 | Pine/maple/fir choppable trees wired with chop+fall animations. choppable_tree_{pine,maple,fir}.tscn created as standalone scenes with inline SpriteFrames (9-frame chop@10fps + 9-frame fall@8fps). choppable_tree.gd updated to play ChopAnim before showing stump; falls back to instant swap if no sprite_frames. world.tscn Tree1/2/3 replaced with TreePine/TreeMaple/TreeFir at same positions. Playtested: chop→fall→stump→wood granted. ADR-068 added. |
 | 2026-05-19 | Tileset housekeeping: (1) atlas_32x32.png source fixed — region_size was (16,16), corrected to (32,32); 264 stale tile registrations removed, 72 correct tiles (8×9) registered. (2) beach_tiles_48x48.png (GameAssets/Beach/Tiles/Tiles.png, 192×112) imported + added as world_tileset source 7 with region_size=(48,48), 8 tiles. (3) town-grass-tile.png dark-grey background color (52,55,62) fully removed — 8,324 pixels made transparent in two passes (6,182 edge-reachable + 2,142 enclosed); tiles now render with no gray halo. Cache cleanup: 4 stale .import refs purged, 6 temp screenshots deleted. World playtested: no regressions. |
+| 2026-05-19 | Overlay TileMapLayer added to world.tscn (sibling of Ground, same GrassBrick_OVERLAYS__tileset.tres, renders above Ground by tree order). Per-tile flood-fill background removal on town-grass-tile.png — 21,892 pixels across 139 tiles made transparent (corner-seeded per-tile fill, tolerance=6, multiple terrain bg colors handled independently). Tiles from town-grass-tile atlas can now be painted on Overlay layer without covering existing ground. ADR-069 added. |
+| 2026-05-19 | world_tileset.tres renamed to GrassBrick_OVERLAYS__tileset.tres. Single reference in world.tscn updated. Filesystem scan triggered. ADR-070 added. |
+| 2026-05-19 | Project structure audit + cleanup: (1) Deleted stray root project.godot (776-byte stub, was causing nested-project ambiguity — game runs from game/project.godot). (2) Deleted game/GameAssets/ legacy directory entirely (985 files: 487 PNGs, 490 imports, confirmed zero active res:// references). (3) Deleted orphan game/assets/tiles/32x32/22222x32.tres (empty TileSet, no references). (4) Moved 7 root-level experiment art dirs (Bushes Mine, Crafting tools, My trees one, My trees two, New 2 drying rack, Weed_plants_Hanging_on_a_rack, objects) into GameAssets/ subdirs. (5) Archived root-level addons/ (orphaned godot_mcp plugin, was tied to deleted root project.godot), screenshots/, states/ into _archived/. ADR-071 added. |

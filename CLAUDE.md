@@ -5,12 +5,13 @@
 ## Rules
 - **PLAYTEST RULE:** If you make it, you play test it. Always. Run the game via MCP, exercise the feature, take a screenshot to confirm correct behavior before reporting done.
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
+- **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, stop and ask — do not pick a "close enough" alternative. Choosing replacement art is the user's job.
 
 ## Where We Are
-- **Last completed:** Tileset housekeeping — atlas_32x32 region fix + 48×48 beach tiles + town-grass-tile transparency (2026-05-19).
-  - **atlas_32x32 (source 6):** was registered at region_size=(16,16); fixed to (32,32). Cleared 264 stale tile registrations, re-registered 72 tiles (8 cols × 9 rows for 256×288 image). ✅
-  - **Beach tiles 48×48 (source 7):** `GameAssets/Beach/Tiles/Tiles.png` (192×112) copied to `res://assets/tiles/beach_tiles_48x48.png`, added as new atlas source with region_size=(48,48), 8 tiles (4×2). ✅
-  - **town-grass-tile transparency:** dark-grey background color (52,55,62,255) fully removed — 8,324 pixels made transparent in two passes (6,182 edge-reachable via PIL + 2,142 enclosed pixels cleared via GDScript). Backup at `.bak`. Playtested: no gray halos on tilemap. ✅
+- **Last completed:** town-grass-tile overlay system + tileset rename (2026-05-19).
+  - **Overlay TileMapLayer (ADR-069):** `Overlay` TileMapLayer added to `world.tscn` as sibling of `Ground` (same `GrassBrick_OVERLAYS__tileset.tres`, renders above Ground by tree order). Paint town-grass-tile tiles on `Overlay` layer — they appear on top of existing ground without replacing it. ✅
+  - **town-grass-tile per-tile transparency (ADR-069):** 21,892 pixels made transparent across 139 tiles via per-tile corner flood-fill (Python/PIL, tolerance=6, multiple terrain bg colors handled per tile). All 256 tiles now have transparent backgrounds — only decorative graphic content remains opaque. ✅
+  - **Tileset renamed (ADR-070):** `GrassBrick_OVERLAYS__tileset.tres` → `GrassBrick_OVERLAYS__tileset.tres`. Single reference in `world.tscn` updated. ✅
   - **Species trees (ADR-068):** `choppable_tree_pine/maple/fir.tscn` created as standalone scenes with inline `SpriteFrames` (9-frame chop + 9-frame fall, 10/8 fps). `choppable_tree.gd` updated to play `ChopAnim` on final chop then transition to stump. Tree1/2/3 in world.tscn replaced with TreePine/TreeMaple/TreeFir at same positions. Tree4 (oak) + WillowTree unchanged. Playtested: chop animation → fall animation → stump → wood granted. ✅
 - **MCP testing lesson:** `simulate_key` via MCP godot-mcp-pro does NOT trigger `world.gd._input()` — that handler filters `event is InputEventKey` and MCP sends a different event type. Use `execute_game_script` to call handlers directly (e.g. `world._handle_tool_toggle("axe")`, `tree.interact(player)`). `await` crashes in `execute_game_script` — split async operations into two calls.
 - **Space/interact:** Space (keycode 32) = `interact` action. T = `npc_trade` action. C = `equip_toggle` action. All three are now named InputMap actions in project.godot — no hardcoded keycodes in world.gd.
@@ -26,7 +27,7 @@
 - **Tree scene pattern:** `res://World/ChoppableTree/choppable_tree.tscn` — self-registers to group `"choppable_trees"` in `_ready()`. Exported vars: `tree_texture`, `stump_texture`, `tree_visual_scale`, `stump_offset`, `stump_visual_scale`, `stump_flip_h`, `chops_required`. New trees = duplicate scene + drop in world — zero world.gd changes needed. Signals: `interactable_entered/exited` (SPC prompt), `wood_chopped` (grants wood via world.gd).
 - **Wood placeholder:** `res://assets/props/items/rock3.png` used as wood icon. Key = `"wood"`. Stacks by key in InventoryManager. Granted at start (once) + on each chop.
 - **Drying rack:** `_award_and_reset()` calls `/root/InventoryManager` (fixed from old `/root/Inventory`). Bud rewards land in inventory.
-- **Next up:** Teal house collision refinement (door gap + side walls); cave entrance rigging; roof overlay for teal house in Overhead; dedup `shop_apothecary_alt.png`. Town/ and Village/ folders (~250 files each) still use numbered/mixed-case names — next naming pass.
+- **Next up:** Teal house collision refinement (door gap + side walls); cave entrance rigging; roof overlay for teal house in Overhead; dedup `shop_apothecary_alt.png`. Town/ and Village/ folders (~250 files each) still use numbered/mixed-case names — next naming pass. Paint town-grass overlay tiles on the new `Overlay` layer to decorate the world.
 - **PowerShell encoding lesson:** PowerShell 5.1 writes UTF-8 with BOM by default. Godot cannot parse .tscn/.tres/.gd files that start with a BOM — use `[System.IO.File]::WriteAllBytes()` or `WriteAllText(path, content, [Text.Encoding]::UTF8)` (no-BOM). Never use `Out-File` or `Set-Content` for Godot resource files.
 - **Godot autosave lesson:** Close scene in editor before editing .tscn on disk. Pattern: `open_scene("other.tscn")` → edit file → `open_scene("world.tscn")`. UID must be restored in .tscn ext_resource entries for renamed assets (Godot strips uid field for broken paths).
 - **Camera lesson:** World node in main.tscn sits at position (195,88). Camera2D limits must be in **global** coords: left=195, top=88, right=835, bottom=584. Always add World offset when setting camera limits.
@@ -56,9 +57,9 @@
 - `y_sort_offset` does NOT exist as a runtime GDScript property in Godot 4.6.2 — it is only a `.tscn` serialization field. Setting it via `execute_editor_script` (even via `set()`) will error. Sorting is purely by `position.y`; use `position.y` placement to control sort order.
 
 ## Asset Layout
-- Source assets: `C:/Users/erikc/Dev/Game/GameAssets/` (~800 PNGs)
+- Source assets: `C:/Users/erikc/Dev/Game/GameAssets/` (~800 PNGs + newly organized subdirs: bushes/, crafting_tools/, trees/, drying_rack_alt/, weed_plants/, objects_misc/)
 - In-project assets (VERIFIED_USED): `res://assets/` + `res://resources/` (reorganized 2026-05-17, ADR-062)
-- In-project legacy (VERIFIED_UNUSED): `res://GameAssets/` — 879 PNGs still here pending Phase 2 cleanup
+- In-project legacy DELETED: `res://GameAssets/` — removed 2026-05-19 (985 files, zero active refs, ADR-071)
 - **Active building assets**: `res://assets/structures/`
   - `shops/` — bakery: `shop_bakery_main.png`, `shop_bakery_open.png`
   - `houses/` — teal house animation: `house_grey_teal_animation.png`
@@ -208,12 +209,22 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-19 (Tileset housekeeping)
-- **atlas_32x32 fixed.** region_size was (16,16); now (32,32). 72 tiles registered for 256×288 image.
-- **Beach 48×48 tiles added.** `res://assets/tiles/beach_tiles_48x48.png` → world_tileset source 7.
-- **town-grass-tile transparency fixed.** Background color (52,55,62) → alpha 0 on 8,324 pixels total (two passes: 6,182 edge-reachable + 2,142 enclosed). Backup at `.bak`. Playtested ✅.
+### Session end — 2026-05-19 (Project structure cleanup + Solid.png tileset source + Overlay)
+- **Project cleanup done (ADR-071).** Deleted: stray root project.godot, game/GameAssets/ (985 files, all unused), orphan 22222x32.tres. Moved 7 root art dirs into GameAssets/. Archived root addons/ (orphaned from deleted project.godot).
+- **Solid.png added as source 8** to GrassBrick_OVERLAYS__tileset.tres (16×16 tiles). When painting Overlay tiles, scroll UP in the source picker to reach town-grass-tile (source 5) — Solid.png is at the bottom of the list.
+- **Two-tier asset structure now clean:** GameAssets/ (source art, repo root) + game/assets/ (in-project canonical). No more three-way duplication.
+
+### Session end — 2026-05-19 (Overlay layer + town-grass-tile full transparency)
+- **Overlay TileMapLayer added.** `Overlay` node in `world.tscn` (sibling of `Ground`, same tileset, renders above Ground). To paint overlay tiles: click `Overlay` in scene tree, then use TileMap editor.
+- **town-grass-tile per-tile backgrounds removed.** 21,892 pixels across 139 tiles made transparent via per-tile corner flood-fill (Python/PIL). All 256 tiles now have transparent backgrounds.
+- **Tileset renamed.** `GrassBrick_OVERLAYS__tileset.tres` → `GrassBrick_OVERLAYS__tileset.tres` at `res://resources/tilesets/`. Single ref in world.tscn updated.
 - **Cave tiles pending.** `GameAssets/Caves/Tiles/Tiles.png` (208×192) has irregular layout — 208/48 is not exact. Needs clarification before adding.
 - **Tileset editor grey background** — just click the checkerboard toggle button in the tile picker toolbar. Editor-only preference, not a file issue.
+
+### Session end — 2026-05-19 (Tileset housekeeping)
+- **atlas_32x32 fixed.** region_size was (16,16); now (32,32). 72 tiles registered for 256×288 image.
+- **Beach 48×48 tiles added.** `res://assets/tiles/beach_tiles_48x48.png` → GrassBrick_OVERLAYS__tileset source 7.
+- **town-grass-tile border transparency fixed.** Background color (52,55,62) → alpha 0 on 8,324 pixels total (first pass). Per-tile backgrounds removed in session above (second pass: 21,892 additional pixels). Backup at `.bak`.
 
 ### Session end — 2026-05-18 (Pine/Maple/Fir species trees + chop animations)
 - **Species tree scenes done.** `choppable_tree_pine/maple/fir.tscn` at `res://World/ChoppableTree/`. All have inline SpriteFrames (chop + fall). TreePine/Maple/Fir replace Tree1/2/3 in world.tscn. Playtested ✅.

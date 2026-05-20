@@ -7,14 +7,14 @@ const TEXTURES := [
 	preload("res://assets/props/drying_rack/rack_new_1plant.png"),
 ]
 const PRODUCTS := [
-	preload("res://GameAssets/Objects/herb_bundle_dried.png"),
-	preload("res://GameAssets/Bud/hang_dry.png"),
+	preload("res://assets/nature/plants/herbs/herb_plant_type_a.png"),
+	preload("res://assets/props/bud/hang_dry.png"),
 	preload("res://assets/props/bud/plant_green.png"),
 	preload("res://assets/props/bud/plant_green_2.png"),
 	preload("res://assets/props/bud/plant_purple.png"),
-	preload("res://GameAssets/Bud/weed_plant.png"),
+	preload("res://assets/props/bud/weed_plant.png"),
 	preload("res://assets/props/bud/weed_plant_2.png"),
-	preload("res://GameAssets/Bud/dry_bud.png"),
+	preload("res://assets/props/bud/dry_bud.png"),
 ]
 const DRY_DURATION := 5.0
 const READY_DURATION := 1.5
