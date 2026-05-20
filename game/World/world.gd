@@ -61,7 +61,7 @@ func _grant_starting_items() -> void:
 	if not _inv_mgr:
 		return
 	_inv_mgr.add_item("axe", preload("res://assets/props/items/tool_axe.png"))
-	_inv_mgr.add_item("bud", preload("res://GameAssets/Bud/dry_bud.png"))
+	_inv_mgr.add_item("bud", preload("res://assets/props/bud/dry_bud.png"))
 	_inv_mgr.add_item("wood", preload("res://assets/props/items/rock3.png"))
 	Engine.set_meta("starting_items_granted", true)
 

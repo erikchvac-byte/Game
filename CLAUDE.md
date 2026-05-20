@@ -6,9 +6,14 @@
 - **PLAYTEST RULE:** If you make it, you play test it. Always. Run the game via MCP, exercise the feature, take a screenshot to confirm correct behavior before reporting done.
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 - **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, stop and ask — do not pick a "close enough" alternative. Choosing replacement art is the user's job.
+- **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Project structure cleanup + drying_rack path fixes (2026-05-20).
+- **Last completed:** world.gd broken preload fix + tileset zombie source cleanup (2026-05-20, ADR-072).
+  - **world.gd:64 fixed:** `preload("res://GameAssets/Bud/dry_bud.png")` → `res://assets/props/bud/dry_bud.png`. Was a missed path from ADR-071 cleanup that caused script parse failure (game unrunnable). ✅
+  - **Tileset zombie sources removed (ADR-072):** Sources 2, 3, 4, 7 in `GrassBrick_OVERLAYS__tileset.tres` had null textures and 0 cells in use — orphaned leftovers with no texture reference. Removed via editor script. Tileset spam (~700 C++ DEBUGGER errors per run) eliminated. Active sources now: 0=Tile.png, 1=grass_stone_dirt.png, 5=town-grass-tile.png, 6=atlas_32x32.png, 8=Solid.png. ✅
+  - **Playtested:** Output log clean (4 lines only), player visible, bud item in hotbar. ✅
+- **Previous (2026-05-20):** Project structure cleanup + drying_rack path fixes.
   - **Structure cleanup (ADR-071):** Deleted stray root `project.godot`, `game/GameAssets/` (985 files, zero refs), orphan `22222x32.tres`. Moved 7 root art dirs into `GameAssets/`. Archived orphaned root `addons/`. Project now has clean two-tier asset structure. ✅
   - **drying_rack.gd paths fixed:** All 4 broken `res://GameAssets/` preloads in `PRODUCTS` replaced with `res://assets/props/bud/`. Three PNGs (hang_dry, weed_plant, dry_bud) recovered from source art. `herb_bundle_dried.png` has no source — **user to supply replacement art**. ✅
   - **Solid.png added to tileset:** Source 8 in `GrassBrick_OVERLAYS__tileset.tres` (16×16, 256 tiles). When painting Overlay tiles, scroll UP past Solid.png in source picker to reach town-grass-tile (source 5). ✅
@@ -134,11 +139,9 @@
 - `res://GameAssets/interior/tiles.PNG` (321×80) — floor/wall tile options for future interior tileset
 - `res://GameAssets/Village/Door Animation/Door1-4.png` (29×19 each) — door open animation frames
 
-## Ground Tileset (ADR-012, session 5)
-- Sources: 0=Tile.png, 1=grass_stone_dirt.png, 2=fivegrass.png (5 tiles), 3=mabeyfive.png (5 tiles)
-- All 960 ground cells use sources 2/3 with random variant (0–4) and flip alt (0–3)
-- Flip alternatives added via `TileSetAtlasSource.create_alternative_tile()` + `TileData.flip_h/flip_v`
-- Asset files: `res://GameAssets/Tiles/fivegrass.png` and `res://GameAssets/Tiles/mabeyfive.png`
+## Ground Tileset (ADR-012, ADR-072)
+- Active sources: 0=Tile.png (203 cells), 1=grass_stone_dirt.png (registered, 0 cells), 5=town-grass-tile.png (41 ground + 917 overlay cells), 6=atlas_32x32.png (registered, 0 cells), 8=Solid.png (1030 cells)
+- Tileset: `res://resources/tilesets/GrassBrick_OVERLAYS__tileset.tres`
 - `get_game_screenshot` supports `save_path` param — use it to avoid base64 token overflow
 
 ## MCP / Editor Gotchas (session 5)
@@ -210,37 +213,18 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-19 (Project structure cleanup + Solid.png tileset source + Overlay)
-- **Project cleanup done (ADR-071).** Deleted: stray root project.godot, game/GameAssets/ (985 files, all unused), orphan 22222x32.tres. Moved 7 root art dirs into GameAssets/. Archived root addons/ (orphaned from deleted project.godot).
-- **Solid.png added as source 8** to GrassBrick_OVERLAYS__tileset.tres (16×16 tiles). When painting Overlay tiles, scroll UP in the source picker to reach town-grass-tile (source 5) — Solid.png is at the bottom of the list.
-- **Two-tier asset structure now clean:** GameAssets/ (source art, repo root) + game/assets/ (in-project canonical). No more three-way duplication.
-
-### Session end — 2026-05-19 (Overlay layer + town-grass-tile full transparency)
-- **Overlay TileMapLayer added.** `Overlay` node in `world.tscn` (sibling of `Ground`, same tileset, renders above Ground). To paint overlay tiles: click `Overlay` in scene tree, then use TileMap editor.
-- **town-grass-tile per-tile backgrounds removed.** 21,892 pixels across 139 tiles made transparent via per-tile corner flood-fill (Python/PIL). All 256 tiles now have transparent backgrounds.
-- **Tileset renamed.** `GrassBrick_OVERLAYS__tileset.tres` → `GrassBrick_OVERLAYS__tileset.tres` at `res://resources/tilesets/`. Single ref in world.tscn updated.
-- **Cave tiles pending.** `GameAssets/Caves/Tiles/Tiles.png` (208×192) has irregular layout — 208/48 is not exact. Needs clarification before adding.
-- **Tileset editor grey background** — just click the checkerboard toggle button in the tile picker toolbar. Editor-only preference, not a file issue.
-
-### Session end — 2026-05-19 (Tileset housekeeping)
-- **atlas_32x32 fixed.** region_size was (16,16); now (32,32). 72 tiles registered for 256×288 image.
-- **Beach 48×48 tiles added.** `res://assets/tiles/beach_tiles_48x48.png` → GrassBrick_OVERLAYS__tileset source 7.
-- **town-grass-tile border transparency fixed.** Background color (52,55,62) → alpha 0 on 8,324 pixels total (first pass). Per-tile backgrounds removed in session above (second pass: 21,892 additional pixels). Backup at `.bak`.
-
-### Session end — 2026-05-18 (Pine/Maple/Fir species trees + chop animations)
-- **Species tree scenes done.** `choppable_tree_pine/maple/fir.tscn` at `res://World/ChoppableTree/`. All have inline SpriteFrames (chop + fall). TreePine/Maple/Fir replace Tree1/2/3 in world.tscn. Playtested ✅.
-- **Chop animation pattern.** `choppable_tree.gd` drives `ChopAnim` (AnimatedSprite2D): on final chop → play "chop" → on finish play "fall" → on finish show stump + emit `wood_chopped`. Base scene fallback: if `ChopAnim.sprite_frames` is null, instant-swap (Tree4 oak still works).
-- **Stump dissolve not yet wired.** `stump_round_dissolve/` (16 frames) is imported but not used — stump is currently static. Wire as future polish.
-- **player_character_alt available.** Full sprite set (Axe/Bow/Idle/Walk/Run etc + `player_sprites.tres`) at `res://assets/characters/player_alt/`. 59×49 px, 3-directional. Can be wired as an alternate player skin or NPC.
-- **purple_jack + grey_hoodie rotations available.** 8-directional character statics in `res://assets/characters/purple_jack/` and `res://assets/characters/grey_hoodie/rotations/`. Ready to wire as NPCs.
-- **Cannabis + herb plants ready.** `res://assets/nature/plants/cannabis/` (13 variants) + `herbs/` (4). Use for drying rack reward textures or world decoration.
-- **Garden dirt patches ready.** `res://assets/props/garden/` — 5 static patches + 9-frame pulse animation. Use for garden plot prop placement.
-- **tileset_32x32 ready.** 66 individual 32×32 tile PNGs + 2 .tres resources at `res://assets/tiles/32x32/`. Ready for new tilemaps.
-- **R3 — legacy bud preloads (deferred).** `world.gd:64` + `drying_rack.gd:10,11,15,17` use `res://GameAssets/Bud/` paths. Files exist, functional. Deferred until art replacement.
-- **R4 — tile_bit_tools UID duplicates.** Nested copy at `tile_bit_tools/tile_bit_tools/` causing 34 editor warnings. Remove to clean up.
+### Session end — 2026-05-20 (Missing-resource audit + tileset cleanup)
+- **Game is runnable again.** `world.gd:64` broken preload fixed (ADR-072). Output log is clean — 4 lines only.
+- **Tileset is clean.** Active sources: 0=Tile.png, 1=grass_stone_dirt.png (registered, 0 cells), 5=town-grass-tile.png, 6=atlas_32x32.png (registered, 0 cells), 8=Solid.png. No zombie sources.
+- **Overlay TileMapLayer:** `Overlay` node in `world.tscn` (sibling of `Ground`, same tileset, renders above Ground). To paint overlay tiles: click `Overlay` in scene tree, then use TileMap editor. Scroll UP in source picker — Solid.png is at bottom, town-grass-tile is source 5.
+- **Tileset editor grey background** — click the checkerboard toggle button in the tile picker toolbar. Editor-only preference, not a file issue.
+- **Cave tiles pending.** `GameAssets/Caves/Tiles/Tiles.png` (208×192) has irregular layout — needs clarification before adding as a tileset source.
+- **tile_bit_tools UID duplicates.** Nested copy at `tile_bit_tools/tile_bit_tools/` causing ~34 editor warnings. Remove to clean up (not yet done).
 - **Pending editor restart note:** `_inv_mgr` fetched via `get_node_or_null("/root/InventoryManager")` in world.gd. Replace with bare `InventoryManager` after confirming autoload is in project.godot.
 - **Wood icon is a placeholder.** `res://assets/props/items/rock3.png` used for wood key. Replace with real wood sprite.
-- **Next development priorities:** Teal house collision refinement (door gap + side walls); cave entrance rigging; NPC trade-receive animation; stump dissolve animation.
+- **herb_bundle_dried.png has no source.** `herb_plant_type_a.png` is placeholder in drying rack PRODUCTS. User to supply replacement art.
+- **Next priorities:** Teal house collision refinement (door gap + side walls); cave entrance rigging; NPC trade-receive animation; stump dissolve animation.
+- **Available but unwired:** player_alt (59×49, 3-dir), purple_jack + grey_hoodie/rotations (8-dir NPCs), cannabis/herb plants (13+4 variants), garden dirt patches (5 static + 9-frame pulse), tileset_32x32 (66 tiles).
 
 ### Permissions Allowlist (as of 2026-05-15)
 All Godot MCP and filesystem MCP tools are pre-approved in `.claude/settings.json`. No prompts expected for any of these:
