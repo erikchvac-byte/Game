@@ -996,6 +996,17 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-073: Y-Sort Offset Calibration — All World Objects
+**Status:** Accepted
+**Date:** 2026-05-20
+**Context:** `World` node in world.tscn has `y_sort_enabled = true`, but every world object had `y_sort_offset = 0` (default). This means each object sorts by its visual CENTER, not its ground contact point. For tall or scaled sprites (willow at node_scale 2.5×, houses at 256×256px, large trees) the behind→in-front transition happened at the wrong depth — e.g. the willow (visual base at world y≈150) sorted at y=97 (canopy center), causing players walking between y=97 and y=134 to appear in front of the tree even though they hadn't passed the trunk base yet. The same issue affected all buildings, trees, props, and NPC characters.
+**Decision:** Set `y_sort_offset` on all 15 visual world objects so that `position.y + y_sort_offset` equals the ground contact point (visual bottom of the sprite, or door/wall base for buildings). Values calculated from: `half_height_in_world_pixels = tex_height × sprite_scale × node_scale / 2` with node child offsets accounted for. Characters (Player, GreyHoodie NPC) sort at feet: `y_sort_offset = half_height = tex_height × sprite_scale / 2`.
+**Rationale:** y_sort_offset is the correct Godot 4 mechanism for this. It is a `.tscn` serialization field only — not accessible at runtime via GDScript (CLAUDE.md: "Setting it via execute_editor_script will error"). Edits made directly to world.tscn after closing the scene in editor (open_scene → edit → reopen pattern). Final offsets: Well +24, PlayerHome +35, Player +16, Plant +24, DryingRack +30, Big Rock +31, TreeWillowWeeping +53, HouseTwostoryTeal +42, BigMushroomStump +22, GreyHoodie +19, Log1 +13, Cave entrance +15, Tree1 +36, Tree2 +37, Tree3 +48.
+**Consequences:** All sprite depth transitions now occur at the visual base of each object. Fine-tuning per-object (especially HouseTwostoryTeal whose door base was estimated at 42 without verifying the texture) may be needed after in-editor walkaround. Any new world object added must have y_sort_offset set in the Inspector — it defaults to 0 and will be wrong for any sprite taller than ~16px.
+**Testing:** Playtested via MCP — player teleported to willow at y=140 (feet sort_y=156), rendered correctly in front of willow (sort_y=150). Player teleported behind bakery at y=95 (feet sort_y=111), correctly hidden behind building (bakery sort_y=115). NPC visible in front of well and teal house. ✅
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1116,3 +1127,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-20 | world.gd:64 broken preload fixed (res://GameAssets/Bud/dry_bud.png → res://assets/props/bud/dry_bud.png). Removed 4 zombie TileSetAtlasSource entries (source IDs 2, 3, 4, 7) from GrassBrick_OVERLAYS__tileset.tres — all had null textures and 0 cells in use. Tileset spam (~700 C++ DEBUGGER errors per run) eliminated. ADR-072 added. |
 | 2026-05-20 | Obsidian vault connected at C:\Users\erikc\Desktop\DesktopFolder\MeNew\GAME — readable via native Glob/Grep/Read tools (no MCP config needed; filesystem MCP is project-scoped only). Tree sprite sizing standards from vault mirrored into CLAUDE.md. No game changes this session. |
 | 2026-05-20 | Full project asset inventory written to Obsidian vault as Project_Asset_Inventory.md. Catalogues ~1,400 assets: 568 in-project PNGs (game/assets/), 819 source PNGs (GameAssets/), 5 .tres resources. Every asset has status tag (IN_USE/AVAILABLE/STAGING/ARCHIVED), frame count for animations, and usage notes. |
+| 2026-05-20 | y_sort_offset calibrated on all 15 world objects (buildings, trees, props, characters). Sort point moved from sprite center to ground contact for each object. Willow +53, houses +35/+42, choppable trees +36/+37/+48, characters (player/NPC) +16/+19. ADR-073 added. |

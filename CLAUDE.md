@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Full project asset inventory written to Obsidian vault (2026-05-20). `Project_Asset_Inventory.md` catalogues ~1,400 assets across game/assets/ (568 PNGs), GameAssets/ (819 PNGs), and game/resources/ (5 .tres), with status (IN_USE / AVAILABLE / STAGING / ARCHIVED), frame counts, and usage notes.
+- **Last completed:** Y-sort offset calibration — 15 world objects (2026-05-20, ADR-073). All sprites now sort by ground contact point. Offsets set directly in world.tscn (y_sort_offset is .tscn-only, not a runtime GDScript property). Playtested ✅.
+- **Previous (2026-05-20):** Full project asset inventory written to Obsidian vault. `Project_Asset_Inventory.md` catalogues ~1,400 assets across game/assets/ (568 PNGs), GameAssets/ (819 PNGs), and game/resources/ (5 .tres), with status (IN_USE / AVAILABLE / STAGING / ARCHIVED), frame counts, and usage notes.
 - **Previous (2026-05-20):** world.gd broken preload fix + tileset zombie source cleanup (ADR-072).
   - **world.gd:64 fixed:** `preload("res://GameAssets/Bud/dry_bud.png")` → `res://assets/props/bud/dry_bud.png`. Was a missed path from ADR-071 cleanup that caused script parse failure (game unrunnable). ✅
   - **Tileset zombie sources removed (ADR-072):** Sources 2, 3, 4, 7 in `GrassBrick_OVERLAYS__tileset.tres` had null textures and 0 cells in use — orphaned leftovers with no texture reference. Removed via editor script. Tileset spam (~700 C++ DEBUGGER errors per run) eliminated. Active sources now: 0=Tile.png, 1=grass_stone_dirt.png, 5=town-grass-tile.png, 6=atlas_32x32.png, 8=Solid.png. ✅
@@ -223,10 +224,11 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-20 (Asset inventory + Obsidian vault)
-- **Game state:** Runnable and clean. No game changes this session.
-- **Asset inventory complete.** `Project_Asset_Inventory.md` written to Obsidian vault. ~1,400 assets catalogued: 568 in-project PNGs, 819 source PNGs, 5 .tres resources. Status tags (IN_USE/AVAILABLE/STAGING/ARCHIVED) on every entry.
-- **Vault access method:** Filesystem MCP is restricted to project dir only. Use native Glob/Grep/Read tools for vault at `C:\Users\erikc\Desktop\DesktopFolder\MeNew\GAME` — no path restrictions on native tools.
+### Session end — 2026-05-20 (Y-sort calibration)
+- **Game state:** Runnable and clean. Y-sort now working correctly for all world objects.
+- **Y-sort fix (ADR-073):** `y_sort_offset` set on 15 nodes in world.tscn so each sprite sorts by its ground contact point, not its visual center. Key values: willow +53, bakery +35, teal house +42, trees +36/+37/+48, player +16, NPC +19. Edit pattern: `open_scene(other)` → Edit tool on world.tscn → `open_scene(world.tscn)`. y_sort_offset is .tscn-only, not accessible at runtime.
+- **HouseTwostoryTeal offset estimated.** y_sort_offset=42 was calculated geometrically (door base at 77% of sprite height, matching bakery proportion). May need slight tweaking after walking around the teal house in-editor.
+- **New world objects need y_sort_offset.** Any future prop/building/NPC added to world.tscn must have `y_sort_offset = half_sprite_height_in_world_pixels` set in the Inspector. Default is 0 which will be wrong for anything taller than ~16px.
 - **Tileset is clean.** Active sources: 0=Tile.png, 1=grass_stone_dirt.png, 5=town-grass-tile.png, 6=atlas_32x32.png, 8=Solid.png. No zombie sources.
 - **Overlay TileMapLayer:** `Overlay` node in `world.tscn`. Scroll UP in source picker — Solid.png at bottom, town-grass-tile is source 5.
 - **Cave tiles pending.** `GameAssets/Caves/Tiles/Tiles.png` (208×192) has irregular layout — needs clarification before adding as a tileset source.
