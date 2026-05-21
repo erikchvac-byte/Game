@@ -16,14 +16,14 @@ script = ExtResource("1_script")
 species = "fir"
 
 [node name="TreeSprite" type="AnimatedSprite2D" parent="." unique_id=565328914]
-scale = Vector2(0.5, 0.5)
+scale = Vector2(0.625, 0.625)
 sprite_frames = ExtResource("2_fir")
 animation = &"idle"
 autoplay = "idle"
 
 [node name="StumpSprite" type="AnimatedSprite2D" parent="." unique_id=2135750376]
 visible = false
-scale = Vector2(0.5, 0.5)
+scale = Vector2(0.125, 0.125)
 sprite_frames = ExtResource("3_stump")
 animation = &"dissolve"
 

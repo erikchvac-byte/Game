@@ -15,14 +15,14 @@ radius = 22.0
 script = ExtResource("1_script")
 
 [node name="TreeSprite" type="AnimatedSprite2D" parent="." unique_id=631128920]
-scale = Vector2(0.5, 0.5)
+scale = Vector2(0.625, 0.625)
 sprite_frames = ExtResource("2_pine")
 animation = &"idle"
 autoplay = "idle"
 
 [node name="StumpSprite" type="AnimatedSprite2D" parent="." unique_id=1004487910]
 visible = false
-scale = Vector2(0.5, 0.5)
+scale = Vector2(0.125, 0.125)
 sprite_frames = ExtResource("3_stump")
 animation = &"dissolve"
 

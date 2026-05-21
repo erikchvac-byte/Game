@@ -12,13 +12,9 @@
 [ext_resource type="Texture2D" uid="uid://cvef32hudv7jo" path="res://assets/structures/cave_entrance_arch_stone.png" id="48_dlis5"]
 [ext_resource type="Texture2D" uid="uid://n6fr5m4wldrm" path="res://assets/nature/stumps/BigMushroomStump.png" id="49_h4hkh"]
 [ext_resource type="PackedScene" uid="uid://bjbusnrbyh8x1" path="res://scenes/interactables/trees/pine_tree.tscn" id="62_5aim4"]
-[ext_resource type="SpriteFrames" uid="uid://ddumottepyyq6" path="res://resources/trees/pine_frames.tres" id="64_houwb"]
-[ext_resource type="SpriteFrames" uid="uid://bp7x3xs5mq8ub" path="res://resources/trees/stump_frames.tres" id="65_o8btu"]
 [ext_resource type="PackedScene" uid="uid://dqypn0h7hldo2" path="res://scenes/interactables/trees/maple_tree.tscn" id="66_2j1j3"]
 [ext_resource type="Texture2D" uid="uid://cqoreyctityfb" path="res://assets/tiles/32x32/tile_007.png" id="67_2hrtt"]
-[ext_resource type="SpriteFrames" uid="uid://dfgepnwsknekg" path="res://resources/trees/maple_frames.tres" id="67_12w7i"]
 [ext_resource type="PackedScene" uid="uid://bmdshivd0nhab" path="res://scenes/interactables/trees/fir_tree.tscn" id="68_xmbla"]
-[ext_resource type="SpriteFrames" uid="uid://ccjpc0xlg1a6u" path="res://resources/trees/fir_frames.tres" id="69_ngrok"]
 [ext_resource type="Texture2D" uid="uid://b6gp3wtyvi25x" path="res://assets/structures/shops/shop_bakery_open.png" id="bakery_open"]
 [ext_resource type="Texture2D" uid="uid://dcplhewp24tmq" path="res://assets/props/drying_rack/rack_new_empty.png" id="drack1_tex"]
 [ext_resource type="Script" uid="uid://23aaem0eoxrt" path="res://Interactables/drying_rack.gd" id="drack_script"]
@@ -376,18 +372,6 @@ size = Vector2(30, 10)
 
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_oyb3p"]
 load_path = "res://.godot/imported/tile_007.png-0745e9ee54feb566e6d6e2730cbf8be8.ctex"
-
-[sub_resource type="CapsuleShape2D" id="TrunkShape"]
-radius = 5.0
-height = 10.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_isdyu"]
-radius = 5.0
-height = 10.0
-
-[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c4deb"]
-radius = 5.0
-height = 10.0
 
 [node name="World" type="Node2D" unique_id=1479370967]
 y_sort_enabled = true
@@ -775,62 +759,8 @@ texture = ExtResource("67_2hrtt")
 [node name="TreePine1" parent="." unique_id=467155269 instance=ExtResource("62_5aim4")]
 position = Vector2(55, 165)
 
-[node name="TreeSprite2" type="AnimatedSprite2D" parent="TreePine1" unique_id=631128920]
-scale = Vector2(0.5, 0.5)
-sprite_frames = ExtResource("64_houwb")
-animation = &"idle"
-autoplay = "idle"
-
-[node name="StumpSprite2" type="AnimatedSprite2D" parent="TreePine1" unique_id=1004487910]
-visible = false
-scale = Vector2(0.5, 0.5)
-sprite_frames = ExtResource("65_o8btu")
-animation = &"dissolve"
-
-[node name="TrunkCollider2" type="CollisionShape2D" parent="TreePine1" unique_id=240107372]
-position = Vector2(0, 16)
-shape = SubResource("TrunkShape")
-
-[node name="InteractArea2" type="Area2D" parent="TreePine1" unique_id=394405981]
-
 [node name="TreeMaple1" parent="." unique_id=2019391354 instance=ExtResource("66_2j1j3")]
 position = Vector2(200, 162)
 
-[node name="TreeSprite2" type="AnimatedSprite2D" parent="TreeMaple1" unique_id=1254046823]
-scale = Vector2(0.5, 0.5)
-sprite_frames = ExtResource("67_12w7i")
-animation = &"idle"
-autoplay = "idle"
-
-[node name="StumpSprite2" type="AnimatedSprite2D" parent="TreeMaple1" unique_id=1868215299]
-visible = false
-scale = Vector2(0.5, 0.5)
-sprite_frames = ExtResource("65_o8btu")
-animation = &"dissolve"
-
-[node name="TrunkCollider2" type="CollisionShape2D" parent="TreeMaple1" unique_id=1033469786]
-position = Vector2(0, 16)
-shape = SubResource("CapsuleShape2D_isdyu")
-
-[node name="InteractArea2" type="Area2D" parent="TreeMaple1" unique_id=1449281796]
-
 [node name="TreeFir1" parent="." unique_id=442005024 instance=ExtResource("68_xmbla")]
 position = Vector2(50, 240)
-
-[node name="TreeSprite2" type="AnimatedSprite2D" parent="TreeFir1" unique_id=565328914]
-scale = Vector2(0.5, 0.5)
-sprite_frames = ExtResource("69_ngrok")
-animation = &"idle"
-autoplay = "idle"
-
-[node name="StumpSprite2" type="AnimatedSprite2D" parent="TreeFir1" unique_id=2135750376]
-visible = false
-scale = Vector2(0.5, 0.5)
-sprite_frames = ExtResource("65_o8btu")
-animation = &"dissolve"
-
-[node name="TrunkCollider2" type="CollisionShape2D" parent="TreeFir1" unique_id=1282701110]
-position = Vector2(0, 16)
-shape = SubResource("CapsuleShape2D_c4deb")
-
-[node name="InteractArea2" type="Area2D" parent="TreeFir1" unique_id=1299628253]
