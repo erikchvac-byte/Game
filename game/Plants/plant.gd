@@ -15,6 +15,11 @@ func _ready() -> void:
 	$PurplePlant.stop()
 	$PurplePlant.frame = PLANT_STAGES[0]
 
+func blocked_message(player: CharacterBody2D) -> String:
+	if not player.carrying_water and not _growing:
+		return "Need water first"
+	return ""
+
 func can_interact(player: CharacterBody2D) -> bool:
 	return player.carrying_water and not _growing and _stage < PLANT_STAGES.size() - 1
 
@@ -30,7 +35,9 @@ func interact(player: CharacterBody2D) -> void:
 	_stage += 1
 	var start_frame: int = PLANT_STAGES[prev_stage]
 	var end_frame: int = PLANT_STAGES[_stage]
-	var fps: float = $PurplePlant.sprite_frames.get_animation_speed("default")
+	var fps: float = $PurplePlant.sprite_frames.get_animation_speed($PurplePlant.animation)
+	if fps <= 0.0:
+		fps = 8.0
 	$PurplePlant.stop()
 	$PurplePlant.frame = start_frame
 	for f in range(start_frame + 1, end_frame + 1):

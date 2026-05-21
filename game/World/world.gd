@@ -103,8 +103,11 @@ func _input(event: InputEvent) -> void:
 		var target := _get_nearest_interactable()
 		if target and target.has_method("interact"):
 			if target.has_method("can_interact") and not target.can_interact(_player):
-				if _hud:
-					_hud.show_toast("Equip axe first (C)", 1.5)
+				var msg := "Equip axe first (C)"
+				if target.has_method("blocked_message"):
+					msg = target.blocked_message(_player)
+				if msg != "" and _hud:
+					_hud.show_toast(msg, 1.5)
 			else:
 				target.interact(_player)
 

@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Tree chop timing + static stump + stump position (2026-05-21, ADR-077). 0.5s delay between player axe swing and tree reaction. Stump static (idle frame, no animation). Stump positioned at trunk base via `stump_y_offset=28.0` export. Playtested ✅.
+- **Last completed:** Farming system — 6 regression fixes (2026-05-21, ADR-078). Well animation reset reliable, loop disabled, correct blocked messages per interactable, bucket anim fallback, plant fps guard. Full well→plant×3→harvest loop verified repeatable indefinitely. Playtested ✅.
+- **Previous (2026-05-21):** Tree chop timing + static stump + stump position (ADR-077). 0.5s delay between player axe swing and tree reaction. Stump static (idle frame, no animation). Stump positioned at trunk base via `stump_y_offset=28.0` export. Playtested ✅.
 - **Previous (2026-05-20):** Fix ghost tree image + rescale sprites (ADR-076). Removed 15 duplicate "2" nodes from all 3 choppable trees in world.tscn (phantom nodes created by MCP add_node on top of instanced-scene children). TreeSprite scale 0.5→0.625 (+25%), StumpSprite scale 0.5→0.125 (−75%). Full chop pipeline now clean — no ghost idle image during fall. Playtested ✅.
 - **Previous (2026-05-20):** Pine/Maple/Fir choppable tree integration (ADR-075). 3 trees placed in grass area in front of bakery: TreePine1 (55,165), TreeMaple1 (200,162), TreeFir1 (50,240). Full chop→fall→stump dissolve→GONE pipeline. Wood grant on `tree_chopped`. Playtested ✅.
 - **Previous (2026-05-20):** Three standard choppable tree systems removed (ADR-074). Tree1/Tree2/Tree3 deleted from world.tscn; all ChoppableTree scenes/scripts/assets removed; world.gd choppable_trees group pipeline stripped. Willow intact. ✅
@@ -228,23 +229,25 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-21 (ghost node fix + tree animation/stump polish)
-- **Game state:** Runnable. 3 choppable trees (Pine/Maple/Fir) fully functional. Ghost idle image fixed. Chop timing, stump appearance, and stump position all corrected. 0 boot errors.
-- **choppable_tree.gd state machine (ADR-077):** IDLE→CHOPPING→FALLING→STUMP (GONE removed). `player.is_chopping` set in `interact()`, cleared in `_begin_tree_reaction()`. 0.5s timer between axe input and tree animation. Stump shows `stump_idle.png` static (no dissolve). `stump_y_offset=28.0` export positions stump at trunk base.
-- **Stump note:** Stump stays permanently until scene reload. Dissolve animation exists in `stump_frames.tres` but is not used — reserved for later.
-- **Ghost node root cause (ADR-076):** `add_node` on an instanced scene adds EXTRA children on top of the instance's existing ones; Godot auto-renames them with "2" suffix. NEVER use `add_node` to set children of an instanced scene — use `execute_editor_script` to modify existing children.
-- **Tree scale:** TreeSprite 0.625 (96×96 → 60×60 world px); StumpSprite 0.125 (96×96 → 12×12 world px).
-- **Tree positions:** TreePine1 (55,165), TreeMaple1 (200,162), TreeFir1 (50,240). House door at (112,117) is clear.
-- **Tileset is clean.** Active sources: 0=Tile.png, 1=grass_stone_dirt.png, 5=town-grass-tile.png, 6=atlas_32x32.png, 8=Solid.png.
-- **Overlay TileMapLayer:** `Overlay` node in `world.tscn`. Scroll UP in source picker for town-grass-tile (source 5).
+### Session end — 2026-05-21 (farming system — 6 regression fixes)
+- **Game state:** Runnable. 0 boot errors. Farming loop fully functional and repeatable indefinitely.
+- **Farming fixes (ADR-078):**
+  - **Well animation reset:** `_reset_sprite()` in well.gd calls `play("default")→stop()→frame=0`. `play()` is the only Godot 4.6 API that clears the internal backwards-play flag; `stop()` alone does not. Removes the need for the `animation_finished` handler (which was dead code — never fired on loop:true, and with loop:false the 0.25s timer fires first).
+  - **Well loop:** `world.tscn` WellWaterFrames `"loop": true` → `"loop": false`. Animation now plays correctly during 0.25s collection window without cycling.
+  - **Toast messages:** `world.gd` dispatches `blocked_message(player)` — well returns "Already carrying water", plant returns "Need water first", trees fall back to "Equip axe first (C)". No more axe message for farming interactables.
+  - **Bucket animation fallback:** `player_animation.gd` now guards `sprite_frames.has_animation(anim)` before calling `play()`. If `_bucket` variant is absent from SpriteFrames, falls back to base animation — sprite no longer freezes.
+  - **Plant fps guard:** `plant.gd` reads `get_animation_speed($PurplePlant.animation)` (uses actual animation name, not hardcoded "default") + `if fps <= 0.0: fps = 8.0`. Prevents `create_timer(INF)` hang.
+- **Farming loop verified:** well→plant(stage 0→1, frame 5)→well→plant(1→2, frame 10)→well→plant(2→3, frame 0 reset)→DryingRack state=1. Second cycle: well.can_interact=true, plant.can_interact=true with water. `well.blocked_message='Already carrying water'` confirmed.
+- **Tree system unchanged:** Pine/Maple/Fir chop→fall→stump fully functional. No regressions.
 - **Open issues:**
-  - `stump_y_offset=28.0` is uniform across all species — may need per-species tuning via Inspector
-  - `HouseTwostoryTeal` y_sort_offset +42 is estimated — needs walk-around tuning
+  - `stump_y_offset=28.0` uniform across species — may need per-species tuning via Inspector
+  - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates causing ~34 editor warnings
   - `_inv_mgr` in world.gd still uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after confirming autoload post-restart
-  - `herb_bundle_dried.png` has no source art — `herb_plant_type_a.png` is placeholder in drying rack PRODUCTS; user to supply
+  - `herb_bundle_dried.png` has no source art — `herb_plant_type_a.png` is placeholder; user to supply
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call to delete
-- **Next priorities:** Teal house collision refinement (door gap + side walls); cave entrance rigging; wood texture (replace rock3.png placeholder); consider adding more tree instances or a 4th species.
+  - Bucket animation variants (`idle_down_bucket` etc.) not yet in `erik_sprites.tres` — player_animation.gd falls back gracefully but shows no visual difference when carrying water
+- **Next priorities:** Add bucket animation variants to erik_sprites.tres; teal house collision refinement (door gap + side walls); cave entrance rigging; wood texture (replace rock3.png placeholder).
 - **Available but unwired:** player_alt (59×49, 3-dir), purple_jack + grey_hoodie/rotations (8-dir NPCs), cannabis/herb plants (13+4 variants), garden dirt patches (5 static + 9-frame pulse), tileset_32x32 (66 tiles), tree_oak_green.png (static, no anims).
 
 ### Permissions Allowlist (as of 2026-05-15)

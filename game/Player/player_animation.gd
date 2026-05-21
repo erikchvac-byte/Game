@@ -32,4 +32,9 @@ func _process(_delta: float) -> void:
 
 	if anim != _current_anim:
 		_current_anim = anim
-		play(anim)
+		if sprite_frames and sprite_frames.has_animation(anim):
+			play(anim)
+		elif "_bucket" in anim:
+			var base := anim.replace("_bucket", "")
+			if sprite_frames and sprite_frames.has_animation(base):
+				play(base)
