@@ -11,7 +11,14 @@
 [ext_resource type="SpriteFrames" uid="uid://b0rvlem6tvcb3" path="res://resources/characters/grey_hoodie_sprites.tres" id="47_i363k"]
 [ext_resource type="Texture2D" uid="uid://cvef32hudv7jo" path="res://assets/structures/cave_entrance_arch_stone.png" id="48_dlis5"]
 [ext_resource type="Texture2D" uid="uid://n6fr5m4wldrm" path="res://assets/nature/stumps/BigMushroomStump.png" id="49_h4hkh"]
+[ext_resource type="PackedScene" uid="uid://bjbusnrbyh8x1" path="res://scenes/interactables/trees/pine_tree.tscn" id="62_5aim4"]
+[ext_resource type="SpriteFrames" uid="uid://ddumottepyyq6" path="res://resources/trees/pine_frames.tres" id="64_houwb"]
+[ext_resource type="SpriteFrames" uid="uid://bp7x3xs5mq8ub" path="res://resources/trees/stump_frames.tres" id="65_o8btu"]
+[ext_resource type="PackedScene" uid="uid://dqypn0h7hldo2" path="res://scenes/interactables/trees/maple_tree.tscn" id="66_2j1j3"]
 [ext_resource type="Texture2D" uid="uid://cqoreyctityfb" path="res://assets/tiles/32x32/tile_007.png" id="67_2hrtt"]
+[ext_resource type="SpriteFrames" uid="uid://dfgepnwsknekg" path="res://resources/trees/maple_frames.tres" id="67_12w7i"]
+[ext_resource type="PackedScene" uid="uid://bmdshivd0nhab" path="res://scenes/interactables/trees/fir_tree.tscn" id="68_xmbla"]
+[ext_resource type="SpriteFrames" uid="uid://ccjpc0xlg1a6u" path="res://resources/trees/fir_frames.tres" id="69_ngrok"]
 [ext_resource type="Texture2D" uid="uid://b6gp3wtyvi25x" path="res://assets/structures/shops/shop_bakery_open.png" id="bakery_open"]
 [ext_resource type="Texture2D" uid="uid://dcplhewp24tmq" path="res://assets/props/drying_rack/rack_new_empty.png" id="drack1_tex"]
 [ext_resource type="Script" uid="uid://23aaem0eoxrt" path="res://Interactables/drying_rack.gd" id="drack_script"]
@@ -370,13 +377,24 @@ size = Vector2(30, 10)
 [sub_resource type="CompressedTexture2D" id="CompressedTexture2D_oyb3p"]
 load_path = "res://.godot/imported/tile_007.png-0745e9ee54feb566e6d6e2730cbf8be8.ctex"
 
+[sub_resource type="CapsuleShape2D" id="TrunkShape"]
+radius = 5.0
+height = 10.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_isdyu"]
+radius = 5.0
+height = 10.0
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_c4deb"]
+radius = 5.0
+height = 10.0
+
 [node name="World" type="Node2D" unique_id=1479370967]
 y_sort_enabled = true
 script = ExtResource("4_worldgd")
 
 [node name="Well" type="Node2D" parent="." unique_id=770000001]
 position = Vector2(231, 75)
-y_sort_offset = 24
 script = ExtResource("well_script")
 
 [node name="WellWater" type="AnimatedSprite2D" parent="Well" unique_id=770063336]
@@ -414,7 +432,6 @@ tile_set = ExtResource("1_62w18")
 light_mask = 2
 texture_filter = 1
 position = Vector2(112, 80)
-y_sort_offset = 35
 scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("BakeryFrames")
 animation = &"idle"
@@ -449,11 +466,9 @@ shape = SubResource("DoorArea")
 
 [node name="Player" parent="." unique_id=1585494498 instance=ExtResource("8_player")]
 position = Vector2(112, 200)
-y_sort_offset = 16
 
 [node name="Plant" type="Node2D" parent="." unique_id=280000001]
 position = Vector2(173, 109)
-y_sort_offset = 24
 script = ExtResource("plant_script")
 
 [node name="PurplePlant" type="AnimatedSprite2D" parent="Plant" unique_id=285786784]
@@ -488,7 +503,6 @@ cast_length = 10.0
 [node name="DryingRack" type="Sprite2D" parent="." unique_id=2133297938]
 texture_filter = 1
 position = Vector2(175, 75)
-y_sort_offset = 30
 texture = ExtResource("drack1_tex")
 script = ExtResource("drack_script")
 
@@ -506,7 +520,6 @@ cast_length = 18.0
 
 [node name="Big Rock" type="Sprite2D" parent="." unique_id=1264295051]
 position = Vector2(36, 131)
-y_sort_offset = 31
 texture = ExtResource("45_8kjm2")
 
 [node name="Shadow" type="Node2D" parent="Big Rock" unique_id=2101001005]
@@ -526,7 +539,6 @@ shape = SubResource("RectangleShape2D_dlis5")
 
 [node name="TreeWillowWeeping" type="Node2D" parent="." unique_id=1732131370]
 position = Vector2(467, 97)
-y_sort_offset = 53
 scale = Vector2(2.975, 2.5)
 script = ExtResource("willow_tree_script")
 
@@ -567,7 +579,6 @@ shape = SubResource("CircleShape2D_h4hkh")
 [node name="HouseTwostoryTeal" type="AnimatedSprite2D" parent="." unique_id=1938115166]
 texture_filter = 1
 position = Vector2(534, 75)
-y_sort_offset = 42
 scale = Vector2(0.6, 0.6)
 sprite_frames = ExtResource("45_h4hkh")
 animation = &"idle"
@@ -598,7 +609,6 @@ cast_length = 30.0
 [node name="BigMushroomStump" type="Sprite2D" parent="." unique_id=1859861714]
 visible = false
 position = Vector2(472, 141)
-y_sort_offset = 22
 texture = ExtResource("49_h4hkh")
 
 [node name="Shadow" type="Node2D" parent="BigMushroomStump" unique_id=1480046185]
@@ -644,7 +654,6 @@ texture_scale = 1.6
 
 [node name="GreyHoodie" type="Node2D" parent="." unique_id=1551921560]
 position = Vector2(534, 158)
-y_sort_offset = 19
 script = ExtResource("46_xu702")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="GreyHoodie" unique_id=132381470]
@@ -658,7 +667,6 @@ frame_progress = 0.74741143
 
 [node name="Log1" type="Sprite2D" parent="." unique_id=1205709140]
 position = Vector2(91, 188.99998)
-y_sort_offset = 13
 scale = Vector2(1, 1.02)
 texture = ExtResource("45_i52kj")
 
@@ -683,7 +691,6 @@ shape = SubResource("RectangleShape2D_3gnva")
 
 [node name="Cave entrance" type="Sprite2D" parent="." unique_id=1053984708]
 position = Vector2(31, 407)
-y_sort_offset = 15
 texture = ExtResource("48_dlis5")
 
 [node name="BorderTop" type="StaticBody2D" parent="." unique_id=652209068]
@@ -764,3 +771,66 @@ texture = ExtResource("67_2hrtt")
 position = Vector2(-56.51522, 2.9999976)
 scale = Vector2(1.34375, 1)
 texture = ExtResource("67_2hrtt")
+
+[node name="TreePine1" parent="." unique_id=467155269 instance=ExtResource("62_5aim4")]
+position = Vector2(55, 165)
+
+[node name="TreeSprite2" type="AnimatedSprite2D" parent="TreePine1" unique_id=631128920]
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("64_houwb")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="StumpSprite2" type="AnimatedSprite2D" parent="TreePine1" unique_id=1004487910]
+visible = false
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("65_o8btu")
+animation = &"dissolve"
+
+[node name="TrunkCollider2" type="CollisionShape2D" parent="TreePine1" unique_id=240107372]
+position = Vector2(0, 16)
+shape = SubResource("TrunkShape")
+
+[node name="InteractArea2" type="Area2D" parent="TreePine1" unique_id=394405981]
+
+[node name="TreeMaple1" parent="." unique_id=2019391354 instance=ExtResource("66_2j1j3")]
+position = Vector2(200, 162)
+
+[node name="TreeSprite2" type="AnimatedSprite2D" parent="TreeMaple1" unique_id=1254046823]
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("67_12w7i")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="StumpSprite2" type="AnimatedSprite2D" parent="TreeMaple1" unique_id=1868215299]
+visible = false
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("65_o8btu")
+animation = &"dissolve"
+
+[node name="TrunkCollider2" type="CollisionShape2D" parent="TreeMaple1" unique_id=1033469786]
+position = Vector2(0, 16)
+shape = SubResource("CapsuleShape2D_isdyu")
+
+[node name="InteractArea2" type="Area2D" parent="TreeMaple1" unique_id=1449281796]
+
+[node name="TreeFir1" parent="." unique_id=442005024 instance=ExtResource("68_xmbla")]
+position = Vector2(50, 240)
+
+[node name="TreeSprite2" type="AnimatedSprite2D" parent="TreeFir1" unique_id=565328914]
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("69_ngrok")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="StumpSprite2" type="AnimatedSprite2D" parent="TreeFir1" unique_id=2135750376]
+visible = false
+scale = Vector2(0.5, 0.5)
+sprite_frames = ExtResource("65_o8btu")
+animation = &"dissolve"
+
+[node name="TrunkCollider2" type="CollisionShape2D" parent="TreeFir1" unique_id=1282701110]
+position = Vector2(0, 16)
+shape = SubResource("CapsuleShape2D_c4deb")
+
+[node name="InteractArea2" type="Area2D" parent="TreeFir1" unique_id=1299628253]

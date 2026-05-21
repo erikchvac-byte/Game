@@ -1,0 +1,137 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://dfgepnwsknekg"]
+
+[ext_resource type="Texture2D" uid="uid://co33qt3nrx10u" path="res://assets/nature/trees/maple/maple_chop/frame_000.png" id="1_uooa1"]
+[ext_resource type="Texture2D" uid="uid://dxxycx4qrkeja" path="res://assets/nature/trees/maple/maple_chop/frame_001.png" id="2_jucdc"]
+[ext_resource type="Texture2D" uid="uid://cmacqreved5do" path="res://assets/nature/trees/maple/maple_chop/frame_002.png" id="3_i6trk"]
+[ext_resource type="Texture2D" uid="uid://do131vminqigk" path="res://assets/nature/trees/maple/maple_chop/frame_003.png" id="4_nsh2o"]
+[ext_resource type="Texture2D" uid="uid://b7cxuykerc5a5" path="res://assets/nature/trees/maple/maple_chop/frame_004.png" id="5_rbw55"]
+[ext_resource type="Texture2D" uid="uid://d1myhls22h0en" path="res://assets/nature/trees/maple/maple_chop/frame_005.png" id="6_6ye24"]
+[ext_resource type="Texture2D" uid="uid://biggl6rp4hbnp" path="res://assets/nature/trees/maple/maple_chop/frame_006.png" id="7_d0ymm"]
+[ext_resource type="Texture2D" uid="uid://bnxsajv5ylydc" path="res://assets/nature/trees/maple/maple_chop/frame_007.png" id="8_jnm8o"]
+[ext_resource type="Texture2D" uid="uid://oopchpfqysap" path="res://assets/nature/trees/maple/maple_chop/frame_008.png" id="9_uu0g5"]
+[ext_resource type="Texture2D" uid="uid://chfyd757jqb88" path="res://assets/nature/trees/maple/maple_fall/frame_000.png" id="10_8lcxc"]
+[ext_resource type="Texture2D" uid="uid://my24cid2dw0f" path="res://assets/nature/trees/maple/maple_fall/frame_001.png" id="11_c8b8s"]
+[ext_resource type="Texture2D" uid="uid://c2umev0eowy5m" path="res://assets/nature/trees/maple/maple_fall/frame_002.png" id="12_kq2ue"]
+[ext_resource type="Texture2D" uid="uid://bh50qm05aiyg" path="res://assets/nature/trees/maple/maple_fall/frame_003.png" id="13_ch5lw"]
+[ext_resource type="Texture2D" uid="uid://coo12g1aiun6" path="res://assets/nature/trees/maple/maple_fall/frame_004.png" id="14_wlyba"]
+[ext_resource type="Texture2D" uid="uid://dhw6nlnudl47i" path="res://assets/nature/trees/maple/maple_fall/frame_005.png" id="15_xcn8w"]
+[ext_resource type="Texture2D" uid="uid://0jr7tipe6s8e" path="res://assets/nature/trees/maple/maple_fall/frame_006.png" id="16_qnpqx"]
+[ext_resource type="Texture2D" uid="uid://b44labk14q8jp" path="res://assets/nature/trees/maple/maple_fall/frame_007.png" id="17_kt5vs"]
+[ext_resource type="Texture2D" uid="uid://bu8hwx48q1tbu" path="res://assets/nature/trees/maple/maple_fall/frame_008.png" id="18_iu1ow"]
+[ext_resource type="Texture2D" uid="uid://cyjv1rmrol2u5" path="res://assets/nature/trees/maple/maple_hit_fall/frame_000.png" id="19_n0xkj"]
+[ext_resource type="Texture2D" uid="uid://dvsev2iacu5n2" path="res://assets/nature/trees/maple/maple_hit_fall/frame_001.png" id="20_byg1j"]
+[ext_resource type="Texture2D" uid="uid://nli4paknyasa" path="res://assets/nature/trees/maple/maple_hit_fall/frame_002.png" id="21_csfp5"]
+[ext_resource type="Texture2D" uid="uid://c3vntnn66ljy0" path="res://assets/nature/trees/maple/maple_hit_fall/frame_003.png" id="22_f4e61"]
+[ext_resource type="Texture2D" uid="uid://x76fysujdvfv" path="res://assets/nature/trees/maple/maple_hit_fall/frame_004.png" id="23_srytx"]
+[ext_resource type="Texture2D" uid="uid://bofg3hh8yownt" path="res://assets/nature/trees/maple/maple_hit_fall/frame_005.png" id="24_m8c7t"]
+[ext_resource type="Texture2D" uid="uid://qnpl04x20psm" path="res://assets/nature/trees/maple/maple_hit_fall/frame_006.png" id="25_jo6rc"]
+[ext_resource type="Texture2D" uid="uid://dxls1fowhfse3" path="res://assets/nature/trees/maple/maple_hit_fall/frame_007.png" id="26_4h4oj"]
+[ext_resource type="Texture2D" uid="uid://b6nxr85r0p25p" path="res://assets/nature/trees/maple/maple_hit_fall/frame_008.png" id="27_nkvom"]
+[ext_resource type="Texture2D" uid="uid://b2t2muqgjk82y" path="res://assets/nature/trees/maple/maple_idle.png" id="28_a4r7p"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_uooa1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_jucdc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_i6trk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_nsh2o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_rbw55")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_6ye24")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_d0ymm")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_jnm8o")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_uu0g5")
+}],
+"loop": false,
+"name": &"chop",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_8lcxc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_c8b8s")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_kq2ue")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_ch5lw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_wlyba")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_xcn8w")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_qnpqx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_kt5vs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_iu1ow")
+}],
+"loop": false,
+"name": &"fall",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("19_n0xkj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_byg1j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_csfp5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_f4e61")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_srytx")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_m8c7t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_jo6rc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_4h4oj")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_nkvom")
+}],
+"loop": false,
+"name": &"hit_fall",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("28_a4r7p")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}]

@@ -42,6 +42,10 @@ func _ready() -> void:
 	$Plant.connect("interactable_entered", _on_interactable_entered)
 	$Plant.connect("interactable_exited", _on_interactable_exited)
 	$Plant.plant_harvested.connect($DryingRack.add_plant)
+	for tree in get_tree().get_nodes_in_group("choppable_trees"):
+		tree.connect("interactable_entered", _on_interactable_entered)
+		tree.connect("interactable_exited", _on_interactable_exited)
+		tree.connect("tree_chopped", _on_tree_chopped)
 	_grant_starting_items()
 
 
@@ -282,3 +286,8 @@ func _on_door_entered(body: Node2D) -> void:
 		await bakery.frame_changed
 	await TransitionManager.fade_to_black(0.4)
 	get_tree().change_scene_to_file("res://World/PlayerHome/interior.tscn")
+
+
+func _on_tree_chopped() -> void:
+	if _inv_mgr:
+		_inv_mgr.add_item("wood", preload("res://assets/props/items/rock3.png"))

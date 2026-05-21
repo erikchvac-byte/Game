@@ -1,0 +1,96 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://ddumottepyyq6"]
+
+[ext_resource type="Texture2D" uid="uid://1kwn54e836c4" path="res://assets/nature/trees/pine/pine_chop/frame_000.png" id="1_1ndbc"]
+[ext_resource type="Texture2D" uid="uid://fqaba6q256jy" path="res://assets/nature/trees/pine/pine_chop/frame_001.png" id="2_425tq"]
+[ext_resource type="Texture2D" uid="uid://cuckhwjwulel5" path="res://assets/nature/trees/pine/pine_chop/frame_002.png" id="3_jkh20"]
+[ext_resource type="Texture2D" uid="uid://w476xempd40y" path="res://assets/nature/trees/pine/pine_chop/frame_003.png" id="4_hj0pk"]
+[ext_resource type="Texture2D" uid="uid://b57appklgxhr6" path="res://assets/nature/trees/pine/pine_chop/frame_004.png" id="5_rb56q"]
+[ext_resource type="Texture2D" uid="uid://dmfcg8wplcfi" path="res://assets/nature/trees/pine/pine_chop/frame_005.png" id="6_i385m"]
+[ext_resource type="Texture2D" uid="uid://dikl6wxmflw0d" path="res://assets/nature/trees/pine/pine_chop/frame_006.png" id="7_nxr44"]
+[ext_resource type="Texture2D" uid="uid://cicqv311rr8jr" path="res://assets/nature/trees/pine/pine_chop/frame_007.png" id="8_qhffa"]
+[ext_resource type="Texture2D" uid="uid://df7xt6aij7g7l" path="res://assets/nature/trees/pine/pine_chop/frame_008.png" id="9_cyt7j"]
+[ext_resource type="Texture2D" uid="uid://cs0divrvovag" path="res://assets/nature/trees/pine/pine_fall/frame_000.png" id="10_e6kts"]
+[ext_resource type="Texture2D" uid="uid://bbyix2h5pfegm" path="res://assets/nature/trees/pine/pine_fall/frame_001.png" id="11_siqru"]
+[ext_resource type="Texture2D" uid="uid://brvdue35xsik0" path="res://assets/nature/trees/pine/pine_fall/frame_002.png" id="12_h6wru"]
+[ext_resource type="Texture2D" uid="uid://cvwelnentrdb4" path="res://assets/nature/trees/pine/pine_fall/frame_003.png" id="13_yjpxu"]
+[ext_resource type="Texture2D" uid="uid://diqy7qq6tqlxd" path="res://assets/nature/trees/pine/pine_fall/frame_004.png" id="14_7mls3"]
+[ext_resource type="Texture2D" uid="uid://dhw1u0vpidgxc" path="res://assets/nature/trees/pine/pine_fall/frame_005.png" id="15_jqqvk"]
+[ext_resource type="Texture2D" uid="uid://jvnhkct8ld18" path="res://assets/nature/trees/pine/pine_fall/frame_006.png" id="16_kuydk"]
+[ext_resource type="Texture2D" uid="uid://oo6aecf4dtxb" path="res://assets/nature/trees/pine/pine_fall/frame_007.png" id="17_supae"]
+[ext_resource type="Texture2D" uid="uid://col7s2smidssh" path="res://assets/nature/trees/pine/pine_fall/frame_008.png" id="18_4mgwr"]
+[ext_resource type="Texture2D" uid="uid://tqiw71rhw6os" path="res://assets/nature/trees/pine/pine_idle.png" id="19_xyo8c"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_1ndbc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_425tq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_jkh20")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_hj0pk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_rb56q")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_i385m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_nxr44")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_qhffa")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_cyt7j")
+}],
+"loop": false,
+"name": &"chop",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_e6kts")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_siqru")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_h6wru")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_yjpxu")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_7mls3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_jqqvk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_kuydk")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_supae")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_4mgwr")
+}],
+"loop": false,
+"name": &"fall",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("19_xyo8c")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}]

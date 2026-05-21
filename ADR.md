@@ -1018,6 +1018,17 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-075: Pine/Maple/Fir Choppable Tree Integration
+**Status:** Accepted
+**Date:** 2026-05-20
+**Context:** ADR-074 removed the old three-tree system. The new pine/maple/fir assets (96×96, generated via PixelLab) with full chop+fall+hit_fall animations were staged in `GameAssets/TempAssetHolding/ResolvedReview/`. A clean reusable architecture was needed to replace the old system.
+**Decision:** New scene architecture — single shared `choppable_tree.gd` (StaticBody2D root) with `@export var species` to select chop variant; one .tscn per species (pine/maple/fir); shared `stump_frames.tres`; 4 SpriteFrames `.tres` files. Group-based signal wiring in world.gd iterates `"choppable_trees"` group. 3 trees placed in grass area at (55,165), (200,162), (50,240).
+**Rationale:** Self-registering group pattern (established in ADR-051) means world.gd needs no per-tree wiring — any new tree dropped in world gets auto-connected. Species `@export` keeps scenes separate but script shared. Shared stump avoids per-species stump assets.
+**Consequences:** Pine/Maple/Fir fully choppable (3 hits each). Maple has 50% chance of `hit_fall` animation on final chop. Stump plays 16-frame dissolve then disappears. Wood inventory granted on `tree_chopped` signal. `is_chopping` player flag wired again. Phantom Tree1/Tree2/Tree3 nodes (editor cache artifact) were deleted in same session.
+**Testing:** Pine fully playtested via `execute_game_script` — 3 chops → chop anim × 3 → fall → stump dissolve → state=GONE → wood count 1→2. Screenshot confirmed pine absent from world after fall. Maple/Fir visually confirmed present and correctly sorted. 0 errors on boot.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1140,3 +1151,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-20 | Full project asset inventory written to Obsidian vault as Project_Asset_Inventory.md. Catalogues ~1,400 assets: 568 in-project PNGs (game/assets/), 819 source PNGs (GameAssets/), 5 .tres resources. Every asset has status tag (IN_USE/AVAILABLE/STAGING/ARCHIVED), frame count for animations, and usage notes. |
 | 2026-05-20 | y_sort_offset calibrated on all 15 world objects (buildings, trees, props, characters). Sort point moved from sprite center to ground contact for each object. Willow +53, houses +35/+42, choppable trees +36/+37/+48, characters (player/NPC) +16/+19. ADR-073 added. |
 | 2026-05-20 | Three standard choppable tree systems removed (Tree1/Tree2/Tree3 + ChoppableTree scenes/scripts). Willow untouched. 6 static tree PNGs, 7 animation dirs, 2 stump assets deleted. world.gd choppable_trees signal pipeline removed. ADR-074 added. |
+| 2026-05-20 | Pine/Maple/Fir choppable tree integration. New assets from TempAssetHolding staged to game/assets/nature/trees/{pine,maple,fir}/. 4 SpriteFrames .tres created (pine/maple/fir/stump). choppable_tree.gd (shared, species @export), 3 species scenes, 3 trees placed at (55,165)/(200,162)/(50,240). world.gd restored group-based tree signal wiring + _on_tree_chopped(). Playtested: full chop→fall→stump→gone→wood grant confirmed. ADR-075 added. |

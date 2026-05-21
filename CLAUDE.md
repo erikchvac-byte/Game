@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Three standard choppable tree systems removed (2026-05-20, ADR-074). Tree1/Tree2/Tree3 nodes deleted from world.tscn; all ChoppableTree scenes/scripts/assets removed; world.gd choppable_trees group pipeline stripped. Willow fully intact. Playtest pending (confirm game loads, willow shakes, player can walk former tree locations).
+- **Last completed:** Pine/Maple/Fir choppable tree integration (2026-05-20, ADR-075). 3 trees placed in grass area in front of bakery: TreePine1 (55,165), TreeMaple1 (200,162), TreeFir1 (50,240). Full chop→fall→stump dissolve→GONE pipeline. Wood grant on `tree_chopped`. Playtested ✅.
+- **Previous (2026-05-20):** Three standard choppable tree systems removed (ADR-074). Tree1/Tree2/Tree3 deleted from world.tscn; all ChoppableTree scenes/scripts/assets removed; world.gd choppable_trees group pipeline stripped. Willow intact. ✅
 - **Previous (2026-05-20):** Y-sort offset calibration — 15 world objects (ADR-073). All sprites now sort by ground contact point. Offsets set directly in world.tscn (y_sort_offset is .tscn-only, not a runtime GDScript property). Playtested ✅.
 - **Previous (2026-05-20):** Full project asset inventory written to Obsidian vault. `Project_Asset_Inventory.md` catalogues ~1,400 assets across game/assets/ (568 PNGs), GameAssets/ (819 PNGs), and game/resources/ (5 .tres), with status (IN_USE / AVAILABLE / STAGING / ARCHIVED), frame counts, and usage notes.
 - **Previous (2026-05-20):** world.gd broken preload fix + tileset zombie source cleanup (ADR-072).
@@ -225,22 +226,24 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-20 (tree removal)
-- **Game state:** Runnable. Three choppable tree systems removed. Willow intact. Playtest not yet run — queue a playtest first next session to confirm no regressions.
-- **Tree removal (ADR-074):** Tree1/Tree2/Tree3 removed from world.tscn. ChoppableTree/ directory deleted entirely (base scene + 3 species scenes + script + uid). world.gd choppable_trees group signal pipeline stripped (CLICK_TREE_RADIUS, signal wiring loop, _on_wood_chopped, is_chopping triggers, tree nav search). 6 static tree PNGs + 7 animation directories + stump_round + stump_round_dissolve + log_brown_short deleted from assets. Full report in `tree_removal_report.md`.
-- **Willow confirmed untouched.** willow_tree.gd, TreeWillowWeeping node, WillowFrames SpriteFrames, ProximityArea collision, assets/nature/trees/willow/ — all intact.
-- **is_chopping flag dormant.** player.gd still has `is_chopping := false` and player_animation.gd still handles `chop_*` animations — but world.gd never sets it to true now. Safe for future use.
-- **Wood has no source.** Starting inventory still grants one wood (rock3.png placeholder). No in-game way to get more. Either add a new chopping system or remove wood from the game.
-- **tree_oak_green.png is orphaned.** At `res://assets/nature/trees/tree_oak_green.png` — not used by any scene. Not removed (not part of the three removed systems). User's call.
-- **y_sort_offset note.** Tree1/Tree2/Tree3 had offsets +36/+37/+48 that are now gone with those nodes. Willow's +53 is still set. Any new tree placed in world.tscn needs a new y_sort_offset.
-- **HouseTwostoryTeal y_sort_offset still estimated.** Value +42 may need tweaking after walking around in-editor.
-- **Tileset is clean.** Active sources: 0=Tile.png, 1=grass_stone_dirt.png, 5=town-grass-tile.png, 6=atlas_32x32.png, 8=Solid.png. No zombie sources.
-- **Overlay TileMapLayer:** `Overlay` node in `world.tscn`. Scroll UP in source picker — Solid.png at bottom, town-grass-tile is source 5.
-- **tile_bit_tools UID duplicates.** Nested copy at `tile_bit_tools/tile_bit_tools/` causing ~34 editor warnings. Remove to clean up (not yet done).
-- **Pending editor restart note:** `_inv_mgr` fetched via `get_node_or_null("/root/InventoryManager")` in world.gd. Replace with bare `InventoryManager` after confirming autoload is in project.godot.
+### Session end — 2026-05-20 (pine/maple/fir integration)
+- **Game state:** Runnable. 3 new choppable trees active (Pine/Maple/Fir). Willow intact. Full chop pipeline verified. 0 boot errors.
+- **New tree system (ADR-075):** `choppable_tree.gd` (StaticBody2D, `@export var species`). 3 scenes at `res://scenes/interactables/trees/`. SpriteFrames at `res://resources/trees/`. Source PNGs at `res://assets/nature/trees/{pine,maple,fir}/` + `res://assets/nature/stumps/`. world.gd uses `get_nodes_in_group("choppable_trees")` in `_ready()` to auto-connect signals. `_on_tree_chopped()` grants wood (rock3.png placeholder).
+- **Tree positions:** TreePine1 (55,165), TreeMaple1 (200,162), TreeFir1 (50,240). All y_sort_offset=21. House door at (112,117) is clear.
+- **Stump system:** Shared `stump_frames.tres` (96×96, 16-frame dissolve at 8fps). State machine: IDLE→CHOPPING→FALLING→STUMP→GONE. Stump hides after dissolve completes.
+- **Maple hit_fall:** 50% random chance on final chop plays `hit_fall` animation instead of `fall`.
+- **Editor stale state issue:** Phantom Tree1/Tree2/Tree3 (Node2D) persisted in editor memory after ADR-074 disk deletion. Deleted via `delete_node` MCP. World scene manually reconstructed via `add_scene_instance` + editor script position/rename/save.
+- **Phantom UID fix:** Placeholder UIDs (e.g. `uid://pine_tree_scene01`) in .tscn headers are NOT valid base62. Must use editor's `open_scene` + `save_scene` to assign real UIDs. Then query with `ResourceLoader.get_resource_uid()`.
+- **is_chopping re-wired.** `interact()` sets `player.is_chopping = true`; `_on_tree_anim_finished()` resets it. Player chop animation plays on each hit.
+- **tree_oak_green.png is orphaned.** At `res://assets/nature/trees/tree_oak_green.png` — not used by any scene. User's call whether to delete.
+- **HouseTwostoryTeal y_sort_offset still estimated.** Value +42 — needs walk-around tuning.
+- **Tileset is clean.** Active sources: 0=Tile.png, 1=grass_stone_dirt.png, 5=town-grass-tile.png, 6=atlas_32x32.png, 8=Solid.png.
+- **Overlay TileMapLayer:** `Overlay` node in `world.tscn`. Scroll UP in source picker for town-grass-tile (source 5).
+- **tile_bit_tools UID duplicates.** Nested copy at `tile_bit_tools/tile_bit_tools/` causing ~34 editor warnings. Remove to clean up.
+- **Pending editor restart note:** `_inv_mgr` fetched via `get_node_or_null("/root/InventoryManager")` in world.gd. Replace with bare `InventoryManager` after confirming autoload.
 - **herb_bundle_dried.png has no source.** `herb_plant_type_a.png` is placeholder in drying rack PRODUCTS. User to supply replacement art.
-- **Next priorities:** Playtest tree removal (confirm clean load); teal house collision refinement; cave entrance rigging; new tree design decision.
-- **Available but unwired:** player_alt (59×49, 3-dir), purple_jack + grey_hoodie/rotations (8-dir NPCs), cannabis/herb plants (13+4 variants), garden dirt patches (5 static + 9-frame pulse), tileset_32x32 (66 tiles).
+- **Next priorities:** Teal house collision refinement; cave entrance rigging; wood texture (replace rock3.png placeholder); consider adding more tree instances or a 4th species.
+- **Available but unwired:** player_alt (59×49, 3-dir), purple_jack + grey_hoodie/rotations (8-dir NPCs), cannabis/herb plants (13+4 variants), garden dirt patches (5 static + 9-frame pulse), tileset_32x32 (66 tiles), tree_oak_green.png (static, no anims).
 
 ### Permissions Allowlist (as of 2026-05-15)
 All Godot MCP and filesystem MCP tools are pre-approved in `.claude/settings.json`. No prompts expected for any of these:

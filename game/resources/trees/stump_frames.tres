@@ -1,0 +1,83 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://bp7x3xs5mq8ub"]
+
+[ext_resource type="Texture2D" uid="uid://cp2dd10roooaa" path="res://assets/nature/stumps/stump_dissolve/frame_000.png" id="1_tunmb"]
+[ext_resource type="Texture2D" uid="uid://7ry4gv1165ja" path="res://assets/nature/stumps/stump_dissolve/frame_001.png" id="2_twynp"]
+[ext_resource type="Texture2D" uid="uid://cvttsnr88gc8t" path="res://assets/nature/stumps/stump_dissolve/frame_002.png" id="3_jj2xi"]
+[ext_resource type="Texture2D" uid="uid://ct13fv5mn7yha" path="res://assets/nature/stumps/stump_dissolve/frame_003.png" id="4_08f41"]
+[ext_resource type="Texture2D" uid="uid://dhky8bc2d7g68" path="res://assets/nature/stumps/stump_dissolve/frame_004.png" id="5_8kau3"]
+[ext_resource type="Texture2D" uid="uid://daxjdqtopdkep" path="res://assets/nature/stumps/stump_dissolve/frame_005.png" id="6_05487"]
+[ext_resource type="Texture2D" uid="uid://tddq5drr0v3c" path="res://assets/nature/stumps/stump_dissolve/frame_006.png" id="7_dg7m8"]
+[ext_resource type="Texture2D" uid="uid://orpoil7pvnxa" path="res://assets/nature/stumps/stump_dissolve/frame_007.png" id="8_84c80"]
+[ext_resource type="Texture2D" uid="uid://eeucy72g60a7" path="res://assets/nature/stumps/stump_dissolve/frame_008.png" id="9_mgs7h"]
+[ext_resource type="Texture2D" uid="uid://7m0d0bxrw5iu" path="res://assets/nature/stumps/stump_dissolve/frame_009.png" id="10_68dkn"]
+[ext_resource type="Texture2D" uid="uid://dy4472yu8r1x7" path="res://assets/nature/stumps/stump_dissolve/frame_010.png" id="11_08od6"]
+[ext_resource type="Texture2D" uid="uid://su3w3h63vbvd" path="res://assets/nature/stumps/stump_dissolve/frame_011.png" id="12_h2k1j"]
+[ext_resource type="Texture2D" uid="uid://bh8fakwxc36er" path="res://assets/nature/stumps/stump_dissolve/frame_012.png" id="13_m6wp3"]
+[ext_resource type="Texture2D" uid="uid://ibcecilsbm51" path="res://assets/nature/stumps/stump_dissolve/frame_013.png" id="14_e12si"]
+[ext_resource type="Texture2D" uid="uid://bn7xkourpvoh5" path="res://assets/nature/stumps/stump_dissolve/frame_014.png" id="15_2ludo"]
+[ext_resource type="Texture2D" uid="uid://phu5jke3ps6i" path="res://assets/nature/stumps/stump_dissolve/frame_015.png" id="16_fnsuo"]
+[ext_resource type="Texture2D" uid="uid://d03ytqw2rw3mc" path="res://assets/nature/stumps/stump_idle.png" id="17_dbafi"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_tunmb")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_twynp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_jj2xi")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_08f41")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_8kau3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_05487")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_dg7m8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_84c80")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_mgs7h")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_68dkn")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_08od6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_h2k1j")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_m6wp3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_e12si")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_2ludo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_fnsuo")
+}],
+"loop": false,
+"name": &"dissolve",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_dbafi")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}]
