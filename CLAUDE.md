@@ -1,12 +1,12 @@
 # Game — Project Reference
 
-> **Session start:** Read `ADR.md` for full architectural context and history. Then read the **Notes** section at the bottom of this file.
+> **Session start:** Read `ADR.md` for full architectural context and history. Then read the **Roadmap** and **Notes** sections at the bottom of this file.
 
 ## Rules
 - **PLAYTEST RULE:** If you make it, you play test it. Always. Run the game via MCP, exercise the feature, take a screenshot to confirm correct behavior before reporting done.
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 - **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, stop and ask — do not pick a "close enough" alternative. Choosing replacement art is the user's job.
-- **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
+- **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
 - **Last completed:** Farming system — 6 regression fixes (2026-05-21, ADR-078). Well animation reset reliable, loop disabled, correct blocked messages per interactable, bucket anim fallback, plant fps guard. Full well→plant×3→harvest loop verified repeatable indefinitely. Playtested ✅.
@@ -225,6 +225,28 @@
 | Post | Player home door + interior | ✅ Done |
 | Post | Day/night cycle + dynamic shadows | ✅ Done |
 | Post | Drying rack 3-state mechanic | ✅ Done |
+
+## Roadmap
+> **Persistent — session-end does NOT auto-replace this.** Update manually when priorities shift or tasks complete. Each entry: what to do, where to find the pieces, what's blocking it.
+
+### Active priorities (in order)
+
+1. **Bucket animations** — add `idle_down_bucket`, `idle_up_bucket`, `idle_side_bucket`, `walk_down_bucket`, `walk_up_bucket`, `walk_side_bucket` animations to `res://resources/characters/erik_sprites.tres`. Source PNGs exist at `res://assets/characters/erik/` (bucket idle/walk variants). No script changes needed — `player_animation.gd` already handles the `_bucket` suffix and falls back gracefully if missing.
+
+2. **Wood icon** — replace `rock3.png` placeholder with a real wood sprite. Key = `"wood"` in InventoryManager. Used in `world.gd:_grant_starting_items()` and `_on_tree_chopped()`. Hotbar slot has a 50% inset applied in `hud.gd` for `key == "wood"` because `rock3.png` is oversized — remove that inset once a proper icon is in place.
+
+3. **Teal house collision** — `HouseTwostoryTeal` has a single 85×28 box collider. Needs: door gap cut into front wall, side wall shapes added to match sprite. Node: `HouseTealCollider` StaticBody2D in `world.tscn`. `y_sort_offset +42` is estimated — walk around and tune via Inspector.
+
+4. **Cave entrance** — Area2D trigger at world position (29, 409). No scene exists yet. Rigging needed: body_entered → fade → cave interior scene (to be created).
+
+5. **Stump y-offset per-species** — `stump_y_offset = 28.0` is uniform across Pine/Maple/Fir. May need tuning per instance via Inspector once all three are playtested side-by-side.
+
+### Blocked / waiting on user
+- **`herb_bundle_dried.png`** — no source art exists. Currently using `herb_plant_type_a.png` as placeholder in drying rack PRODUCTS. User to supply replacement before this slot is usable.
+- **`tree_oak_green.png`** — orphaned static PNG at `res://assets/nature/trees/`. No animation strips. User to decide: wire as a non-choppable decorative tree, or delete.
+- **`shop_apothecary_alt.png`** — confirmed byte-identical duplicate of `shop_apothecary_main.png`. Pending dedup (user decision on which name to keep).
+
+---
 
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
