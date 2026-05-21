@@ -1040,6 +1040,17 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-077: Tree Chop Timing Delay + Static Stump + Stump Position Fix
+**Status:** Accepted
+**Date:** 2026-05-21
+**Context:** Three problems in the choppable tree system: (1) tree chop/fall animations fired the same frame as axe input — no delay between player swing and tree reaction; (2) stump played dissolve animation immediately after appearing, then disappeared; (3) stump spawned at StaticBody2D origin (tree center/canopy area) instead of the trunk base, causing visual floating.
+**Decision:** (1) Timing: `interact()` sets `player.is_chopping=true` immediately, then `get_tree().create_timer(0.5)` fires `_begin_tree_reaction()` 0.5s later to start the tree animation. `player.is_chopping=false` is also reset in `_begin_tree_reaction` (player swing finishes just as tree starts reacting). (2) Stump: replaced `_stump_sprite.play("dissolve")` with `stop()` + `animation = "idle"` + `frame = 0` — shows `stump_idle.png` as a static frame. Removed `_on_stump_anim_finished()` and its signal connection. `State.GONE` removed from enum. (3) Position: added `@export var stump_y_offset: float = 28.0` set via `_stump_sprite.position = Vector2(0.0, stump_y_offset)` in `_ready()`. Offset 28.0 derived from sprite measurement: tree trunk base at ~y=87 in 96×96 sprite at scale 0.625 = 24.4 world units below origin; stump cut surface at ~y=8 at scale 0.125 = -5 world units from stump center; net offset = 24.4 - (-5) ≈ 28.
+**Rationale:** `create_timer()` one-shot approach is lightweight and self-cleaning. Exporting `stump_y_offset` lets designers tune per-species without code changes. Using the `idle` animation (single stump_idle.png frame) rather than dissolve frame 0 makes intent explicit and future-proof.
+**Consequences:** Player swing now visually precedes tree reaction by 0.5s — satisfying cause-and-effect. Stump stays on screen permanently (no GONE state) until scene reload — acceptable for current phase. `stump_y_offset` defaults to 28.0 (all three species share same offset; can be overridden in Inspector per instance). Chop state machine now: IDLE→CHOPPING→FALLING→STUMP (no GONE). Only `choppable_tree.gd` changed — no .tscn file edits needed.
+**Testing:** Full 3-chop pipeline verified: state transitions IDLE×3→CHOPPING→FALLING→STUMP correct; stump_playing=false; stump_anim=idle; stump_frame=0; stump_pos=(0,28); tree_vis=false after fall; wood ×2 granted. Report: `tree_animation_stump_fix_report.md`.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1164,3 +1175,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-20 | Three standard choppable tree systems removed (Tree1/Tree2/Tree3 + ChoppableTree scenes/scripts). Willow untouched. 6 static tree PNGs, 7 animation dirs, 2 stump assets deleted. world.gd choppable_trees signal pipeline removed. ADR-074 added. |
 | 2026-05-20 | Pine/Maple/Fir choppable tree integration. New assets from TempAssetHolding staged to game/assets/nature/trees/{pine,maple,fir}/. 4 SpriteFrames .tres created (pine/maple/fir/stump). choppable_tree.gd (shared, species @export), 3 species scenes, 3 trees placed at (55,165)/(200,162)/(50,240). world.gd restored group-based tree signal wiring + _on_tree_chopped(). Playtested: full chop→fall→stump→gone→wood grant confirmed. ADR-075 added. |
 | 2026-05-20 | Fixed duplicate ghost tree nodes: removed 15 phantom nodes (TreeSprite2/StumpSprite2/TrunkCollider2/InteractArea2/InteractCol2 × 3 trees) added by MCP add_node calls on top of instanced-scene children. Tree sprite scale +25% (0.5→0.625), stump scale −75% (0.5→0.125). Ghost idle image gone — chop pipeline clean. ADR-076 added. |
+| 2026-05-21 | Tree animation/stump fixes: 0.5s chop delay (player swings first, tree reacts after); stump disabled animation (static idle frame via stop()+animation="idle"+frame=0); stump position set to trunk base (stump_y_offset=28.0 export var, set in _ready()). Verified: no ghost, no stump animation, stump at correct ground position, y-sort correct. ADR-077 added. |
