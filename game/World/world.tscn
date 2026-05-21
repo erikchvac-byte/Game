@@ -661,11 +661,10 @@ shadow_size = Vector2(22, 5)
 cast_length = 8.0
 
 [node name="TreeCollider" type="StaticBody2D" parent="Log1" unique_id=902955060]
-position = Vector2(-7.9999995, -0.9803772)
-rotation = -2.664432
-scale = Vector2(0.6995856, 1.8974241)
+position = Vector2(-12, -0.98037714)
+rotation = -2.6598766
+scale = Vector2(0.6995856, 3.5530136)
 skew = 1.0559242
-metadata/_edit_group_ = true
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Log1/TreeCollider" unique_id=1638229223]
 position = Vector2(-4.0560303, 2.1051788)
@@ -757,6 +756,7 @@ scale = Vector2(1.34375, 1)
 texture = ExtResource("67_2hrtt")
 
 [node name="TreePine1" parent="." unique_id=467155269 instance=ExtResource("62_5aim4")]
+y_sort_enabled = true
 position = Vector2(55, 165)
 
 [node name="TreeMaple1" parent="." unique_id=2019391354 instance=ExtResource("66_2j1j3")]

@@ -182,6 +182,17 @@ func _on_right_click(world_pos: Vector2) -> void:
 			_nav_target_node = _npc
 			_nav_pending_interact = true
 			return
+	# Trees — click anywhere on sprite navigates and interacts
+	for tree in get_tree().get_nodes_in_group("choppable_trees"):
+		var tree_node := tree as Node2D
+		if tree_node == null:
+			continue
+		if tree_node.global_position.distance_to(world_pos) < 35.0:
+			_nav_active = true
+			_nav_target_pos = tree_node.global_position
+			_nav_target_node = tree
+			_nav_pending_interact = true
+			return
 	_nav_active = true
 	_nav_target_pos = world_pos
 	_nav_target_node = null
@@ -239,6 +250,11 @@ func _do_nav_interact(player: CharacterBody2D, target: Node) -> void:
 	if not target.has_method("interact"):
 		return
 	if target.has_method("can_interact") and not target.can_interact(player):
+		var msg := "Equip axe first (C)"
+		if target.has_method("blocked_message"):
+			msg = target.blocked_message(player)
+		if msg != "" and _hud:
+			_hud.show_toast(msg, 1.5)
 		return
 	target.interact(player)
 
