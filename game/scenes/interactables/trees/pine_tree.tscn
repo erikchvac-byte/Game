@@ -11,6 +11,9 @@ height = 10.0
 [sub_resource type="CircleShape2D" id="InteractShape"]
 radius = 22.0
 
+[sub_resource type="CircleShape2D" id="StumpShape"]
+radius = 7.0
+
 [node name="PineTree" type="StaticBody2D" unique_id=467155269]
 script = ExtResource("1_script")
 
@@ -29,6 +32,10 @@ animation = &"dissolve"
 [node name="TrunkCollider" type="CollisionShape2D" parent="." unique_id=240107372]
 position = Vector2(0, 16)
 shape = SubResource("TrunkShape")
+
+[node name="StumpCollider" type="CollisionShape2D" parent="." unique_id=112233445]
+disabled = true
+shape = SubResource("StumpShape")
 
 [node name="InteractArea" type="Area2D" parent="." unique_id=394405981]
 

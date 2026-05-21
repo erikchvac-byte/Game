@@ -11,6 +11,9 @@ height = 10.0
 [sub_resource type="CircleShape2D" id="InteractShape"]
 radius = 22.0
 
+[sub_resource type="CircleShape2D" id="StumpShape"]
+radius = 7.0
+
 [node name="MapleTree" type="StaticBody2D" unique_id=2019391354]
 script = ExtResource("1_script")
 species = "maple"
@@ -30,6 +33,10 @@ animation = &"dissolve"
 [node name="TrunkCollider" type="CollisionShape2D" parent="." unique_id=1033469786]
 position = Vector2(0, 16)
 shape = SubResource("TrunkShape")
+
+[node name="StumpCollider" type="CollisionShape2D" parent="." unique_id=223344556]
+disabled = true
+shape = SubResource("StumpShape")
 
 [node name="InteractArea" type="Area2D" parent="." unique_id=1449281796]
 

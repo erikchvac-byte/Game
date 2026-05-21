@@ -11,6 +11,7 @@ signal tree_chopped
 @onready var _tree_sprite: AnimatedSprite2D = $TreeSprite
 @onready var _stump_sprite: AnimatedSprite2D = $StumpSprite
 @onready var _trunk_col: CollisionShape2D = $TrunkCollider
+@onready var _stump_col: CollisionShape2D = $StumpCollider
 @onready var _interact_area: Area2D = $InteractArea
 @onready var _interact_col: CollisionShape2D = $InteractArea/InteractCol
 
@@ -23,6 +24,8 @@ func _ready() -> void:
 	add_to_group("choppable_trees")
 	_stump_sprite.visible = false
 	_stump_sprite.position = Vector2(0.0, stump_y_offset)
+	_stump_col.position = Vector2(0.0, stump_y_offset)
+	_stump_col.disabled = true
 	_tree_sprite.play("idle")
 	_tree_sprite.animation_finished.connect(_on_tree_anim_finished)
 	_interact_area.body_entered.connect(_on_body_entered)
@@ -67,6 +70,7 @@ func _on_tree_anim_finished() -> void:
 		_stump_sprite.visible = true
 		_trunk_col.disabled = true
 		_interact_col.disabled = true
+		_stump_col.disabled = false
 		_state = State.STUMP
 		tree_chopped.emit()
 

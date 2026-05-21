@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Tree scale +20%, y_sort fix, left-click chop (2026-05-21, ADR-079). TreeSprite 0.625→0.75, StumpSprite 0.125→0.15. y_sort_offset corrected 36→12 (formula: stump_y_offset − player_half_height = 28 − 16). Left-click on any tree now navigates + interacts (world.gd `_on_right_click` tree detection, `_do_nav_interact` blocked toast). Playtested ✅.
+- **Last completed:** Stump colliders + Log1 removal (2026-05-21, ADR-080). CircleShape2D (r=7) StumpCollider added to pine/maple/fir .tscn files; disabled at start, enabled on FALLING→STUMP. Player stops exactly at stump radius on approach (gap=13 = r6+r7). Log1 (Sprite2D + Shadow + TreeCollider + CollisionShape2D + 2 exclusive resources) deleted from world.tscn cleanly. Tree scenes are fully self-contained prefabs — drag from FileSystem to place. Playtested ✅.
+- **Previous (2026-05-21):** Tree scale +20%, y_sort fix, left-click chop (ADR-079). TreeSprite 0.625→0.75, StumpSprite 0.125→0.15. y_sort_offset corrected 36→12 (formula: stump_y_offset − player_half_height = 28 − 16). Left-click on any tree now navigates + interacts (world.gd `_on_right_click` tree detection, `_do_nav_interact` blocked toast). Playtested ✅.
 - **Previous (2026-05-21):** Farming system — 6 regression fixes (ADR-078). Well animation reset reliable, loop disabled, correct blocked messages per interactable, bucket anim fallback, plant fps guard. Full well→plant×3→harvest loop verified repeatable indefinitely. Playtested ✅.
 - **Previous (2026-05-21):** Tree chop timing + static stump + stump position (ADR-077). 0.5s delay between player axe swing and tree reaction. Stump static (idle frame, no animation). Stump positioned at trunk base via `stump_y_offset=28.0` export. Playtested ✅.
 - **Previous (2026-05-20):** Fix ghost tree image + rescale sprites (ADR-076). Removed 15 duplicate "2" nodes from all 3 choppable trees in world.tscn (phantom nodes created by MCP add_node on top of instanced-scene children). TreeSprite scale 0.5→0.625 (+25%), StumpSprite scale 0.5→0.125 (−75%). Full chop pipeline now clean — no ghost idle image during fall. Playtested ✅.
@@ -252,14 +253,12 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-21 (tree scale, y_sort fix, left-click chop — ADR-079)
-- **Game state:** Runnable. 0 boot errors. All three trees (pine/maple/fir) choppable via left-click and Space. Y-sort correct on all three.
+### Session end — 2026-05-21 (stump colliders, Log1 removal — ADR-080)
+- **Game state:** Runnable. 0 boot errors. All three trees choppable; stumps now block player movement after chop. Log1 prop removed entirely.
 - **Changes this session:**
-  - **Tree scale:** TreeSprite 0.625→0.75, StumpSprite 0.125→0.15 on all three species `.tscn` files.
-  - **y_sort_offset formula:** `stump_y_offset(28) − player_half_height(16) = 12`. Changed from 36→12 in world.tscn for all three instances. Player transitions to "in front" exactly when feet reach the trunk base.
-  - **Left-click tree chop:** `world.gd _on_right_click` now iterates choppable_trees group, detects click within 35px of any tree, sets nav target + pending interact. Same nav arrival path as NPC (`_update_mouse_navigation` → `_do_nav_interact`).
-  - **Blocked toast on nav interact:** `_do_nav_interact` now shows "Equip axe first (C)" (or custom `blocked_message()`) when `can_interact` returns false — matches Space-key behavior.
-- **Godot editor cache lesson:** `open_scene` via MCP does NOT flush the runtime resource cache. If world.tscn is edited on disk while the scene is open in the editor, running the game will use the in-memory (stale) version. Fix: call `reload_project` to force a full cache flush.
+  - **Stump colliders:** `StumpCollider` (CircleShape2D r=7) added to `pine_tree.tscn`, `maple_tree.tscn`, `fir_tree.tscn`. `choppable_tree.gd` wires it via `@onready`, disables in `_ready()`, enables on `State.FALLING → State.STUMP`. Position set to `Vector2(0, stump_y_offset)` in `_ready()`.
+  - **Log1 removed:** Sprite2D + Shadow + TreeCollider StaticBody2D + CollisionShape2D all deleted from `world.tscn`. Exclusive ext_resource (`log_fallen_brown.png`, id=45_i52kj) and exclusive sub_resource (`RectangleShape2D_3gnva`) also removed. No world.gd references existed.
+  - **Tree prefab clarification:** pine/maple/fir `.tscn` files are self-contained reusable scenes. Place by dragging from FileSystem panel into world viewport.
 - **Open issues:**
   - `stump_y_offset=28.0` uniform across species — may need per-species tuning via Inspector
   - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning

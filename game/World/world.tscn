@@ -6,7 +6,6 @@
 [ext_resource type="Texture2D" uid="uid://587lmkrd0dfs" path="res://assets/ui/key_e.png" id="41_s5cut"]
 [ext_resource type="Texture2D" uid="uid://c1kj7cpn6wu31" path="res://assets/nature/rocks/rock_grey_cluster.png" id="45_8kjm2"]
 [ext_resource type="SpriteFrames" uid="uid://bdowx3l78eemq" path="res://resources/structures/house_grey_teal_frames.tres" id="45_h4hkh"]
-[ext_resource type="Texture2D" uid="uid://cvmbhu2io20hk" path="res://assets/nature/stumps/log_fallen_brown.png" id="45_i52kj"]
 [ext_resource type="Script" uid="uid://c2rgwc7pyf36p" path="res://NPCs/npc_grey_hoodie.gd" id="46_xu702"]
 [ext_resource type="SpriteFrames" uid="uid://b0rvlem6tvcb3" path="res://resources/characters/grey_hoodie_sprites.tres" id="47_i363k"]
 [ext_resource type="Texture2D" uid="uid://cvef32hudv7jo" path="res://assets/structures/cave_entrance_arch_stone.png" id="48_dlis5"]
@@ -352,8 +351,6 @@ fill = 1
 fill_from = Vector2(0.5, 0.5)
 fill_to = Vector2(1, 0.5)
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_3gnva"]
-size = Vector2(23.555119, 9.33167)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_h4hkh"]
 size = Vector2(640, 16)
@@ -648,29 +645,6 @@ sprite_frames = ExtResource("47_i363k")
 animation = &"idle_south"
 autoplay = "idle_south"
 frame_progress = 0.74741143
-
-[node name="Log1" type="Sprite2D" parent="." unique_id=1205709140]
-position = Vector2(91, 188.99998)
-scale = Vector2(1, 1.02)
-texture = ExtResource("45_i52kj")
-
-[node name="Shadow" type="Node2D" parent="Log1" unique_id=1548863076]
-script = ExtResource("obj_shadow_script")
-ground_offset = Vector2(0, 10)
-shadow_size = Vector2(22, 5)
-cast_length = 8.0
-
-[node name="TreeCollider" type="StaticBody2D" parent="Log1" unique_id=902955060]
-position = Vector2(-12, -0.98037714)
-rotation = -2.6598766
-scale = Vector2(0.6995856, 3.5530136)
-skew = 1.0559242
-
-[node name="CollisionShape2D" type="CollisionShape2D" parent="Log1/TreeCollider" unique_id=1638229223]
-position = Vector2(-4.0560303, 2.1051788)
-rotation = 0.2145135
-scale = Vector2(1.3544221, 1.4731997)
-shape = SubResource("RectangleShape2D_3gnva")
 
 [node name="Cave entrance" type="Sprite2D" parent="." unique_id=1053984708]
 position = Vector2(31, 407)

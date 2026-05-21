@@ -1062,6 +1062,28 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-079: Tree Scale +20%, Y-Sort Formula, Left-Click Chop
+**Status:** Accepted
+**Date:** 2026-05-21
+**Context:** Trees at scale 0.625 were visually small. Y-sort threshold of 36 (sprite half-height) caused the player to render behind trees too early — should transition exactly when player feet reach the trunk base. Left-click on trees moved the player but did not trigger interact.
+**Decision:** TreeSprite scale 0.625→0.75, StumpSprite 0.125→0.15 across all three species .tscn files. Y-sort offset formula: `stump_y_offset(28) − player_half_height(16) = 12` → changed all three tree instances in world.tscn from 36→12. Added tree detection block in `world.gd _on_right_click()`: iterates `choppable_trees` group, detects click within 35px of any tree, sets `_nav_target_node` + `_nav_pending_interact`. `_do_nav_interact()` updated to show blocked toast when `can_interact` returns false (matching Space-key path).
+**Rationale:** Y-sort threshold should match the visual ground contact point (trunk base), not the sprite's geometric bottom. The left-click fix reuses the existing NPC nav pattern — no new systems needed.
+**Consequences:** Player appears in front of tree exactly when feet reach trunk base. Left-click chop now navigates to tree and chops on arrival if axe equipped, shows toast if not. `reload_project` required after editing world.tscn on disk — `open_scene` alone does not flush the runtime resource cache.
+**Testing:** Script-driven: forced pine through FALLING→STUMP transition, player blocked by stump collider at expected distance. Left-click tree detection verified at 35px radius. Y-sort transition confirmed visually at trunk base.
+
+---
+
+## ADR-080: Stump Colliders + Log1 Removal
+**Status:** Accepted
+**Date:** 2026-05-21
+**Context:** After a tree is chopped, the stump sprite appears but the player could walk through it — no collision. Log1 (a decorative fallen log Sprite2D with its own shadow and collision shape) was a leftover world prop to be removed.
+**Decision:** Added `StumpCollider` (CollisionShape2D, CircleShape2D radius=7) to `pine_tree.tscn`, `maple_tree.tscn`, and `fir_tree.tscn`. In `choppable_tree.gd`: added `@onready var _stump_col` reference; `_ready()` sets `_stump_col.position = Vector2(0, stump_y_offset)` and `_stump_col.disabled = true`; fall-complete branch (`State.FALLING` → `State.STUMP`) sets `_stump_col.disabled = false`. Removed Log1 from world.tscn (Sprite2D + Shadow + TreeCollider StaticBody2D + CollisionShape2D), its exclusive ext_resource (log_fallen_brown.png, id=45_i52kj), and its exclusive sub_resource (RectangleShape2D_3gnva).
+**Rationale:** Stump collider radius 7px matches the ~14px rendered size of the stump sprite (96×96 at scale 0.15). Position is set in script to stay in sync with `stump_y_offset` export var. Log1 removal is clean — no world.gd references, no shared resources.
+**Consequences:** Stumps block player movement after chop. Trunk collider disables on chop (existing behavior); stump collider enables at the same moment. Tree scenes (pine/maple/fir) are fully self-contained reusable prefabs: drag `fir_tree.tscn` from FileSystem into world viewport to place a new wired tree. Log1 and all its assets are gone; no other nodes depended on them.
+**Testing:** Script-driven: all 3 trees showed `StumpCollider disabled=true` at game start. Pine forced to STUMP state → `disabled=false` confirmed. Player at (250,300) walked north toward stump at (250,281) → stopped at y=294 (gap=13 = player_radius 6 + stump_radius 7). Maple+fir remained IDLE with collider disabled. 0 editor errors after Log1 removal.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1189,3 +1211,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-21 | Tree animation/stump fixes: 0.5s chop delay (player swings first, tree reacts after); stump disabled animation (static idle frame via stop()+animation="idle"+frame=0); stump position set to trunk base (stump_y_offset=28.0 export var, set in _ready()). Verified: no ghost, no stump animation, stump at correct ground position, y-sort correct. ADR-077 added. |
 | 2026-05-21 | Farming system — 6 regression fixes. (1) WellWater loop:true→false (world.tscn). (2) well.gd: _reset_sprite() using play("default")→stop()→frame=0 reliably clears backwards-play flag; removed dead animation_finished handler. (3) world.gd: blocked_message() dispatch replaces hardcoded "Equip axe first (C)" for all interactables. (4) plant.gd: get_animation_speed uses $PurplePlant.animation (not hardcoded "default") + fps<=0 fallback=8.0. (5) player_animation.gd: has_animation() guard before play(); _bucket variant falls back to base animation instead of freezing. Full loop (well→plant×3→drying rack) verified repeatable indefinitely. ADR-078 added. |
 | 2026-05-21 | Tree scale +20% (0.625→0.75 TreeSprite, 0.125→0.15 StumpSprite all three species). y_sort_offset corrected 36→12 (formula: stump_y_offset − player_half_height = 28 − 16 = 12; player feet reach trunk base = transition point). Left-click tree chop added to world.gd: _on_right_click detects choppable_trees within 35px and sets nav target + pending interact; _do_nav_interact now shows blocked toast. Godot editor cache lesson: open_scene alone does not flush runtime resource cache — reload_project required. ADR-079 added. |
+| 2026-05-21 | Stump colliders added to pine/maple/fir tree scenes (CircleShape2D r=7, disabled at start, enabled on fall-complete). choppable_tree.gd: _stump_col @onready, position set to stump_y_offset in _ready(), toggled in FALLING→STUMP transition. Log1 and all components (Shadow, TreeCollider, CollisionShape2D, exclusive ext_resource, exclusive sub_resource) removed from world.tscn. ADR-080 added. |

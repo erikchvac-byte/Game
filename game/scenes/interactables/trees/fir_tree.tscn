@@ -11,6 +11,9 @@ height = 14.0
 [sub_resource type="CircleShape2D" id="InteractShape"]
 radius = 22.0
 
+[sub_resource type="CircleShape2D" id="StumpShape"]
+radius = 7.0
+
 [node name="FirTree" type="StaticBody2D" unique_id=442005024]
 script = ExtResource("1_script")
 species = "fir"
@@ -31,6 +34,10 @@ animation = &"dissolve"
 position = Vector2(2, 16)
 scale = Vector2(1.2722644, -0.9366518)
 shape = SubResource("TrunkShape")
+
+[node name="StumpCollider" type="CollisionShape2D" parent="." unique_id=334455667]
+disabled = true
+shape = SubResource("StumpShape")
 
 [node name="InteractArea" type="Area2D" parent="." unique_id=1299628253]
 
