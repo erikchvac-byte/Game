@@ -1029,6 +1029,17 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-076: Fix Duplicate Tree Nodes + Rescale Tree/Stump Sprites
+**Status:** Accepted
+**Date:** 2026-05-20
+**Context:** After ADR-075 placed the three choppable trees via MCP `add_scene_instance` + `add_node`, each tree ended up with duplicate child nodes (`TreeSprite2`, `StumpSprite2`, `TrunkCollider2`, `InteractArea2`, `InteractCol2`). These were created because `add_node` calls for `TreeSprite` etc. found a node of that name already present (from the instanced scene) and Godot auto-renamed the new node to `TreeSprite2`. The `choppable_tree.gd` script correctly controls `$TreeSprite` (the original), but `TreeSprite2` persisted permanently showing the idle PNG — appearing as a static "ghost" image during and after the chop/fall animation. Also, tree sprites at scale 0.5 on 96×96 art were visually small; stump dissolve at 0.5 scale was proportionally too large.
+**Decision:** Use an editor script to delete all 15 duplicate nodes (5 per tree × 3 trees) from world.tscn. Update `TreeSprite` scale to `Vector2(0.625, 0.625)` (+25%) and `StumpSprite` scale to `Vector2(0.125, 0.125)` (−75%) in each source .tscn (pine/maple/fir_tree.tscn) via editor script + save_scene.
+**Rationale:** Root cause was the MCP add_node pattern — instanced scenes already contain their children, so any subsequent add_node call for those same node types creates duplicates. The correct pattern for scene children is to modify them via overrides or editor script on the instanced root, not add_node. Scale changes improve visual readability of the trees and make the stump more proportionate during its brief dissolve.
+**Consequences:** Ghost idle image gone — chop/fall/stump animations are now clean. Tree sprites 25% larger, stumps 75% smaller. world.tscn lost 70 lines of spurious node declarations. Orphaned sub_resources (TrunkShape, CapsuleShape2D_isdyu, CapsuleShape2D_c4deb) also removed by Godot on save. Future tree instances: never use add_node to add children to an already-instanced scene — use execute_editor_script to set properties on existing children.
+**Testing:** Playtested — 3 chops on Pine → chop anim × 3 → fall anim → stump dissolve → state=GONE, tree_vis=false, stump_vis=false. No ghost image at any stage. Wood ×2 awarded. Maple and Fir intact.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1152,3 +1163,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-20 | y_sort_offset calibrated on all 15 world objects (buildings, trees, props, characters). Sort point moved from sprite center to ground contact for each object. Willow +53, houses +35/+42, choppable trees +36/+37/+48, characters (player/NPC) +16/+19. ADR-073 added. |
 | 2026-05-20 | Three standard choppable tree systems removed (Tree1/Tree2/Tree3 + ChoppableTree scenes/scripts). Willow untouched. 6 static tree PNGs, 7 animation dirs, 2 stump assets deleted. world.gd choppable_trees signal pipeline removed. ADR-074 added. |
 | 2026-05-20 | Pine/Maple/Fir choppable tree integration. New assets from TempAssetHolding staged to game/assets/nature/trees/{pine,maple,fir}/. 4 SpriteFrames .tres created (pine/maple/fir/stump). choppable_tree.gd (shared, species @export), 3 species scenes, 3 trees placed at (55,165)/(200,162)/(50,240). world.gd restored group-based tree signal wiring + _on_tree_chopped(). Playtested: full chop→fall→stump→gone→wood grant confirmed. ADR-075 added. |
+| 2026-05-20 | Fixed duplicate ghost tree nodes: removed 15 phantom nodes (TreeSprite2/StumpSprite2/TrunkCollider2/InteractArea2/InteractCol2 × 3 trees) added by MCP add_node calls on top of instanced-scene children. Tree sprite scale +25% (0.5→0.625), stump scale −75% (0.5→0.125). Ghost idle image gone — chop pipeline clean. ADR-076 added. |
