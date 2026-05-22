@@ -9,7 +9,7 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Temp asset import + organization (2026-05-22, ADR-081). 32 PNGs from `temp/` copied to `game/assets/` with descriptive names: 8 stump grove dwellings (`game/assets/structures/grove/`), 14 bush variants (`game/assets/nature/bushes/`), 6 stone variants + 53 animation frames in subdirs (`game/assets/nature/rocks/`), 4 currency UI icons (`game/assets/props/items/`). All auto-importable — none wired to scenes yet. Godot editor scan will pick them up on next open.
+- **Last completed:** Stump_Home_001 placed in world (2026-05-22, ADR-082). `stump_home_001.png` + lights variant + 16-frame door animation imported to `game/assets/structures/grove/`. `res://resources/structures/stump_home_001_frames.tres` created (idle + door_open). `StumpIdle` Sprite2D replaced with `StumpHome001` AnimatedSprite2D at (13, 311). Canonical scale = 0.1953125 for all 128×128 grove dwellings. Temp folders archived to `_archived/StumpHomes/` and deleted. Playtested ✅.
 - **Previous (2026-05-21):** Stump colliders + Log1 removal (ADR-080). CircleShape2D (r=7) StumpCollider added to pine/maple/fir .tscn files; disabled at start, enabled on FALLING→STUMP. Player stops exactly at stump radius on approach (gap=13 = r6+r7). Log1 (Sprite2D + Shadow + TreeCollider + CollisionShape2D + 2 exclusive resources) deleted from world.tscn cleanly. Tree scenes are fully self-contained prefabs — drag from FileSystem to place. Playtested ✅.
 - **Previous (2026-05-21):** Tree scale +20%, y_sort fix, left-click chop (ADR-079). TreeSprite 0.625→0.75, StumpSprite 0.125→0.15. y_sort_offset corrected 36→12 (formula: stump_y_offset − player_half_height = 28 − 16). Left-click on any tree now navigates + interacts (world.gd `_on_right_click` tree detection, `_do_nav_interact` blocked toast). Playtested ✅.
 - **Previous (2026-05-21):** Farming system — 6 regression fixes (ADR-078). Well animation reset reliable, loop disabled, correct blocked messages per interactable, bucket anim fallback, plant fps guard. Full well→plant×3→harvest loop verified repeatable indefinitely. Playtested ✅.
@@ -244,7 +244,9 @@
 
 5. **Stump y-offset per-species** — `stump_y_offset = 28.0` is uniform across Pine/Maple/Fir. May need tuning per instance via Inspector once all three are playtested side-by-side.
 
-6. **Wire new grove/bush/stone assets** — All 32 new assets are imported (2026-05-22, ADR-081) but not placed in any scene. Grove dwellings at `game/assets/structures/grove/` are ready as Sprite2D props (no scripts yet). Bushes at `game/assets/nature/bushes/` are decorative Sprite2D. Animated stones at `game/assets/nature/rocks/` need SpriteFrames `.tres` resources created before use in AnimatedSprite2D. Currency icons at `game/assets/props/items/` are ready for InventoryManager wiring.
+6. **Stump shrine gameplay** — `StumpHome001` is placed at (13, 311) with `door_open` animation ready. TBD trigger needed: drop-item offering → probabilistic exchange (gem→buds), trust 0–100 scale, stump visual evolves through 5 states. Drop mechanic (Q key → WorldDropItem), ShrineManager autoload, ForestCreature wanderer all pending. See earlier conversation for full architecture plan.
+
+7. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. Animated stones at `game/assets/nature/rocks/` need SpriteFrames `.tres` before use. Currency icons at `game/assets/props/items/` ready for InventoryManager.
 
 ### Blocked / waiting on user
 - **`herb_bundle_dried.png`** — no source art exists. Currently using `herb_plant_type_a.png` as placeholder in drying rack PRODUCTS. User to supply replacement before this slot is usable.
@@ -256,24 +258,26 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-22 (temp asset import — ADR-081)
-- **Game state:** Runnable. 0 boot errors (no scene files changed this session). 32 new assets available in game/assets/ after editor scan; none are wired to scenes yet.
+### Session end — 2026-05-22 (stump home placed — ADR-082)
+- **Game state:** Runnable. 0 boot errors. `StumpHome001` AnimatedSprite2D placed at (13, 311) in world.tscn, idle animation looping, door_open wired but not yet triggered. User also placed bushes in scene this session (not tracked by Claude).
 - **Changes this session:**
-  - **Grove dwellings:** 8 PNGs → `game/assets/structures/grove/`. Includes `stump_door_twisted` (48×48, rune-carved entrance), `stump_home_hanging_post`, `stump_home_stone_well`, `stump_dwelling_birdhouse`, `stump_home_log_door`, `stump_home_totem`, `stump_home_mushroom`, `stump_home_mossy_mound` (all 64×64).
-  - **Bushes:** 14 PNGs → `game/assets/nature/bushes/`. Range from `bush_round_small` through hedge segments to `bush_conical`/`bush_flowering`.
-  - **Stones:** 6 static PNGs + 6 animation subdirs (53 frames) → `game/assets/nature/rocks/`. Animated variants: `stone_cluster_a` (2× hit/9f each), `stone_pile_square` (hit/16f), `rock_jagged` (hit+break/9f each), `rock_slate_flat` (crumble/9f). Animation frame dirs follow existing tree pattern (`rock_name/anim_name/frame_000.png`).
-  - **Currency icons:** 4 PNGs → `game/assets/props/items/` — `currency_bill`, `currency_coin`, `currency_bills_wad`, `currency_coins_stack` (all 48×48).
+  - **Stump_Home_001 import:** `stump_home_001.png` + `stump_home_001_lights.png` + 16-frame door anim → `game/assets/structures/grove/`
+  - **StillPNGs import:** `stump_home_002–004.png` → `game/assets/structures/grove/`
+  - **SpriteFrames:** `res://resources/structures/stump_home_001_frames.tres` (idle 1fr + door_open 16fr@8fps)
+  - **World:** `StumpIdle` Sprite2D removed; `StumpHome001` AnimatedSprite2D placed at (13,311) scale=0.1953125
+  - **Archive + cleanup:** temp folders → `_archived/StumpHomes/`, temp dirs deleted
+  - **Canonical scale established:** 0.1953125 for all 128×128 grove dwellings
 - **Open issues (carried forward):**
   - `stump_y_offset=28.0` uniform across species — may need per-species tuning
   - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates causing ~34 editor warnings
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after confirming autoload post-restart
-  - `herb_bundle_dried.png` has no source art — `herb_plant_type_a.png` is placeholder; user to supply
-  - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call to delete
-  - Bucket animation variants not yet in `erik_sprites.tres` — falls back gracefully but no visual difference when carrying water
-  - Fir TrunkCollider `scale.y = -0.9366518` (negative) — suspicious, may cause distorted collision
-- **Next priorities:** Add bucket animation variants to erik_sprites.tres; teal house collision refinement; cave entrance rigging; wood icon (replace rock3.png placeholder); wire new grove/bush/stone assets into world scene.
-- **Available but unwired (updated):** grove dwellings (8 stump structures), bushes (14 variants), animated stones (6 variants), currency icons (4) — all new this session. Also: player_alt (59×49, 3-dir), purple_jack + grey_hoodie/rotations (8-dir NPCs), cannabis/herb plants (13+4 variants), garden dirt patches (5 static + 9-frame pulse), tileset_32x32 (66 tiles), tree_oak_green.png (static, no anims).
+  - `herb_bundle_dried.png` has no source art — `herb_plant_type_a.png` is placeholder
+  - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
+  - Bucket animation variants not yet in `erik_sprites.tres`
+  - Fir TrunkCollider `scale.y = -0.9366518` (negative) — may cause distorted collision
+- **Next priorities:** Stump shrine gameplay (drop mechanic, WorldDropItem, ShrineManager, trust system, ForestCreature); bucket animations; teal house collision; wood icon.
+- **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7 (stump_door_twisted etc.), bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tileset_32x32, tree_oak_green.png.
 
 ### Permissions Allowlist (as of 2026-05-15)
 All Godot MCP and filesystem MCP tools are pre-approved in `.claude/settings.json`. No prompts expected for any of these:

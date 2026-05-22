@@ -1099,6 +1099,22 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-082: Stump Home 001 — Asset Import, SpriteFrames, World Placement
+**Status:** Accepted
+**Date:** 2026-05-22
+**Context:** `temp/Stump_Home_001` contained a 128×128 stump house still PNG, a lights-on variant, and a 16-frame door-open/close animation. `temp/StillPNGs_Stump_Homes` contained 3 additional still variants. The world had a placeholder `StumpIdle` Sprite2D at (19, 318) using `stump_idle.png` — a simple round stump, not a dwelling. This session begins the stump shrine / grove gameplay system.
+**Decision:**
+1. Copied all assets to `game/assets/structures/grove/`: `stump_home_001.png`, `stump_home_001_lights.png`, `stump_home_002–004.png`, and `stump_home_001_door/frame_000–015.png`.
+2. Created `res://resources/structures/stump_home_001_frames.tres` — SpriteFrames with `idle` (1 frame, loop) and `door_open` (16 frames @ 8fps, no loop).
+3. Deleted `StumpIdle` Sprite2D from `world.tscn`, added `StumpHome001` AnimatedSprite2D at (13, 311), playing `idle`, SpriteFrames assigned.
+4. User manually resized in editor — canonical scale is `Vector2(0.1953125, 0.1953125)` for all 128×128 grove dwelling sprites (~25px world-space display).
+5. Both temp folders archived to `_archived/StumpHomes/` then deleted.
+**Rationale:** AnimatedSprite2D chosen (over Sprite2D) so `door_open` can be triggered by the TBD activation mechanic without swapping nodes. Scale derived by user visual judgement against existing world objects.
+**Consequences:** `door_open` animation is wired but never triggered yet — activation mechanic is TBD. `stump_home_002–004.png` are imported but not placed. All stump home / grove dwelling assets placed henceforth must use scale 0.1953125.
+**Testing:** Playtested — stump home visible at lower-left grove position, idle animation running, no regressions in farming/chop systems. ✅
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1228,3 +1244,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-21 | Tree scale +20% (0.625→0.75 TreeSprite, 0.125→0.15 StumpSprite all three species). y_sort_offset corrected 36→12 (formula: stump_y_offset − player_half_height = 28 − 16 = 12; player feet reach trunk base = transition point). Left-click tree chop added to world.gd: _on_right_click detects choppable_trees within 35px and sets nav target + pending interact; _do_nav_interact now shows blocked toast. Godot editor cache lesson: open_scene alone does not flush runtime resource cache — reload_project required. ADR-079 added. |
 | 2026-05-21 | Stump colliders added to pine/maple/fir tree scenes (CircleShape2D r=7, disabled at start, enabled on fall-complete). choppable_tree.gd: _stump_col @onready, position set to stump_y_offset in _ready(), toggled in FALLING→STUMP transition. Log1 and all components (Shadow, TreeCollider, CollisionShape2D, exclusive ext_resource, exclusive sub_resource) removed from world.tscn. ADR-080 added. |
 | 2026-05-22 | Temp asset batch imported with descriptive names. 4 categories from temp/: 8 grove stump dwellings → game/assets/structures/grove/; 14 bush variants → game/assets/nature/bushes/; 6 stone variants + 6 animation dirs (53 frames total) → game/assets/nature/rocks/; 4 currency UI icons → game/assets/props/items/. All machine-generated folder/file names replaced with descriptive snake_case. ADR-081 added. |
+| 2026-05-22 | Stump_Home_001 + StillPNGs_Stump_Homes imported, wired, placed. 5 stills (001–004 + lights variant) + 16-frame door animation copied to game/assets/structures/grove/. SpriteFrames resource stump_home_001_frames.tres created (idle 1fr + door_open 16fr@8fps). StumpIdle Sprite2D replaced with StumpHome001 AnimatedSprite2D at (13,311). Canonical scale 0.1953125 for all 128×128 grove dwellings established by user. Both temp folders archived to _archived/StumpHomes/ then deleted. ADR-082 added. |
