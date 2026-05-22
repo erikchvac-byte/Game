@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Stump_Home_001 placed in world (2026-05-22, ADR-082). `stump_home_001.png` + lights variant + 16-frame door animation imported to `game/assets/structures/grove/`. `res://resources/structures/stump_home_001_frames.tres` created (idle + door_open). `StumpIdle` Sprite2D replaced with `StumpHome001` AnimatedSprite2D at (13, 311). Canonical scale = 0.1953125 for all 128×128 grove dwellings. Temp folders archived to `_archived/StumpHomes/` and deleted. Playtested ✅.
+- **Last completed:** ForestCreature Y-sort + flee polish (2026-05-22, ADR-083). `y_sort_offset = 11` set on ForestCreature in world.tscn (sorts at feet). `_player` retyped `CharacterBody2D` in forest_creature.gd. Flee: approach detection (`_player.velocity.dot(flee_dir) > 8`), 1.4× speed when actively chased, 35% upward bias toward northern tree cover. Occluded-behind-pine confirmed. Player scale = 0.34375 (22px). Playtested ✅.
+- **Previous (2026-05-22):** Stump_Home_001 placed in world (ADR-082). `stump_home_001.png` + lights variant + 16-frame door animation imported to `game/assets/structures/grove/`. `res://resources/structures/stump_home_001_frames.tres` created (idle + door_open). `StumpIdle` Sprite2D replaced with `StumpHome001` AnimatedSprite2D at (13, 311). Canonical scale = 0.1953125 for all 128×128 grove dwellings. Temp folders archived to `_archived/StumpHomes/` and deleted. Playtested ✅.
 - **Previous (2026-05-21):** Stump colliders + Log1 removal (ADR-080). CircleShape2D (r=7) StumpCollider added to pine/maple/fir .tscn files; disabled at start, enabled on FALLING→STUMP. Player stops exactly at stump radius on approach (gap=13 = r6+r7). Log1 (Sprite2D + Shadow + TreeCollider + CollisionShape2D + 2 exclusive resources) deleted from world.tscn cleanly. Tree scenes are fully self-contained prefabs — drag from FileSystem to place. Playtested ✅.
 - **Previous (2026-05-21):** Tree scale +20%, y_sort fix, left-click chop (ADR-079). TreeSprite 0.625→0.75, StumpSprite 0.125→0.15. y_sort_offset corrected 36→12 (formula: stump_y_offset − player_half_height = 28 − 16). Left-click on any tree now navigates + interacts (world.gd `_on_right_click` tree detection, `_do_nav_interact` blocked toast). Playtested ✅.
 - **Previous (2026-05-21):** Farming system — 6 regression fixes (ADR-078). Well animation reset reliable, loop disabled, correct blocked messages per interactable, bucket anim fallback, plant fps guard. Full well→plant×3→harvest loop verified repeatable indefinitely. Playtested ✅.
@@ -258,15 +259,12 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-22 (stump home placed — ADR-082)
-- **Game state:** Runnable. 0 boot errors. `StumpHome001` AnimatedSprite2D placed at (13, 311) in world.tscn, idle animation looping, door_open wired but not yet triggered. User also placed bushes in scene this session (not tracked by Claude).
+### Session end — 2026-05-22 (ForestCreature Y-sort + flee — ADR-083)
+- **Game state:** Runnable. 0 boot errors. Stump shrine system fully wired (WorldDropItem, ShrineManager, StumpShrine interactable, ForestCreature). Player = 22px (scale 0.34375). ForestCreature = 22px (scale 0.177). ForestCreature now hides behind trees via Y-sort; flee speed boosts when player actively chases.
 - **Changes this session:**
-  - **Stump_Home_001 import:** `stump_home_001.png` + `stump_home_001_lights.png` + 16-frame door anim → `game/assets/structures/grove/`
-  - **StillPNGs import:** `stump_home_002–004.png` → `game/assets/structures/grove/`
-  - **SpriteFrames:** `res://resources/structures/stump_home_001_frames.tres` (idle 1fr + door_open 16fr@8fps)
-  - **World:** `StumpIdle` Sprite2D removed; `StumpHome001` AnimatedSprite2D placed at (13,311) scale=0.1953125
-  - **Archive + cleanup:** temp folders → `_archived/StumpHomes/`, temp dirs deleted
-  - **Canonical scale established:** 0.1953125 for all 128×128 grove dwellings
+  - **forest_creature.gd:** `_player` retyped `CharacterBody2D`. Added `APPROACH_FLEE_MULT=1.4`, `APPROACH_UPWARD_BIAS=0.35`, `APPROACH_VEL_THRESHOLD=8.0`. Flee branch detects player approach via velocity dot product; boosts speed 1.4× and adds upward bias when chased.
+  - **world.tscn:** `y_sort_offset = 11` added to `ForestCreature` node.
+  - **Player scale:** `AnimatedSprite2D scale = Vector2(0.34375, 0.34375)` (22px tall, set earlier in session).
 - **Open issues (carried forward):**
   - `stump_y_offset=28.0` uniform across species — may need per-species tuning
   - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning
@@ -276,8 +274,8 @@
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
   - Bucket animation variants not yet in `erik_sprites.tres`
   - Fir TrunkCollider `scale.y = -0.9366518` (negative) — may cause distorted collision
-- **Next priorities:** Stump shrine gameplay (drop mechanic, WorldDropItem, ShrineManager, trust system, ForestCreature); bucket animations; teal house collision; wood icon.
-- **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7 (stump_door_twisted etc.), bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tileset_32x32, tree_oak_green.png.
+- **Next priorities:** Stump shrine trust progression (visual stump evolution 5 states, trust display); bucket animations; teal house collision; wood icon.
+- **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tileset_32x32, tree_oak_green.png.
 
 ### Permissions Allowlist (as of 2026-05-15)
 All Godot MCP and filesystem MCP tools are pre-approved in `.claude/settings.json`. No prompts expected for any of these:

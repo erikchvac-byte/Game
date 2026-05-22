@@ -19,6 +19,9 @@
 [ext_resource type="Texture2D" uid="uid://3xu4b2hq82qi" path="res://assets/nature/bushes/bush_round_tall.png" id="67_h4nnu"]
 [ext_resource type="Texture2D" uid="uid://b6t5yulg5di2g" path="res://assets/nature/bushes/bush_wild_scraggly.png" id="68_houwb"]
 [ext_resource type="PackedScene" uid="uid://bmdshivd0nhab" path="res://scenes/interactables/trees/fir_tree.tscn" id="68_xmbla"]
+[ext_resource type="Script" uid="uid://cp78hu25e8wku" path="res://World/StumpShrine/stump_shrine.gd" id="69_h4nnu"]
+[ext_resource type="Script" uid="uid://blb55d2t8741v" path="res://World/ForestCreature/forest_creature.gd" id="70_houwb"]
+[ext_resource type="Texture2D" uid="uid://cwyeihiapb88t" path="res://assets/nature/bushes/bush_dense_flat.png" id="71_houwb"]
 [ext_resource type="Texture2D" uid="uid://b6gp3wtyvi25x" path="res://assets/structures/shops/shop_bakery_open.png" id="bakery_open"]
 [ext_resource type="Texture2D" uid="uid://dcplhewp24tmq" path="res://assets/props/drying_rack/rack_new_empty.png" id="drack1_tex"]
 [ext_resource type="Script" uid="uid://23aaem0eoxrt" path="res://Interactables/drying_rack.gd" id="drack_script"]
@@ -775,7 +778,7 @@ position = Vector2(13, 311)
 scale = Vector2(0.1953125, 0.1953125)
 sprite_frames = ExtResource("64_32rkg")
 animation = &"idle"
-frame_progress = 0.24513042
+frame_progress = 0.5707702
 
 [node name="BushSparseFlat" type="Sprite2D" parent="." unique_id=1356826398]
 position = Vector2(404, 209)
@@ -794,4 +797,22 @@ texture = ExtResource("67_h4nnu")
 [node name="BushWildScraggly" type="Sprite2D" parent="." unique_id=1481937818]
 position = Vector2(419.00003, 219)
 scale = Vector2(1.3104957, 0.1887688)
+texture = ExtResource("68_houwb")
+
+[node name="StumpShrine" type="Node2D" parent="." unique_id=457654152]
+position = Vector2(13, 311)
+script = ExtResource("69_h4nnu")
+
+[node name="ForestCreature" type="CharacterBody2D" parent="." unique_id=243700899]
+position = Vector2(40, 320)
+script = ExtResource("70_houwb")
+
+[node name="BushDenseFlat" type="Sprite2D" parent="." unique_id=1043470036]
+position = Vector2(246, 87)
+scale = Vector2(0.7083333, 0.5625)
+texture = ExtResource("71_houwb")
+
+[node name="BushWildScraggly2" type="Sprite2D" parent="." unique_id=1851098037]
+position = Vector2(222, 96)
+scale = Vector2(0.7083332, 0.3541666)
 texture = ExtResource("68_houwb")

@@ -1115,6 +1115,22 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-083: ForestCreature Y-Sort Depth Sorting + Flee Behavior Polish
+**Status:** Accepted
+**Date:** 2026-05-22
+**Context:** The ForestCreature (hobo man, 22px tall at scale 0.177) had no `y_sort_offset`, so it always sorted at its node origin rather than its ground contact point. This caused it to render in front of trees even when it was visually behind them. Additionally, the flee behavior was purely reactive (direct away from player at constant speed) with no differentiation between a stationary player nearby vs. a player actively chasing.
+**Decision:**
+1. Added `y_sort_offset = 11` to the `ForestCreature` node in `world.tscn` (half of 22px visual height → sorts at feet).
+2. Retyped `_player` from `Node2D` to `CharacterBody2D` in `forest_creature.gd` to enable clean `.velocity` access without dynamic dispatch.
+3. Added approach detection: `player_approaching = _player.velocity.dot(flee_dir) > 8.0` — true when player is actively moving toward the creature.
+4. Speed boost when chased: `APPROACH_FLEE_MULT = 1.4` (34 → ~48px/s), normal speed when player is stationary nearby.
+5. Upward bias when chased: flee direction gets a `Vector2(0, -0.35)` component added then renormalized — pushes creature toward the northern tree line where it can hide.
+**Rationale:** `y_sort_offset` is a .tscn-only serialization field in Godot 4.6.2 — cannot be set via GDScript at runtime; must be written directly in the scene file. The 11px offset matches the visual half-height so sort transitions feel correct as the creature crosses a tree's sort threshold. The upward bias is subtle enough not to override the away-from-player direction but meaningfully favors heading toward cover. 1.4× speed avoids a "teleport" feel while still feeling like genuine flight.
+**Consequences:** Creature now disappears behind trees when its sort key falls below the tree's (e.g., creature at local y=158+11=169 < pine at y=165+12=177). Upward bias works best with the current tree cluster north of the creature's spawn area — if the world layout changes, the bias direction may need revisiting.
+**Testing:** Frozen creature at pine trunk (local y=158) confirmed occluded by pine (local y=165). Player at local y=208 remains visible in front of same pine. Clean boot, no parse errors. Flee triggers and creature runs north. ✅
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1245,3 +1261,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-21 | Stump colliders added to pine/maple/fir tree scenes (CircleShape2D r=7, disabled at start, enabled on fall-complete). choppable_tree.gd: _stump_col @onready, position set to stump_y_offset in _ready(), toggled in FALLING→STUMP transition. Log1 and all components (Shadow, TreeCollider, CollisionShape2D, exclusive ext_resource, exclusive sub_resource) removed from world.tscn. ADR-080 added. |
 | 2026-05-22 | Temp asset batch imported with descriptive names. 4 categories from temp/: 8 grove stump dwellings → game/assets/structures/grove/; 14 bush variants → game/assets/nature/bushes/; 6 stone variants + 6 animation dirs (53 frames total) → game/assets/nature/rocks/; 4 currency UI icons → game/assets/props/items/. All machine-generated folder/file names replaced with descriptive snake_case. ADR-081 added. |
 | 2026-05-22 | Stump_Home_001 + StillPNGs_Stump_Homes imported, wired, placed. 5 stills (001–004 + lights variant) + 16-frame door animation copied to game/assets/structures/grove/. SpriteFrames resource stump_home_001_frames.tres created (idle 1fr + door_open 16fr@8fps). StumpIdle Sprite2D replaced with StumpHome001 AnimatedSprite2D at (13,311). Canonical scale 0.1953125 for all 128×128 grove dwellings established by user. Both temp folders archived to _archived/StumpHomes/ then deleted. ADR-082 added. |
+| 2026-05-22 | ForestCreature y_sort_offset=11 set in world.tscn (sorts at feet). _player retyped CharacterBody2D. Flee: approach detection (velocity dot > 8), 1.4× speed boost when chased, 35% upward bias toward tree cover. Confirmed occluded by pine when sort key < tree's. ADR-083 added. |
