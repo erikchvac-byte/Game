@@ -17,7 +17,7 @@ shape = SubResource("CapsuleShape2D_4ntmi")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1104767735]
 texture_filter = 1
-scale = Vector2(0.34375, 0.34375)
+scale = Vector2(0.5, 0.5)
 sprite_frames = ExtResource("2_erik")
 animation = &"idle_down"
 script = ExtResource("3_btcbx")
