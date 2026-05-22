@@ -1084,6 +1084,21 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-081: Temp Asset Import — Grove Dwellings, Bushes, Stones, UI Currency Icons
+**Status:** Accepted
+**Date:** 2026-05-22
+**Context:** Four PixelLab-generated asset batches were sitting in `temp/` with machine-generated folder names (UUID fragments, prompt-truncated strings like `Top-down_view_of_tree_stump_ho_2`). The assets were not in `game/assets/` so Godot could not import or reference them.
+**Decision:** Viewed each PNG visually to identify content, then copied to descriptive snake_case paths under `game/assets/`:
+- 8 stump dwelling sprites → `game/assets/structures/grove/` (`stump_door_twisted`, `stump_home_hanging_post`, `stump_home_stone_well`, `stump_dwelling_birdhouse`, `stump_home_log_door`, `stump_home_totem`, `stump_home_mushroom`, `stump_home_mossy_mound`)
+- 14 bush variants → `game/assets/nature/bushes/` (`bush_round_small`, `bush_hedge_wide`, `bush_dense_flat`, `bush_round_tall`, `bush_round_large`, `bush_wild_uneven`, `bush_wide_spreading`, `bush_hedge_block`, `bush_wild_scraggly`, `bush_hedge_low`, `bush_flowering`, `bush_conical`, `bush_sparse_flat`, `bush_hedge_corner`)
+- 6 stone static sprites + 6 animation subdirs (53 frames) → `game/assets/nature/rocks/` (`stone_cluster_a` with `hit/`×9f + `hit_2/`×9f; `stone_pile_square` with `hit/`×16f; `rock_jagged` with `hit/`×9f + `break/`×9f; `rock_slate_flat` with `crumble/`×9f; `boulder_smooth`; `stone_pile_debris`)
+- 4 currency UI icons → `game/assets/props/items/` (`currency_bill`, `currency_coin`, `currency_bills_wad`, `currency_coins_stack`)
+**Rationale:** Names derived from visual content inspection, not AI-generated prompt names. Animation frames follow the existing tree animation directory pattern (`stone_cluster_a/hit/frame_000.png`). `temp/` folder left untouched.
+**Consequences:** 32 new assets auto-import into Godot on next editor scan. None are wired into scenes yet. Animated stones require SpriteFrames `.tres` resources before use. `stump_door_twisted.png` is 48×48 (distinct entrance style); all other grove items are 64×64. Currency icons are 48×48, suitable for hotbar/UI use.
+**Testing:** File presence confirmed via PowerShell copy output (0 errors, all 32 files + 53 animation frames copied).
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1212,3 +1227,4 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-21 | Farming system — 6 regression fixes. (1) WellWater loop:true→false (world.tscn). (2) well.gd: _reset_sprite() using play("default")→stop()→frame=0 reliably clears backwards-play flag; removed dead animation_finished handler. (3) world.gd: blocked_message() dispatch replaces hardcoded "Equip axe first (C)" for all interactables. (4) plant.gd: get_animation_speed uses $PurplePlant.animation (not hardcoded "default") + fps<=0 fallback=8.0. (5) player_animation.gd: has_animation() guard before play(); _bucket variant falls back to base animation instead of freezing. Full loop (well→plant×3→drying rack) verified repeatable indefinitely. ADR-078 added. |
 | 2026-05-21 | Tree scale +20% (0.625→0.75 TreeSprite, 0.125→0.15 StumpSprite all three species). y_sort_offset corrected 36→12 (formula: stump_y_offset − player_half_height = 28 − 16 = 12; player feet reach trunk base = transition point). Left-click tree chop added to world.gd: _on_right_click detects choppable_trees within 35px and sets nav target + pending interact; _do_nav_interact now shows blocked toast. Godot editor cache lesson: open_scene alone does not flush runtime resource cache — reload_project required. ADR-079 added. |
 | 2026-05-21 | Stump colliders added to pine/maple/fir tree scenes (CircleShape2D r=7, disabled at start, enabled on fall-complete). choppable_tree.gd: _stump_col @onready, position set to stump_y_offset in _ready(), toggled in FALLING→STUMP transition. Log1 and all components (Shadow, TreeCollider, CollisionShape2D, exclusive ext_resource, exclusive sub_resource) removed from world.tscn. ADR-080 added. |
+| 2026-05-22 | Temp asset batch imported with descriptive names. 4 categories from temp/: 8 grove stump dwellings → game/assets/structures/grove/; 14 bush variants → game/assets/nature/bushes/; 6 stone variants + 6 animation dirs (53 frames total) → game/assets/nature/rocks/; 4 currency UI icons → game/assets/props/items/. All machine-generated folder/file names replaced with descriptive snake_case. ADR-081 added. |
