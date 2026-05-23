@@ -1277,9 +1277,32 @@ With old offset=12: transition at player.y = tree.y − 2 (2px north of tree cen
 
 ---
 
+## ADR-088: Tree y_sort_offset Persistence Fix + Value Calibration — 28 → 22
+**Status:** Accepted
+**Date:** 2026-05-23
+**Context:** After ADR-087 set y_sort_offset=28 as instance overrides in world.tscn, the editor stripped those overrides on every resave (node move, MCP save_scene, etc.), silently resetting all trees to offset=0. The fix-strips-on-save loop was the root persistence bug. Additionally, empirical testing showed offset=28 placed the transition 5px too far south — player was still behind the tree at y=190 (feet at y=204, visually at the lower branch tips) when they should have been in front.
+
+**Decision:**
+1. Bake `y_sort_offset = 22` directly into the three base tree .tscn files (`pine_tree.tscn`, `maple_tree.tscn`, `fir_tree.tscn`) on the root node. Instance overrides in world.tscn are never written by the editor; values in the base scene survive every resave permanently.
+2. Remove the spurious `y_sort_enabled = true` instance override on TreePine1 in world.tscn. (This sorted TreePine1's own children against each other, which was meaningless and caused StumpSprite to render in front of TreeSprite during the chopping transition.)
+3. Value changed 28 → 22: transition fires when player feet reach ~y=203 (lower visible branch tips), not y=209 (physical trunk base as positioned by stump_y_offset). The 6px difference corresponds to the gap between the stump sprite center placement and the actual lowest visible canopy pixel.
+
+**Rationale:** Instance overrides in world.tscn are always at risk of being stripped — any editor operation that rewrites the scene file loses overrides that don't have a matching property in the base scene. The only durable solution is to own the value in the base scene. Value 22 confirmed empirically: player at y=175 fully behind tree ✅, y=185 correctly behind (mid-branch zone) ✅, y=190 fully in front ✅.
+
+**Key discovery:** `y_sort_offset` is NOT accessible via GDScript `get()` at runtime (returns null) — it is an engine-internal serialization field applied at scene load. `pine.y_sort_offset` raises a runtime error. Do not try to read or set it in execute_game_script; verify by playtesting positions.
+
+**Consequences:** All 12 choppable tree instances in world.tscn now inherit offset=22 automatically. No per-instance overrides needed. Future tree placements (drag from FileSystem) get the correct offset for free.
+
+**Files changed:** `game/scenes/interactables/trees/pine_tree.tscn`, `maple_tree.tscn`, `fir_tree.tscn` — root node `y_sort_offset = 22` baked in. `game/World/world.tscn` — `y_sort_enabled = true` removed from TreePine1 instance override.
+
+**Testing:** y=175 → behind ✅; y=185 → behind (mid-branch, partially visible through transparency — correct) ✅; y=190 → fully in front ✅. Transition at player.y≈189, feet at y≈203. ✅
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-23 | ADR-088: y_sort_offset persistence fix — baked into base tree scenes (not world.tscn instance overrides). Value calibrated 28→22 (lower branch tips, not trunk base). Removed y_sort_enabled=true from TreePine1 override. |
 | 2026-05-23 | ADR-087: Fixed tree y_sort_offset formula error — all 12 choppable trees 12→28. Player/ForestCreature now correctly render behind canopy until trunk base. |
 | 2026-05-22 | ADR-086: Full sprite/collision/camera audit. Fixed Fir TrunkCollider negative scale, Player y_sort_offset 16→14, camera zoom 1.0→0.87. Documented correct sprite sizes (56×56 player, 124×124 ForestCreature). |
 | 2026-05-22 | ADR-085: Restored all 25 y_sort_offset values in world.tscn (lost since ADR-073, overwrites by subsequent sessions). All depth transitions now correct. |

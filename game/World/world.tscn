@@ -383,7 +383,6 @@ script = ExtResource("4_worldgd")
 
 [node name="Well" type="Node2D" parent="." unique_id=770000001]
 position = Vector2(231, 75)
-y_sort_offset = 24
 script = ExtResource("well_script")
 
 [node name="WellWater" type="AnimatedSprite2D" parent="Well" unique_id=770063336]
@@ -421,7 +420,6 @@ tile_set = ExtResource("1_62w18")
 light_mask = 2
 texture_filter = 1
 position = Vector2(112, 80)
-y_sort_offset = 35
 scale = Vector2(0.5, 0.5)
 sprite_frames = SubResource("BakeryFrames")
 animation = &"idle"
@@ -456,11 +454,9 @@ shape = SubResource("DoorArea")
 
 [node name="Player" parent="." unique_id=1585494498 instance=ExtResource("8_player")]
 position = Vector2(112, 200)
-y_sort_offset = 14
 
 [node name="Plant" type="Node2D" parent="." unique_id=280000001]
 position = Vector2(173, 109)
-y_sort_offset = 24
 script = ExtResource("plant_script")
 
 [node name="PurplePlant" type="AnimatedSprite2D" parent="Plant" unique_id=285786784]
@@ -495,7 +491,6 @@ cast_length = 10.0
 [node name="DryingRack" type="Sprite2D" parent="." unique_id=2133297938]
 texture_filter = 1
 position = Vector2(175, 75)
-y_sort_offset = 30
 texture = ExtResource("drack1_tex")
 script = ExtResource("drack_script")
 
@@ -513,7 +508,6 @@ cast_length = 18.0
 
 [node name="Big Rock" type="Sprite2D" parent="." unique_id=1264295051]
 position = Vector2(36, 131)
-y_sort_offset = 31
 texture = ExtResource("45_8kjm2")
 
 [node name="Shadow" type="Node2D" parent="Big Rock" unique_id=2101001005]
@@ -533,7 +527,6 @@ shape = SubResource("RectangleShape2D_dlis5")
 
 [node name="TreeWillowWeeping" type="Node2D" parent="." unique_id=1732131370]
 position = Vector2(467, 97)
-y_sort_offset = 53
 scale = Vector2(2.975, 2.5)
 script = ExtResource("willow_tree_script")
 
@@ -574,7 +567,6 @@ shape = SubResource("CircleShape2D_h4hkh")
 [node name="HouseTwostoryTeal" type="AnimatedSprite2D" parent="." unique_id=1938115166]
 texture_filter = 1
 position = Vector2(534, 75)
-y_sort_offset = 42
 scale = Vector2(0.6, 0.6)
 sprite_frames = ExtResource("45_h4hkh")
 animation = &"idle"
@@ -605,7 +597,6 @@ cast_length = 30.0
 [node name="BigMushroomStump" type="Sprite2D" parent="." unique_id=1859861714]
 visible = false
 position = Vector2(472, 141)
-y_sort_offset = 22
 texture = ExtResource("49_h4hkh")
 
 [node name="Shadow" type="Node2D" parent="BigMushroomStump" unique_id=1480046185]
@@ -651,7 +642,6 @@ texture_scale = 1.6
 
 [node name="GreyHoodie" type="Node2D" parent="." unique_id=1551921560]
 position = Vector2(534, 158)
-y_sort_offset = 19
 script = ExtResource("46_xu702")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="GreyHoodie" unique_id=132381470]
@@ -665,7 +655,6 @@ frame_progress = 0.74741143
 
 [node name="Cave entrance" type="Sprite2D" parent="." unique_id=1053984708]
 position = Vector2(31, 407)
-y_sort_offset = 15
 texture = ExtResource("48_dlis5")
 
 [node name="BorderTop" type="StaticBody2D" parent="." unique_id=652209068]
@@ -719,11 +708,11 @@ scale = Vector2(1.3125, 1)
 texture = ExtResource("67_2hrtt")
 
 [node name="Tile008" type="Sprite2D" parent="Tile007/Tile008" unique_id=529146155]
-position = Vector2(-22.85714, 1)
+position = Vector2(-22.857138, 4)
 texture = ExtResource("67_2hrtt")
 
 [node name="Tile009" type="Sprite2D" parent="Tile007/Tile008" unique_id=123925640]
-position = Vector2(-41.523808, -1)
+position = Vector2(-50.285713, 4)
 scale = Vector2(1.0238087, 1)
 texture = SubResource("CompressedTexture2D_oyb3p")
 
@@ -748,57 +737,54 @@ scale = Vector2(1.34375, 1)
 texture = ExtResource("67_2hrtt")
 
 [node name="TreePine1" parent="." unique_id=467155269 instance=ExtResource("62_5aim4")]
-y_sort_enabled = true
-position = Vector2(55, 165)
-y_sort_offset = 28
+position = Vector2(91, 181)
 
 [node name="TreeMaple1" parent="." unique_id=2019391354 instance=ExtResource("66_2j1j3")]
+visible = false
 position = Vector2(200, 162)
-y_sort_offset = 28
 
 [node name="TreeFir1" parent="." unique_id=442005024 instance=ExtResource("68_xmbla")]
+visible = false
 position = Vector2(50, 240)
-y_sort_offset = 28
 
 [node name="MapleTree" parent="." unique_id=300161114 instance=ExtResource("66_2j1j3")]
+visible = false
 position = Vector2(236, 189)
-y_sort_offset = 28
 
 [node name="MapleTree2" parent="." unique_id=445774007 instance=ExtResource("66_2j1j3")]
+visible = false
 position = Vector2(196, 213)
-y_sort_offset = 28
 
 [node name="FirTree" parent="." unique_id=1677230814 instance=ExtResource("68_xmbla")]
+visible = false
 position = Vector2(235, 237)
-y_sort_offset = 28
 
 [node name="FirTree2" parent="." unique_id=731925772 instance=ExtResource("68_xmbla")]
+visible = false
 position = Vector2(160, 180)
-y_sort_offset = 28
 
 [node name="PineTree" parent="." unique_id=9972895 instance=ExtResource("62_5aim4")]
+visible = false
 position = Vector2(163, 228)
-y_sort_offset = 28
 
 [node name="PineTree2" parent="." unique_id=43081839 instance=ExtResource("62_5aim4")]
+visible = false
 position = Vector2(28, 204)
-y_sort_offset = 28
 
 [node name="PineTree3" parent="." unique_id=1639860943 instance=ExtResource("62_5aim4")]
+visible = false
 position = Vector2(28, 275)
-y_sort_offset = 28
 
 [node name="PineTree4" parent="." unique_id=148670934 instance=ExtResource("62_5aim4")]
+visible = false
 position = Vector2(62, 289)
-y_sort_offset = 28
 
 [node name="MapleTree3" parent="." unique_id=1867104290 instance=ExtResource("66_2j1j3")]
+visible = false
 position = Vector2(110, 263)
-y_sort_offset = 28
 
 [node name="StumpHome001" type="AnimatedSprite2D" parent="." unique_id=1028054031]
 position = Vector2(13, 311)
-y_sort_offset = 12
 scale = Vector2(0.1953125, 0.1953125)
 sprite_frames = ExtResource("64_32rkg")
 animation = &"idle"
@@ -829,7 +815,6 @@ script = ExtResource("69_h4nnu")
 
 [node name="ForestCreature" type="CharacterBody2D" parent="." unique_id=243700899]
 position = Vector2(40, 320)
-y_sort_offset = 11
 script = ExtResource("70_houwb")
 
 [node name="BushDenseFlat" type="Sprite2D" parent="." unique_id=1043470036]

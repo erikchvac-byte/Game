@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Tree y_sort_offset formula fix (2026-05-23, ADR-087). User confirmed player and ForestCreature still rendered in front of tree canopy after ADR-086. Root cause: ADR-079 formula `stump_y_offset − player_half_height = 28 − 16 = 12` was wrong — the subtraction is not part of the formula. Correct value = `stump_y_offset = 28` directly. Changed all 12 choppable tree instances in world.tscn from y_sort_offset=12 → 28. Verified: player hidden behind canopy at y=179, appears in front at y=181 (transition exactly at trunk base). ✅
+- **Last completed:** Tree y_sort_offset persistence fix + value calibration (2026-05-23, ADR-088). Root cause of the recurring loop: y_sort_offset was set as instance overrides in world.tscn, which the editor strips on every resave. Fix: baked y_sort_offset into base tree scenes (pine_tree.tscn, maple_tree.tscn, fir_tree.tscn) so it survives all editor operations. Also removed spurious `y_sort_enabled = true` from TreePine1 instance. Value calibrated 28→22 empirically: transition at player.y≈189 (feet at y≈203 = lower branch tips). Tests: y=175 fully behind ✅, y=185 correctly behind (mid-branch) ✅, y=190 fully in front ✅.
+- **Previous (2026-05-23):** Tree y_sort_offset formula fix (ADR-087). Root cause: ADR-079 formula `stump_y_offset − player_half_height = 28 − 16 = 12` was wrong. Correct value = `stump_y_offset = 28` directly. Changed all 12 choppable tree instances in world.tscn from 12→28. ✅
 - **Previous (2026-05-22):** Full sprite/collision/camera audit (ADR-086). Fixed 3 bugs: (1) Fir TrunkCollider scale.y=-0.94 flipped physics — reset to (1,1); (2) Player y_sort_offset 16→14 (sprite is 56×56 at scale 0.5 = 28px, half=14); (3) Camera zoom (0.87,0.87) lost from player.tscn — restored. Playtested ✅.
 - **Previous (2026-05-22):** Y-sort offset full restoration — all 25 world objects (ADR-085). Audit found that every y_sort_offset value from ADR-073 (and trees from ADR-079) had been silently lost from world.tscn across sessions ADR-074→084. Only ForestCreature(=11) remained. Restored: Well(24), PlayerHome(35), Player(16), Plant(24), DryingRack(30), Big Rock(31), WillowWeeping(53), HouseTwostoryTeal(42), BigMushroomStump(22), GreyHoodie(19), CaveEntrance(15), StumpHome001(12), all 12 choppable trees(12). Depth transitions verified: player hidden behind pine at y=155 (sort_y 171 < 177), visible at y=182 (sort_y 198 > 177). Playtested ✅.
 - **Previous (2026-05-22):** ForestCreature tree-hopping + collision/y_sort fixes (ADR-084). Full rewrite of `forest_creature.gd` — random wander replaced with `TREE_HOP → HIDING → TREE_HOP` state machine. 13 trees gathered at runtime (choppable_trees group + name scan). Hops prefer trees within 150px; flee steers into nearest tree in flee direction. `y_sort_offset = 11` correctly written to world.tscn (was absent despite ADR-083). Collision fixed: `radius=4 height=4 pos.y=3` (12px total, down from 20px). Playtested ✅.
@@ -263,17 +264,19 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-23 (Tree y_sort_offset formula fix — ADR-087)
-- **Game state:** Runnable. 0 boot errors. All 25 world objects depth-sort correctly. Player and ForestCreature correctly render behind tree canopy until their feet pass the trunk base. ✅
-- **y_sort_offset formula (AUTHORITATIVE):**
+### Session end — 2026-05-23 (Tree y_sort_offset persistence fix — ADR-088)
+- **Game state:** Runnable. 0 boot errors. All 25 world objects depth-sort correctly. y_sort_offset = 22 baked into all three base tree scenes — permanent, survives every editor resave. ✅
+- **y_sort_offset formula (AUTHORITATIVE — updated from ADR-088):**
   - **Player/creatures:** `offset = half_height_px` (player=14, ForestCreature=11). Sort key = their feet.
-  - **Trees:** `offset = stump_y_offset = 28`. Sort key = trunk base. Do NOT subtract player_half_height.
+  - **Trees (choppable pine/maple/fir):** `offset = 22`. Sort key = lower visible branch tips. **NOT** stump_y_offset=28 (that's the stump sprite placement, ~6px below the actual lowest branch pixel). Do NOT subtract player_half_height.
   - **Buildings:** `offset = door_base_y - building.position.y` (manual measurement).
   - Rule: `node.position.y + node.y_sort_offset` = the world-y line where "you are now in front of this object".
-- **Changes this session:** `world.tscn` — all 12 choppable tree instances y_sort_offset: 12 → 28.
+  - **CRITICAL:** `y_sort_offset` is NOT accessible via GDScript `get()` at runtime (returns null, raises error). It is an engine-internal serialization field read from .tscn at load. Do NOT try to read it in execute_game_script. Verify by playtesting.
+  - **CRITICAL:** Set y_sort_offset in the BASE SCENE, not as instance overrides in world.tscn. Overrides are stripped on every editor resave. Base scene values are permanent.
+- **Changes this session:** `pine_tree.tscn`, `maple_tree.tscn`, `fir_tree.tscn` — root node `y_sort_offset = 22` baked in. `world.tscn` — `y_sort_enabled = true` removed from TreePine1 instance override.
 - **Open issues (carried forward):**
   - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning to confirm door threshold
-  - `stump_y_offset=28.0` uniform across pine/maple/fir — may need per-species tuning
+  - `stump_y_offset=28.0` uniform across pine/maple/fir — may need per-species tuning (offset=22 was calibrated on pine)
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates causing ~34 editor warnings
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
   - `herb_bundle_dried.png` has no source art — placeholder in use
