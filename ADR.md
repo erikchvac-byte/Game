@@ -1146,9 +1146,40 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-085: Y-Sort Offset Full Restoration — All 25 World Objects
+**Status:** Accepted
+**Date:** 2026-05-22
+**Context:** Audit confirmed that all y_sort_offset values set in ADR-073 (and trees in ADR-079) had been silently lost from world.tscn. Every subsequent session that rewrote or heavily edited world.tscn (ADR-074 through ADR-084) overwrote the file without preserving y_sort_offset fields. Only ForestCreature (=11, set in the previous session) remained. Result: all 24 other world objects sorted at their node origin (y_sort_offset=0), causing wrong depth transitions — player appeared behind the bakery too soon, in front of trees too late, etc.
+**Decision:** Audit method: grep world.tscn for all `y_sort_offset` occurrences → found only 1 (ForestCreature). Cross-reference ADR-073/079 values against current node positions. Write all 25 y_sort_offset values directly to world.tscn (close-scene-first pattern via MCP open_scene).
+
+Values restored:
+| Node | position.y | y_sort_offset | sort_y | Source |
+|---|---|---|---|---|
+| Well | 75 | 24 | 99 | ADR-073 tested |
+| PlayerHome | 80 | 35 | 115 | ADR-073 tested |
+| Player (instanced) | 200 | 16 | 216 | ADR-073 tested |
+| Plant | 109 | 24 | 133 | ADR-073 |
+| DryingRack | 75 | 30 | 105 | ADR-073 + ADR-025 |
+| Big Rock | 131 | 31 | 162 | ADR-073 |
+| TreeWillowWeeping | 97 | 53 | 150 | ADR-073 tested |
+| HouseTwostoryTeal | 75 | 42 | 117 | ADR-073 estimate |
+| BigMushroomStump | 141 | 22 | 163 | ADR-073 |
+| GreyHoodie | 158 | 19 | 177 | ADR-073 |
+| Cave entrance | 407 | 15 | 422 | ADR-073 |
+| StumpHome001 | 311 | 12 | 323 | calculated (128px × 0.195 ≈ 25px, half=12) |
+| All 12 choppable trees | varies | 12 | varies | ADR-079 formula |
+| ForestCreature | 320 | 11 | 331 | ADR-083/084 (already set) |
+
+**Rationale:** y_sort_offset is a `.tscn`-only serialization field — cannot be set at runtime via GDScript (Godot 4.6.2). It must be written directly to world.tscn and is silently dropped any time the file is regenerated or rewritten. The fix uses the Edit tool on the raw .tscn file after closing the scene in the editor.
+**Consequences:** All 25 world objects now sort by their visual ground contact point. Any future world.tscn rewrite (via execute_editor_script PackedScene pattern or full file replacement) will lose these values again — must be reapplied. Adding new world objects requires explicitly setting y_sort_offset in the Inspector before committing.
+**Testing:** Playtested via MCP. Player teleported to local (55,155): hidden behind PineTree1 (sort_y 177 > player sort_y 171). Player teleported to (55,182): fully visible in front of same tree (player sort_y 198 > 177). Screenshot confirmed. 0 errors on boot. ✅
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-22 | ADR-085: Restored all 25 y_sort_offset values in world.tscn (lost since ADR-073, overwrites by subsequent sessions). All depth transitions now correct. |
 | 2026-04-25 | ADR created. Project scoped, Stage 1 plan approved. |
 | 2026-04-25 | MCP config corrected — using Godot MCP Pro Node.js bridge server. |
 | 2026-04-25 | Built custom MCP bridge (mcp-bridge/index.js) — original binary was missing. |

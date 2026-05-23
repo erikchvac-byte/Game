@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** ForestCreature tree-hopping + collision/y_sort fixes (2026-05-22, ADR-084). Full rewrite of `forest_creature.gd` — random wander replaced with `TREE_HOP → HIDING → TREE_HOP` state machine. 13 trees gathered at runtime (choppable_trees group + name scan). Hops prefer trees within 150px; flee steers into nearest tree in flee direction. `y_sort_offset = 11` correctly written to world.tscn (was absent despite ADR-083). Collision fixed: `radius=4 height=4 pos.y=3` (12px total, down from 20px). Playtested ✅.
+- **Last completed:** Y-sort offset full restoration — all 25 world objects (2026-05-22, ADR-085). Audit found that every y_sort_offset value from ADR-073 (and trees from ADR-079) had been silently lost from world.tscn across sessions ADR-074→084. Only ForestCreature(=11) remained. Restored: Well(24), PlayerHome(35), Player(16), Plant(24), DryingRack(30), Big Rock(31), WillowWeeping(53), HouseTwostoryTeal(42), BigMushroomStump(22), GreyHoodie(19), CaveEntrance(15), StumpHome001(12), all 12 choppable trees(12). Depth transitions verified: player hidden behind pine at y=155 (sort_y 171 < 177), visible at y=182 (sort_y 198 > 177). Playtested ✅.
+- **Previous (2026-05-22):** ForestCreature tree-hopping + collision/y_sort fixes (ADR-084). Full rewrite of `forest_creature.gd` — random wander replaced with `TREE_HOP → HIDING → TREE_HOP` state machine. 13 trees gathered at runtime (choppable_trees group + name scan). Hops prefer trees within 150px; flee steers into nearest tree in flee direction. `y_sort_offset = 11` correctly written to world.tscn (was absent despite ADR-083). Collision fixed: `radius=4 height=4 pos.y=3` (12px total, down from 20px). Playtested ✅.
 - **Previous (2026-05-22):** ForestCreature Y-sort + flee polish (ADR-083). `_player` retyped `CharacterBody2D`. Flee: approach detection, 1.4× speed when chased, 35% upward bias. Player scale = 0.5 (32px, original). Playtested ✅.
 - **Previous (2026-05-22):** Stump_Home_001 placed in world (ADR-082). `stump_home_001.png` + lights variant + 16-frame door animation imported to `game/assets/structures/grove/`. `res://resources/structures/stump_home_001_frames.tres` created (idle + door_open). `StumpIdle` Sprite2D replaced with `StumpHome001` AnimatedSprite2D at (13, 311). Canonical scale = 0.1953125 for all 128×128 grove dwellings. Temp folders archived to `_archived/StumpHomes/` and deleted. Playtested ✅.
 - **Previous (2026-05-21):** Stump colliders + Log1 removal (ADR-080). CircleShape2D (r=7) StumpCollider added to pine/maple/fir .tscn files; disabled at start, enabled on FALLING→STUMP. Player stops exactly at stump radius on approach (gap=13 = r6+r7). Log1 (Sprite2D + Shadow + TreeCollider + CollisionShape2D + 2 exclusive resources) deleted from world.tscn cleanly. Tree scenes are fully self-contained prefabs — drag from FileSystem to place. Playtested ✅.
@@ -260,26 +261,21 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-22 (ForestCreature tree-hopping + collision/y_sort — ADR-084)
-- **Game state:** Runnable. 0 boot errors. Player = 32px (scale 0.5). ForestCreature = 22px (scale 0.177). ForestCreature hops between 13 named tree nodes in the wooded cluster, hides at each for 0.7–2.2s, never reaches map border corners. Confirmed occluded by trees via y_sort.
+### Session end — 2026-05-22 (Y-sort full restore — ADR-085)
+- **Game state:** Runnable. 0 boot errors. All 25 world objects depth-sort correctly. Player = 32px (scale 0.5). ForestCreature = 22px (scale 0.177). Trees, bakery, teal house, well, NPC all sort at visual ground contact point. Playtest screenshots confirmed correct behind/in-front transitions at pine trunk baseline. ✅
 - **Changes this session:**
-  - **forest_creature.gd:** Full rewrite. State machine `TREE_HOP / HIDING / FLEE / TRUST_HOLD`. `_gather_trees()` collects 13 trees at runtime (choppable_trees group + World child name scan for Pine/Maple/Fir/Tree/Willow). `_pick_next_tree()` filters by border margin + 150px proximity preference. Flee steers toward nearest tree in flee direction. Old random wander removed entirely.
-  - **forest_creature.gd collision:** `radius=4 height=4 position.y=3` (12px total). Was `radius=5 height=10` (20px total — near the full sprite height, causing premature wall contacts).
-  - **world.tscn:** `y_sort_offset = 11` confirmed written (was absent despite ADR-083 noting it).
-- **ForestCreature tree-hop architecture notes:**
-  - Trees are `StaticBody2D` in world.tscn — gathered by name pattern at runtime, not a group. If new trees are added with different names, add the name keyword to `_gather_trees()` or put them in a "world_trees" group.
-  - `HOP_NEAR_RADIUS = 150` keeps hops tight within the main cluster. TreeWillowWeeping (467,97) is in the pool but rarely chosen (too far). Widen if needed.
-  - `ARRIVE_RADIUS = 12` — creature stops at 12px from tree origin. Tree origins are at trunk base, so this places the creature visually beside/behind the trunk.
+  - **world.tscn:** Restored 24 missing y_sort_offset values (all were lost since ADR-073; only ForestCreature=11 survived). Added: Well(24), PlayerHome(35), Player(16), Plant(24), DryingRack(30), BigRock(31), WillowWeeping(53), HouseTwostoryTeal(42), BigMushroomStump(22), GreyHoodie(19), CaveEntrance(15), StumpHome001(12), + all 12 choppable tree instances(12).
+- **y_sort_offset loss pattern (CRITICAL):** Any full rewrite or MCP-based regeneration of world.tscn silently drops y_sort_offset fields. Must be re-added manually via direct .tscn edit using close-scene-first pattern whenever world.tscn is rebuilt. Quick audit: `grep y_sort_offset world.tscn` should return 25 lines.
 - **Open issues (carried forward):**
-  - `stump_y_offset=28.0` uniform across species — may need per-species tuning
-  - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning
+  - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning to confirm door threshold
+  - `stump_y_offset=28.0` uniform across pine/maple/fir — may need per-species tuning via Inspector
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates causing ~34 editor warnings
-  - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after confirming autoload post-restart
+  - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
   - `herb_bundle_dried.png` has no source art — `herb_plant_type_a.png` is placeholder
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
   - Bucket animation variants not yet in `erik_sprites.tres`
   - Fir TrunkCollider `scale.y = -0.9366518` (negative) — may cause distorted collision
-- **Next priorities:** Stump shrine trust progression (visual stump evolution 5 states, trust display); bucket animations; teal house collision; wood icon.
+- **Next priorities:** Stump shrine trust progression (visual stump evolution 5 states, trust display); bucket animations; teal house collision tuning; wood icon.
 - **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tileset_32x32, tree_oak_green.png.
 
 ### Permissions Allowlist (as of 2026-05-15)
