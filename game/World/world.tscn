@@ -805,6 +805,7 @@ script = ExtResource("69_h4nnu")
 
 [node name="ForestCreature" type="CharacterBody2D" parent="." unique_id=243700899]
 position = Vector2(40, 320)
+y_sort_offset = 11
 script = ExtResource("70_houwb")
 
 [node name="BushDenseFlat" type="Sprite2D" parent="." unique_id=1043470036]

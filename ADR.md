@@ -1131,6 +1131,21 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 
 ---
 
+## ADR-084: ForestCreature Tree-Hopping Primary Movement
+**Status:** Accepted
+**Date:** 2026-05-22
+**Context:** ForestCreature was using pure random wander (`randf() * TAU` → new direction every 1.5–4s), which sent it to map edges and open terrain instead of keeping it in the wooded cluster. The stated requirement is: tree-hopping as the primary movement pattern — dart to a tree, hide briefly, pick the next tree. Edge-avoidance should be a consequence of tree placement, not a dedicated behavior.
+**Decision:**
+1. Replaced random wander with a 3-state machine: `TREE_HOP` (moving toward target tree) → `HIDING` (0.7–2.2s pause at tree) → `TREE_HOP`.
+2. `_gather_trees()` runs deferred in `_ready()` — collects all tree nodes in two passes: `get_nodes_in_group("choppable_trees")` + name-pattern scan of World's children for "Tree/Pine/Maple/Fir/Willow". Result: 13 trees at runtime.
+3. `_pick_next_tree()` filters to trees inside global camera bounds minus 20px margin, then prefers trees within 150px (`HOP_NEAR_RADIUS`). Falls back to any valid tree if none are close.
+4. Flee behavior updated: steers toward nearest tree in the flee direction (within 80px, dot ≥ 0.2) so the creature runs for cover rather than open terrain.
+**Rationale:** Trees are static-body nodes already present in the scene; scanning for them by group + name pattern avoids requiring all tree scenes to add a new group registration. The 150px near-preference keeps hops short (within the dense cluster) without ever forcing a destination. Border-safety is implicit — there are no trees near map edges.
+**Consequences:** Creature always stays in the wooded area as long as trees exist there. If all trees are chopped, creature has no targets and stops. `HOP_NEAR_RADIUS = 150` may need widening if more trees are added far apart. TreeWillowWeeping (467,97) is in the candidate pool but almost never selected since it's far from spawn; adjust `HOP_NEAR_RADIUS` or exclude it explicitly if it causes breakout behavior.
+**Testing:** Three screenshots confirmed creature moving between left wooded cluster (PineTree2/3/4, MapleTree cluster) over 30s, never reaching map border corners. Flee test: creature steers toward tree in flee direction. ✅
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1263,3 +1278,5 @@ For each PNG: moved PNG + its `.import` file together (preserving UID); updated 
 | 2026-05-22 | Stump_Home_001 + StillPNGs_Stump_Homes imported, wired, placed. 5 stills (001–004 + lights variant) + 16-frame door animation copied to game/assets/structures/grove/. SpriteFrames resource stump_home_001_frames.tres created (idle 1fr + door_open 16fr@8fps). StumpIdle Sprite2D replaced with StumpHome001 AnimatedSprite2D at (13,311). Canonical scale 0.1953125 for all 128×128 grove dwellings established by user. Both temp folders archived to _archived/StumpHomes/ then deleted. ADR-082 added. |
 | 2026-05-22 | ForestCreature y_sort_offset=11 set in world.tscn (sorts at feet). _player retyped CharacterBody2D. Flee: approach detection (velocity dot > 8), 1.4× speed boost when chased, 35% upward bias toward tree cover. Confirmed occluded by pine when sort key < tree's. ADR-083 added. |
 | 2026-05-22 | Player AnimatedSprite2D scale reverted to original Vector2(0.5, 0.5) = 32px tall. |
+| 2026-05-22 | ForestCreature tree-hopping behavior: full rewrite of forest_creature.gd. State machine TREE_HOP/HIDING/FLEE. 13 trees gathered at runtime (group + name scan). 150px hop preference. Flee steers to nearby tree in flee direction. ADR-084 added. |
+| 2026-05-22 | ForestCreature collision + y_sort fix: y_sort_offset=11 correctly saved to world.tscn (was absent despite ADR-083 noting it). Collision reduced from radius=5/height=10 (20px total, nearly sprite height) to radius=4/height=4 (12px) offset +3px toward feet. |

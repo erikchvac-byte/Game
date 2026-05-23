@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** ForestCreature Y-sort + flee polish (2026-05-22, ADR-083). `y_sort_offset = 11` set on ForestCreature in world.tscn (sorts at feet). `_player` retyped `CharacterBody2D` in forest_creature.gd. Flee: approach detection (`_player.velocity.dot(flee_dir) > 8`), 1.4× speed when actively chased, 35% upward bias toward northern tree cover. Occluded-behind-pine confirmed. Player scale = 0.5 (32px, original). Playtested ✅.
+- **Last completed:** ForestCreature tree-hopping + collision/y_sort fixes (2026-05-22, ADR-084). Full rewrite of `forest_creature.gd` — random wander replaced with `TREE_HOP → HIDING → TREE_HOP` state machine. 13 trees gathered at runtime (choppable_trees group + name scan). Hops prefer trees within 150px; flee steers into nearest tree in flee direction. `y_sort_offset = 11` correctly written to world.tscn (was absent despite ADR-083). Collision fixed: `radius=4 height=4 pos.y=3` (12px total, down from 20px). Playtested ✅.
+- **Previous (2026-05-22):** ForestCreature Y-sort + flee polish (ADR-083). `_player` retyped `CharacterBody2D`. Flee: approach detection, 1.4× speed when chased, 35% upward bias. Player scale = 0.5 (32px, original). Playtested ✅.
 - **Previous (2026-05-22):** Stump_Home_001 placed in world (ADR-082). `stump_home_001.png` + lights variant + 16-frame door animation imported to `game/assets/structures/grove/`. `res://resources/structures/stump_home_001_frames.tres` created (idle + door_open). `StumpIdle` Sprite2D replaced with `StumpHome001` AnimatedSprite2D at (13, 311). Canonical scale = 0.1953125 for all 128×128 grove dwellings. Temp folders archived to `_archived/StumpHomes/` and deleted. Playtested ✅.
 - **Previous (2026-05-21):** Stump colliders + Log1 removal (ADR-080). CircleShape2D (r=7) StumpCollider added to pine/maple/fir .tscn files; disabled at start, enabled on FALLING→STUMP. Player stops exactly at stump radius on approach (gap=13 = r6+r7). Log1 (Sprite2D + Shadow + TreeCollider + CollisionShape2D + 2 exclusive resources) deleted from world.tscn cleanly. Tree scenes are fully self-contained prefabs — drag from FileSystem to place. Playtested ✅.
 - **Previous (2026-05-21):** Tree scale +20%, y_sort fix, left-click chop (ADR-079). TreeSprite 0.625→0.75, StumpSprite 0.125→0.15. y_sort_offset corrected 36→12 (formula: stump_y_offset − player_half_height = 28 − 16). Left-click on any tree now navigates + interacts (world.gd `_on_right_click` tree detection, `_do_nav_interact` blocked toast). Playtested ✅.
@@ -245,7 +246,7 @@
 
 5. **Stump y-offset per-species** — `stump_y_offset = 28.0` is uniform across Pine/Maple/Fir. May need tuning per instance via Inspector once all three are playtested side-by-side.
 
-6. **Stump shrine gameplay** — `StumpHome001` is placed at (13, 311) with `door_open` animation ready. TBD trigger needed: drop-item offering → probabilistic exchange (gem→buds), trust 0–100 scale, stump visual evolves through 5 states. Drop mechanic (Q key → WorldDropItem), ShrineManager autoload, ForestCreature wanderer all pending. See earlier conversation for full architecture plan.
+6. **Stump shrine gameplay** — `StumpHome001` is placed at (13, 311) with `door_open` animation ready. TBD trigger needed: drop-item offering → probabilistic exchange (gem→buds), trust 0–100 scale, stump visual evolves through 5 states. Drop mechanic (Q key → WorldDropItem), ShrineManager autoload already in place. ForestCreature now hops through wooded area near shrine.
 
 7. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. Animated stones at `game/assets/nature/rocks/` need SpriteFrames `.tres` before use. Currency icons at `game/assets/props/items/` ready for InventoryManager.
 
@@ -259,12 +260,16 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-22 (ForestCreature Y-sort + flee — ADR-083)
-- **Game state:** Runnable. 0 boot errors. Stump shrine system fully wired (WorldDropItem, ShrineManager, StumpShrine interactable, ForestCreature). Player = 22px (scale 0.34375). ForestCreature = 22px (scale 0.177). ForestCreature now hides behind trees via Y-sort; flee speed boosts when player actively chases.
+### Session end — 2026-05-22 (ForestCreature tree-hopping + collision/y_sort — ADR-084)
+- **Game state:** Runnable. 0 boot errors. Player = 32px (scale 0.5). ForestCreature = 22px (scale 0.177). ForestCreature hops between 13 named tree nodes in the wooded cluster, hides at each for 0.7–2.2s, never reaches map border corners. Confirmed occluded by trees via y_sort.
 - **Changes this session:**
-  - **forest_creature.gd:** `_player` retyped `CharacterBody2D`. Added `APPROACH_FLEE_MULT=1.4`, `APPROACH_UPWARD_BIAS=0.35`, `APPROACH_VEL_THRESHOLD=8.0`. Flee branch detects player approach via velocity dot product; boosts speed 1.4× and adds upward bias when chased.
-  - **world.tscn:** `y_sort_offset = 11` added to `ForestCreature` node.
-  - **Player scale:** reverted to original `Vector2(0.5, 0.5)` (32px tall).
+  - **forest_creature.gd:** Full rewrite. State machine `TREE_HOP / HIDING / FLEE / TRUST_HOLD`. `_gather_trees()` collects 13 trees at runtime (choppable_trees group + World child name scan for Pine/Maple/Fir/Tree/Willow). `_pick_next_tree()` filters by border margin + 150px proximity preference. Flee steers toward nearest tree in flee direction. Old random wander removed entirely.
+  - **forest_creature.gd collision:** `radius=4 height=4 position.y=3` (12px total). Was `radius=5 height=10` (20px total — near the full sprite height, causing premature wall contacts).
+  - **world.tscn:** `y_sort_offset = 11` confirmed written (was absent despite ADR-083 noting it).
+- **ForestCreature tree-hop architecture notes:**
+  - Trees are `StaticBody2D` in world.tscn — gathered by name pattern at runtime, not a group. If new trees are added with different names, add the name keyword to `_gather_trees()` or put them in a "world_trees" group.
+  - `HOP_NEAR_RADIUS = 150` keeps hops tight within the main cluster. TreeWillowWeeping (467,97) is in the pool but rarely chosen (too far). Widen if needed.
+  - `ARRIVE_RADIUS = 12` — creature stops at 12px from tree origin. Tree origins are at trunk base, so this places the creature visually beside/behind the trunk.
 - **Open issues (carried forward):**
   - `stump_y_offset=28.0` uniform across species — may need per-species tuning
   - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning
