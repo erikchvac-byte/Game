@@ -23,6 +23,7 @@ animation = &"idle_down"
 script = ExtResource("3_btcbx")
 
 [node name="Camera2D" type="Camera2D" parent="." unique_id=879633460]
+zoom = Vector2(0.87, 0.87)
 limit_left = 195
 limit_top = 88
 limit_right = 835

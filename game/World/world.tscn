@@ -456,7 +456,7 @@ shape = SubResource("DoorArea")
 
 [node name="Player" parent="." unique_id=1585494498 instance=ExtResource("8_player")]
 position = Vector2(112, 200)
-y_sort_offset = 16
+y_sort_offset = 14
 
 [node name="Plant" type="Node2D" parent="." unique_id=280000001]
 position = Vector2(173, 109)

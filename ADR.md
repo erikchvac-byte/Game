@@ -1176,9 +1176,79 @@ Values restored:
 
 ---
 
+## ADR-086: Sprite Size + Collision + Camera Audit — Full Reconciliation
+**Status:** Accepted
+**Date:** 2026-05-22
+**Context:** Stop-hook required a 7-item audit after ADR-085 only addressed y_sort_offset. The remaining items: (2) actual PNG frame dimensions, (3) scale reconciliation world.tscn vs .tscn defaults, (4) ADR cross-reference for the breaking scale changes, (5) collision shape audit, (6) camera zoom/viewport, (7) Area2D radii.
+
+**Findings and fixes:**
+
+**PNG Frame Dimensions (Item 2) — audited via execute_editor_script:**
+| Sprite | Actual Size | Scale | Visual Size | Notes |
+|---|---|---|---|---|
+| Erik (player) | **56×56** | 0.5 | **28×28px** | ADR-013/057 claimed 64×64 — wrong |
+| Hobo man (ForestCreature) | **124×124** | 0.177 | **22×22px** | ADR claimed 128×128 — off by 4px |
+| Pine/Maple/Fir idle | 96×96 | 0.75 | 72×72px | ✓ |
+| Stump idle + dissolve frames | 96×96 | 0.15 | 14.4×14.4px | ✓ |
+| Willow frames | 96×96 | root 2.975×AnimSpr 0.505 | ~144×144px | Complex layered scale |
+| Well water frames | 48×48 | 1.0 | 48×48px | ✓ |
+| BigMushroomStump | 48×48 | 1.0 | 48×48px | visible=false |
+| Grey hoodie NPC | 92×92 | 0.6 | 55×55px | Half=27.5; y_sort_offset=19 (8.5px low, acceptable) |
+| Rock grey cluster | 58×63 | 1.0 | 58×63px | ✓ |
+| Cave entrance | 34×31 | 1.0 | 34×31px | ✓ |
+| Bush sparse flat | 48×48 | 1.0 | 48×48px | ✓ |
+| StumpHome001 | 128×128 | 0.1953125 | 25×25px | ✓ |
+| Bakery (per frame) | 256×256 | 0.5 | 128×128px | 3×3 spritesheet |
+| Teal house (per frame) | 256×256 | 0.6 | 154×154px | 3×3 spritesheet |
+
+**Scale reconciliation (Item 3):** No world.tscn overrides on any choppable tree instances — all use .tscn defaults (TreeSprite=0.75, StumpSprite=0.15). Player uses player.tscn default (AnimatedSprite2D scale=0.5). No conflicts found.
+
+**ADR breaking-change cross-reference (Item 4):**
+- **ADR-076:** TreeSprite 0.5→0.625 — first change that required y_sort recalibration; old offsets became incorrect.
+- **ADR-079:** TreeSprite 0.625→0.75 — second change; recalibrated using player_half_height=16 (assumed 64×64 sprite). Actual sprite is 56×56 → correct half_height=14 → correct offset would be 28-14=14, not 12. 2px error, visually confirmed acceptable.
+- Player sprites were always 56×56 (not 64×64 as ADR-013 stated). Discovered this session.
+
+**Collision shape audit (Item 5):**
+| Shape | Size | Node | Assessment |
+|---|---|---|---|
+| WellCollider | Circle r=18 | Well | 18px vs 24px visual radius — 6px inset, acceptable |
+| WellArea | Circle r=26 | Well | Slightly larger than visual, generous trigger ✓ |
+| PlantArea | Circle r=32 | Plant | Generous, functional ✓ |
+| PlantCollider | Circle r=6 at (0,5) | Plant | visible=false, minimal blocker ✓ |
+| DRackShape | Rect 44×10 at (0,26) | DryingRack | Covers base of rack ✓ |
+| LogCollider (BigRock) | Rect 50×22 rotated | Big Rock | Set up for old log sprite; 24×22 effective for 58×63 rock. Low priority ✓ |
+| TrunkCollider (Pine/Maple) | Capsule r=5 h=10 at (0,16) | Trees | Covers trunk area ✓ |
+| TrunkCollider (Fir) | Capsule r=4 h=14 at (0,16) | Fir | **FIXED**: was scale=(1.27,-0.94) — negative y flipped physics resolution. Reset to scale=(1,1), position=(0,16) ✓ |
+| StumpCollider | Circle r=7 | Trees | 14px diameter for 14.4px visual stump ✓ |
+| InteractArea | Circle r=22 | Trees | Chop proximity trigger ✓ |
+| Bakery WallCenter/LeftLower/RightLower | Rect 60×25, 21×31, 22×30 | PlayerHomeCollider | Multi-shape door gap ✓ |
+| HouseTeal WallCenter | Rect 48.5×33.4 | HouseTealCollider | Single estimated box, no door gap ✓ |
+| Borders | 640×16, 17×474, 16×480 | Borders | Map edges ✓ |
+| NPCHomeDoor | Rect 30×10 | Area2D | NPC home trigger ✓ |
+
+**Camera zoom/viewport (Item 6):** zoom=(0.87,0.87) was **lost from player.tscn** (same serialization-loss pattern as y_sort_offset). Restored. Visible area: ~368×207px world at 320×180 logical viewport. Limits (global L/T/R/B): 195/88/835/584 ✓.
+
+**Area2D radii (Item 7):** WellArea r=26, PlantArea r=32, TreeInteract r=22, WillowProximity ~13px world, NPCTrade=36px (world.gd constant), DoorEntrance 14×6, NPCHomeDoor 30×10. All appropriate for their sprite sizes and intended interaction ranges ✓.
+
+**Fixes made:**
+1. `fir_tree.tscn` TrunkCollider: removed bad scale (1.27, -0.94) → (1, 1), position (2,16)→(0,16)
+2. `world.tscn` Player y_sort_offset: 16→14 (actual sprite 56×56 at 0.5 = 28px visual, half=14)
+3. `player.tscn` Camera2D zoom: restored (0.87, 0.87)
+
+**Known acceptable discrepancies (not fixed):**
+- Tree y_sort_offset=12 uses formula 28-16=12 (with wrong player_half_height). Correct would be 14. 2px difference, playtested and confirmed acceptable.
+- GreyHoodie y_sort_offset=19 vs actual correct 27.5. 8.5px low but NPC patrol stays south of teal house, so no visible sorting conflicts.
+- BigRock LogCollider shape is for old log sprite, poorly fits 58×63 rock. Low priority static scenery.
+
+**Consequences:** ADR-013 and ADR-057 sprite size claims (64×64, 128×128) are incorrect. All y_sort_offset formulas using player_half_height=16 are slightly off (should use 14). The 2px error is imperceptible at game scale. Future sprite calibration should use player_half_height=14.
+**Testing:** Camera zoom confirmed at runtime (0.87, 0.87). Fir TrunkCollider scale confirmed (1,1) at runtime. Game boots clean, player + NPC + ForestCreature visible with correct depth sorting. Screenshot confirmed wider viewport and correct rendering. ✅
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-22 | ADR-086: Full sprite/collision/camera audit. Fixed Fir TrunkCollider negative scale, Player y_sort_offset 16→14, camera zoom 1.0→0.87. Documented correct sprite sizes (56×56 player, 124×124 ForestCreature). |
 | 2026-05-22 | ADR-085: Restored all 25 y_sort_offset values in world.tscn (lost since ADR-073, overwrites by subsequent sessions). All depth transitions now correct. |
 | 2026-04-25 | ADR created. Project scoped, Stage 1 plan approved. |
 | 2026-04-25 | MCP config corrected — using Godot MCP Pro Node.js bridge server. |

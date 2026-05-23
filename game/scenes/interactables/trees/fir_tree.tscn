@@ -31,8 +31,7 @@ sprite_frames = ExtResource("3_stump")
 animation = &"dissolve"
 
 [node name="TrunkCollider" type="CollisionShape2D" parent="." unique_id=1282701110]
-position = Vector2(2, 16)
-scale = Vector2(1.2722644, -0.9366518)
+position = Vector2(0, 16)
 shape = SubResource("TrunkShape")
 
 [node name="StumpCollider" type="CollisionShape2D" parent="." unique_id=334455667]
