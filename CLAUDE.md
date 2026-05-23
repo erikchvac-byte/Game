@@ -9,7 +9,8 @@
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 
 ## Where We Are
-- **Last completed:** Full sprite/collision/camera audit (2026-05-22, ADR-086). Fixed 3 bugs found: (1) Fir TrunkCollider had scale.y=-0.94 flipping physics resolution — reset to (1,1); (2) Player y_sort_offset 16→14 (sprite is 56×56 at scale 0.5 = 28px, half=14, not the 64×64 claimed in ADR-013); (3) Camera zoom (0.87,0.87) was lost from player.tscn — restored. Audited all 7 requested areas: PNG dimensions confirmed (player=56×56, hobo_man=124×124, trees=96×96), no world.tscn scale overrides on trees, ADR-076/079 identified as breaking-change origins, all collision shapes mapped, camera limits correct, all Area2D radii appropriate. Playtested ✅.
+- **Last completed:** Tree y_sort_offset formula fix (2026-05-23, ADR-087). User confirmed player and ForestCreature still rendered in front of tree canopy after ADR-086. Root cause: ADR-079 formula `stump_y_offset − player_half_height = 28 − 16 = 12` was wrong — the subtraction is not part of the formula. Correct value = `stump_y_offset = 28` directly. Changed all 12 choppable tree instances in world.tscn from y_sort_offset=12 → 28. Verified: player hidden behind canopy at y=179, appears in front at y=181 (transition exactly at trunk base). ✅
+- **Previous (2026-05-22):** Full sprite/collision/camera audit (ADR-086). Fixed 3 bugs: (1) Fir TrunkCollider scale.y=-0.94 flipped physics — reset to (1,1); (2) Player y_sort_offset 16→14 (sprite is 56×56 at scale 0.5 = 28px, half=14); (3) Camera zoom (0.87,0.87) lost from player.tscn — restored. Playtested ✅.
 - **Previous (2026-05-22):** Y-sort offset full restoration — all 25 world objects (ADR-085). Audit found that every y_sort_offset value from ADR-073 (and trees from ADR-079) had been silently lost from world.tscn across sessions ADR-074→084. Only ForestCreature(=11) remained. Restored: Well(24), PlayerHome(35), Player(16), Plant(24), DryingRack(30), Big Rock(31), WillowWeeping(53), HouseTwostoryTeal(42), BigMushroomStump(22), GreyHoodie(19), CaveEntrance(15), StumpHome001(12), all 12 choppable trees(12). Depth transitions verified: player hidden behind pine at y=155 (sort_y 171 < 177), visible at y=182 (sort_y 198 > 177). Playtested ✅.
 - **Previous (2026-05-22):** ForestCreature tree-hopping + collision/y_sort fixes (ADR-084). Full rewrite of `forest_creature.gd` — random wander replaced with `TREE_HOP → HIDING → TREE_HOP` state machine. 13 trees gathered at runtime (choppable_trees group + name scan). Hops prefer trees within 150px; flee steers into nearest tree in flee direction. `y_sort_offset = 11` correctly written to world.tscn (was absent despite ADR-083). Collision fixed: `radius=4 height=4 pos.y=3` (12px total, down from 20px). Playtested ✅.
 - **Previous (2026-05-22):** ForestCreature Y-sort + flee polish (ADR-083). `_player` retyped `CharacterBody2D`. Flee: approach detection, 1.4× speed when chased, 35% upward bias. Player scale = 0.5 (32px, original). Playtested ✅.
@@ -262,14 +263,14 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-22 (Full sprite/collision/camera audit — ADR-086)
-- **Game state:** Runnable. 0 boot errors. All 25 world objects depth-sort correctly. Player = 28px (56×56 at scale 0.5). ForestCreature = 22px (124×124 at scale 0.177). Camera zoom = 0.87 (15% wider view). Trees, bakery, teal house, well, NPC all sort at visual ground contact point. Fir trunk collision correct (no distortion). ✅
-- **Changes this session (ADR-085 + ADR-086):**
-  - **world.tscn:** Restored 24 missing y_sort_offset values + corrected Player 16→14.
-  - **fir_tree.tscn:** TrunkCollider bad scale (1.27, -0.94) removed; position (2,16)→(0,16).
-  - **player.tscn:** Camera zoom (0.87, 0.87) restored (was lost, reverted to 1.0).
-- **Canonical sprite sizes (ADR-086 confirmed):** Player=56×56 (28px at 0.5), ForestCreature=124×124 (22px at 0.177), Trees=96×96 (72px at 0.75), Stump=96×96 (14px at 0.15), Well=48×48, GreyHoodie=92×92 (55px at 0.6), Bakery=256×256 frame (128px at 0.5), TealHouse=256×256 frame (154px at 0.6).
-- **y_sort_offset loss pattern (CRITICAL):** Any full rewrite of world.tscn silently drops y_sort_offset. Quick audit: `grep y_sort_offset world.tscn` must return 25 lines. Player half-height for future formulas = **14** (not 16).
+### Session end — 2026-05-23 (Tree y_sort_offset formula fix — ADR-087)
+- **Game state:** Runnable. 0 boot errors. All 25 world objects depth-sort correctly. Player and ForestCreature correctly render behind tree canopy until their feet pass the trunk base. ✅
+- **y_sort_offset formula (AUTHORITATIVE):**
+  - **Player/creatures:** `offset = half_height_px` (player=14, ForestCreature=11). Sort key = their feet.
+  - **Trees:** `offset = stump_y_offset = 28`. Sort key = trunk base. Do NOT subtract player_half_height.
+  - **Buildings:** `offset = door_base_y - building.position.y` (manual measurement).
+  - Rule: `node.position.y + node.y_sort_offset` = the world-y line where "you are now in front of this object".
+- **Changes this session:** `world.tscn` — all 12 choppable tree instances y_sort_offset: 12 → 28.
 - **Open issues (carried forward):**
   - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning to confirm door threshold
   - `stump_y_offset=28.0` uniform across pine/maple/fir — may need per-species tuning

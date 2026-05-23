@@ -1236,7 +1236,7 @@ Values restored:
 3. `player.tscn` Camera2D zoom: restored (0.87, 0.87)
 
 **Known acceptable discrepancies (not fixed):**
-- Tree y_sort_offset=12 uses formula 28-16=12 (with wrong player_half_height). Correct would be 14. 2px difference, playtested and confirmed acceptable.
+- Tree y_sort_offset=12 ← **INCORRECT — see ADR-087 for fix.** User confirmed player/ForestCreature still rendering in front of tree canopy.
 - GreyHoodie y_sort_offset=19 vs actual correct 27.5. 8.5px low but NPC patrol stays south of teal house, so no visible sorting conflicts.
 - BigRock LogCollider shape is for old log sprite, poorly fits 58×63 rock. Low priority static scenery.
 
@@ -1245,9 +1245,42 @@ Values restored:
 
 ---
 
+## ADR-087: Tree y_sort_offset Formula Correction — 12 → 28
+**Status:** Accepted
+**Date:** 2026-05-23
+**Context:** User confirmed after ADR-085/086 that player and ForestCreature (ShT) still rendered in front of tree canopy when approaching from the north or walking past tree edges. The "2px difference" noted in ADR-086 as acceptable was in fact a 16px formula error causing a 34px incorrect band.
+
+**Root cause:** ADR-079 set `y_sort_offset = stump_y_offset - player_half_height = 28 - 16 = 12`. The subtraction was wrong. The correct formula is:
+
+```
+tree_y_sort_offset = stump_y_offset (ground level of tree)
+player_y_sort_offset = player_half_height (player's feet)
+
+Depth transition triggers when:
+  player.position.y + player_y_sort_offset = tree.position.y + tree_y_sort_offset
+  player.position.y + 14 = tree.position.y + 28
+  → player appears in front when player.position.y > tree.position.y + 14
+  → player.feet (y+14) > trunk base (tree.y+28)  ✓
+```
+
+With old offset=12: transition at player.y = tree.y − 2 (2px north of tree center). Tree canopy extends 36px above center → 34px band where player was visually inside canopy but rendered in front.
+
+**Decision:** Change all 12 choppable tree instances in `world.tscn` from `y_sort_offset = 12` → `y_sort_offset = 28`.
+
+**Rationale:** The tree's depth sort key should equal the trunk base position (stump_y_offset=28 from tree origin). The player and ForestCreature each use their own half-height offsets independently — they do not subtract from the tree's offset. The offsets are compared against each other at sort time, not added together.
+
+**Consequences:** Player and ForestCreature correctly render behind tree canopy until their feet pass the trunk base. Tested: behind at y=179 (feet=193, trunk base=193), in front at y=181. StumpHome001 y_sort_offset=12 left unchanged (correct for 25px stump visual, half=12.5).
+
+**Files changed:** `game/World/world.tscn` — 12 nodes (TreePine1, TreeMaple1, TreeFir1, MapleTree, MapleTree2, FirTree, FirTree2, PineTree, PineTree2, PineTree3, PineTree4, MapleTree3).
+
+**Testing:** Screenshot confirmed player hidden behind tree at trunk level, appears in front just past trunk base. ForestCreature offset=11 (its own half-height) also correctly sorts behind trees. ✅
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-23 | ADR-087: Fixed tree y_sort_offset formula error — all 12 choppable trees 12→28. Player/ForestCreature now correctly render behind canopy until trunk base. |
 | 2026-05-22 | ADR-086: Full sprite/collision/camera audit. Fixed Fir TrunkCollider negative scale, Player y_sort_offset 16→14, camera zoom 1.0→0.87. Documented correct sprite sizes (56×56 player, 124×124 ForestCreature). |
 | 2026-05-22 | ADR-085: Restored all 25 y_sort_offset values in world.tscn (lost since ADR-073, overwrites by subsequent sessions). All depth transitions now correct. |
 | 2026-04-25 | ADR created. Project scoped, Stage 1 plan approved. |
