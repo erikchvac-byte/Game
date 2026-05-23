@@ -7,6 +7,7 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 - **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, stop and ask — do not pick a "close enough" alternative. Choosing replacement art is the user's job.
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
+- **TSCN EDIT RULE:** Never rewrite any `.tscn` file in full using the Write tool. Always use targeted Edit tool calls for specific node changes. Full rewrites silently drop `y_sort_offset` and other inline node properties that aren't in your working context — this is the root cause of the recurring y_sort_offset loss (ADR-073→085→088→089).
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
@@ -266,27 +267,28 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-23 (Tree y_sort_offset persistence fix — ADR-088)
-- **Game state:** Runnable. 0 boot errors. All 25 world objects depth-sort correctly. y_sort_offset = 22 baked into all three base tree scenes — permanent, survives every editor resave. ✅
-- **y_sort_offset formula (AUTHORITATIVE — updated from ADR-088):**
-  - **Player/creatures:** `offset = half_height_px` (player=14, ForestCreature=11). Sort key = their feet.
-  - **Trees (choppable pine/maple/fir):** `offset = 22`. Sort key = lower visible branch tips. **NOT** stump_y_offset=28 (that's the stump sprite placement, ~6px below the actual lowest branch pixel). Do NOT subtract player_half_height.
-  - **Buildings:** `offset = door_base_y - building.position.y` (manual measurement).
-  - Rule: `node.position.y + node.y_sort_offset` = the world-y line where "you are now in front of this object".
-  - **CRITICAL:** `y_sort_offset` is NOT accessible via GDScript `get()` at runtime (returns null, raises error). It is an engine-internal serialization field read from .tscn at load. Do NOT try to read it in execute_game_script. Verify by playtesting.
-  - **CRITICAL:** Set y_sort_offset in the BASE SCENE, not as instance overrides in world.tscn. Overrides are stripped on every editor resave. Base scene values are permanent.
-- **Changes this session:** `pine_tree.tscn`, `maple_tree.tscn`, `fir_tree.tscn` — root node `y_sort_offset = 22` baked in. `world.tscn` — `y_sort_enabled = true` removed from TreePine1 instance override.
+### Session end — 2026-05-23 (Full physics/collision/y-sort audit — ADR-089)
+- **Game state:** Runnable. 0 boot errors. All 25 world objects depth-sort correctly. All y_sort_offset values confirmed present and correct. Playtested tree, bakery, and player spawn transitions ✅.
+- **y_sort_offset formula (AUTHORITATIVE):**
+  - **Player/creatures:** `offset = half_height_px` (player=14, ForestCreature=11).
+  - **Trees (choppable pine/maple/fir):** `offset = 22` — baked into base scenes, never set as world.tscn instance overrides.
+  - **Buildings/props:** `offset = door_base_y - node.position.y` (manual measurement). See ADR-089 table.
+  - Rule: `node.position.y + node.y_sort_offset` = world-y where player transitions from behind → in front.
+  - **CRITICAL:** `y_sort_offset` is NOT a runtime GDScript property. Do not read/set via execute_game_script.
+  - **CRITICAL:** Set in BASE SCENE for instanced nodes. Write inline in world.tscn definition for non-instanced nodes. Never use instance overrides in world.tscn — stripped on every editor resave.
+  - **CRITICAL:** Never fully rewrite any .tscn file — use targeted Edit calls only (TSCN EDIT RULE).
+- **Changes this session (ADR-089):** Restored 12 y_sort_offset values in world.tscn (Well=24, PlayerHome=35, Plant=24, DryingRack=30, Big Rock=31, WillowWeeping=53, HouseTwostoryTeal=42, BigMushroomStump=22, GreyHoodie=19, CaveEntrance=15, StumpHome001=12, ForestCreature=11). Baked player y_sort_offset=14 into player.tscn. Fixed HouseTealCollider: WallFront CollisionShape2D was nested inside another CollisionShape2D (invalid) — moved to direct child of StaticBody2D, giving teal house 2 active wall segments. Added TSCN EDIT RULE to CLAUDE.md and memory. Created `game/tools/collision_validator.gd`.
 - **Open issues (carried forward):**
-  - `HouseTwostoryTeal` y_sort_offset +42 estimated — needs walk-around tuning to confirm door threshold
+  - `HouseTwostoryTeal` y_sort_offset=42 is estimated — now WallFront is active, walk-around tuning may be needed to confirm both value and collision feel
   - `stump_y_offset=28.0` uniform across pine/maple/fir — may need per-species tuning (offset=22 was calibrated on pine)
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates causing ~34 editor warnings
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
   - `herb_bundle_dried.png` has no source art — placeholder in use
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
   - Bucket animation variants not yet in `erik_sprites.tres`
-  - BigRock LogCollider was built for old log sprite, poorly fits 58×63 rock cluster (low priority)
-  - GreyHoodie y_sort_offset=19 is 8.5px low vs correct 27.5 — no visible issue during NPC patrol
-- **Next priorities:** Stump shrine trust progression; bucket animations; teal house collision; wood icon.
+  - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
+  - GreyHoodie y_sort_offset=19 is ~8.5px low vs correct 27.5 — no visible issue during NPC patrol
+- **Next priorities:** Stump shrine trust progression; bucket animations; teal house collision tuning (walk around with WallFront now active); wood icon.
 - **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tileset_32x32, tree_oak_green.png.
 
 ### Permissions Allowlist (as of 2026-05-15)
