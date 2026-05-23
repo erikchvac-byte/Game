@@ -382,6 +382,7 @@ y_sort_enabled = true
 script = ExtResource("4_worldgd")
 
 [node name="Well" type="Node2D" parent="." unique_id=770000001]
+y_sort_offset = 24
 position = Vector2(231, 75)
 script = ExtResource("well_script")
 
@@ -417,6 +418,7 @@ tile_map_data = PackedByteArray("AAADABoABQAKAAEAAAAEABoABQALAAEAAAAIABoABQALAAA
 tile_set = ExtResource("1_62w18")
 
 [node name="PlayerHome" type="AnimatedSprite2D" parent="." unique_id=1239180551]
+y_sort_offset = 35
 light_mask = 2
 texture_filter = 1
 position = Vector2(112, 80)
@@ -456,6 +458,7 @@ shape = SubResource("DoorArea")
 position = Vector2(112, 200)
 
 [node name="Plant" type="Node2D" parent="." unique_id=280000001]
+y_sort_offset = 24
 position = Vector2(173, 109)
 script = ExtResource("plant_script")
 
@@ -489,6 +492,7 @@ shadow_size = Vector2(14, 5)
 cast_length = 10.0
 
 [node name="DryingRack" type="Sprite2D" parent="." unique_id=2133297938]
+y_sort_offset = 30
 texture_filter = 1
 position = Vector2(175, 75)
 texture = ExtResource("drack1_tex")
@@ -507,6 +511,7 @@ shadow_size = Vector2(28, 5)
 cast_length = 18.0
 
 [node name="Big Rock" type="Sprite2D" parent="." unique_id=1264295051]
+y_sort_offset = 31
 position = Vector2(36, 131)
 texture = ExtResource("45_8kjm2")
 
@@ -526,6 +531,7 @@ position = Vector2(0, 18)
 shape = SubResource("RectangleShape2D_dlis5")
 
 [node name="TreeWillowWeeping" type="Node2D" parent="." unique_id=1732131370]
+y_sort_offset = 53
 position = Vector2(467, 97)
 scale = Vector2(2.975, 2.5)
 script = ExtResource("willow_tree_script")
@@ -565,6 +571,7 @@ scale = Vector2(-1.39778, 1.2572073)
 shape = SubResource("CircleShape2D_h4hkh")
 
 [node name="HouseTwostoryTeal" type="AnimatedSprite2D" parent="." unique_id=1938115166]
+y_sort_offset = 42
 texture_filter = 1
 position = Vector2(534, 75)
 scale = Vector2(0.6, 0.6)
@@ -582,7 +589,7 @@ rotation = -3.679051
 scale = Vector2(0.9999996, 0.9999996)
 shape = SubResource("RectangleShape2D_o2cvn")
 
-[node name="WallCenter" type="CollisionShape2D" parent="HouseTwostoryTeal/HouseTealCollider/WallCenter" unique_id=210750579]
+[node name="WallFront" type="CollisionShape2D" parent="HouseTwostoryTeal/HouseTealCollider" unique_id=210750579]
 position = Vector2(2.6865234, 18.781845)
 rotation = -3.0409276
 scale = Vector2(0.99999976, 0.99999976)
@@ -595,6 +602,7 @@ shadow_size = Vector2(65, 10)
 cast_length = 30.0
 
 [node name="BigMushroomStump" type="Sprite2D" parent="." unique_id=1859861714]
+y_sort_offset = 22
 visible = false
 position = Vector2(472, 141)
 texture = ExtResource("49_h4hkh")
@@ -641,6 +649,7 @@ texture = SubResource("GradientTexture2D_h4hkh")
 texture_scale = 1.6
 
 [node name="GreyHoodie" type="Node2D" parent="." unique_id=1551921560]
+y_sort_offset = 19
 position = Vector2(534, 158)
 script = ExtResource("46_xu702")
 
@@ -654,6 +663,7 @@ autoplay = "idle_south"
 frame_progress = 0.74741143
 
 [node name="Cave entrance" type="Sprite2D" parent="." unique_id=1053984708]
+y_sort_offset = 15
 position = Vector2(31, 407)
 texture = ExtResource("48_dlis5")
 
@@ -784,6 +794,7 @@ visible = false
 position = Vector2(110, 263)
 
 [node name="StumpHome001" type="AnimatedSprite2D" parent="." unique_id=1028054031]
+y_sort_offset = 12
 position = Vector2(13, 311)
 scale = Vector2(0.1953125, 0.1953125)
 sprite_frames = ExtResource("64_32rkg")
@@ -814,6 +825,7 @@ position = Vector2(13, 311)
 script = ExtResource("69_h4nnu")
 
 [node name="ForestCreature" type="CharacterBody2D" parent="." unique_id=243700899]
+y_sort_offset = 11
 position = Vector2(40, 320)
 script = ExtResource("70_houwb")
 

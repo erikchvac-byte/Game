@@ -1299,9 +1299,109 @@ With old offset=12: transition at player.y = tree.y − 2 (2px north of tree cen
 
 ---
 
+## ADR-089: Full Physics/Collision/Y-Sort Audit + Standardization
+**Status:** Accepted
+**Date:** 2026-05-23
+
+**Context:** Recurring y_sort_offset loss (ADR-073→085→088) plus no authoritative documentation of collision body types, layers, or sprite ownership rules. Goal: complete audit of every player↔environment interaction, document the canonical state, fix all outstanding bugs.
+
+**Findings:**
+
+### Collision Body Type Matrix
+
+| Object | Node Type | Physics Body | Collision Shape | Notes |
+|--------|-----------|-------------|-----------------|-------|
+| Player | CharacterBody2D | self | CapsuleShape2D r=4, h=12 | player.tscn |
+| ForestCreature | CharacterBody2D | self | CapsuleShape2D r=4, h=4 at (0,3) — runtime | forest_creature.gd |
+| Well | Node2D | WellCollider StaticBody2D | CircleShape2D r=18 (block) | WellArea Area2D r=26 (interact) |
+| Plant | Node2D | PlantCollider StaticBody2D at (0,5) | CircleShape2D (small) | PlantArea Area2D (interact) |
+| DryingRack | Sprite2D | DryingRackCollider StaticBody2D | RectangleShape2D 44×10 at (0,26) | No interact area — uses proximity in world.gd |
+| Big Rock | Sprite2D | LogCollider StaticBody2D child | RectangleShape2D, oddly transformed | Originally for a log; poorly fits rock cluster (known, low priority) |
+| Pine/Maple/Fir tree | StaticBody2D | self | TrunkCollider CapsuleShape2D r=4-5, h=10-14 at (0,16) | StumpCollider CircleShape2D r=7 (disabled until STUMP); InteractArea Area2D r=22 |
+| PlayerHome (Bakery) | AnimatedSprite2D | PlayerHomeCollider StaticBody2D (sibling) | 3-shape compound at (112,80): WallCenter rect, LeftLower, RightLower | Separate node — not a child of PlayerHome |
+| HouseTwostoryTeal | AnimatedSprite2D | HouseTealCollider StaticBody2D (child) | WallCenter + WallFront RectangleShape2D | BUG FIXED: WallFront was nested inside WallCenter (invalid) |
+| GreyHoodie (NPC) | Node2D | None | None | Proximity only via NPC_TRADE_RADIUS=36px in world.gd; player walks through |
+| WillowTree | Node2D | TreeCollider StaticBody2D | CircleShape2D r=7.4 | ProximityArea Area2D r=14.6 |
+| BigMushroomStump | Sprite2D | MushroomCollider StaticBody2D | RectangleShape2D 20×10 at (2,15) | Currently hidden (visible=false) |
+| StumpShrine | Node2D | DetectionArea Area2D | CircleShape2D r=30 — runtime | stump_shrine.gd creates at ready |
+| DoorEntrance | Area2D | self | RectangleShape2D at (108,117) | Triggers bakery entry |
+| NPCHomeDoor | Area2D | self | RectangleShape2D at (534,125) | Triggers NPC home entry |
+| World Borders | StaticBody2D ×4 | self | RectangleShape2D (wide/tall strips) | Invisible |
+
+### Collision Layers/Masks
+
+All physics bodies and areas use **Godot defaults: layer=1, mask=1**. No explicit layer assignments exist anywhere in the project. This is intentional for the current game scope — the only interactions are Player↔Environment and ForestCreature↔Environment. If NPC-NPC isolation is needed later, assign Player to layer 1, Environment to layer 2, NPCs to layer 4.
+
+### Y-Sort Offset Rule Table (AUTHORITATIVE)
+
+`sort_y = node.position.y + node.y_sort_offset`
+
+When `player.sort_y > object.sort_y`, player renders IN FRONT of object.
+
+| Object | position.y | y_sort_offset | sort_y | Rule used |
+|--------|-----------|--------------|--------|-----------|
+| Player | varies | **14** (half of 28px rendered height) | p.y+14 | half_height |
+| ForestCreature | varies | **11** (half of ~22px rendered height) | p.y+11 | half_height |
+| Well | 75 | **24** | 99 | visual bottom |
+| PlayerHome (Bakery) | 80 | **35** | 115 | door base |
+| Plant | 109 | **24** | 133 | ground contact |
+| DryingRack | 75 | **30** | 105 | ground contact |
+| Big Rock | 131 | **31** | 162 | base of rock cluster |
+| WillowWeeping | 97 | **53** | 150 | ground root line |
+| HouseTwostoryTeal | 75 | **42** | 117 | door base (estimated) |
+| BigMushroomStump | 141 | **22** | 163 | base of stump |
+| GreyHoodie (NPC) | 158 | **19** | 177 | half_height |
+| Cave entrance | 407 | **15** | 422 | base of arch |
+| StumpHome001 | 311 | **12** | 323 | base of stump |
+| Trees (Pine/Maple/Fir) | varies | **22** | t.y+22 | lower branch tips (baked in base scenes) |
+
+### Sprite Ownership Map (what controls position/scale/offset)
+
+| Property | Owner | Notes |
+|----------|-------|-------|
+| node.position | world.tscn placement | Never set at runtime |
+| node.y_sort_offset | Base scene (instanced) or world.tscn inline node definition | NOT a runtime property |
+| AnimatedSprite2D.scale | Scene file (.tscn) | Player=0.5, Bakery=0.5, TealHouse=0.6, StumpHome001=0.1953125 |
+| AnimatedSprite2D.offset | Never used | All sprites centered on origin |
+| CollisionShape2D.position | Scene file only | Offsets shape from parent physics body |
+| TreeSprite scale | Tree base scene | TreeSprite=0.75, StumpSprite=0.15 |
+| TrunkCollider position | Tree base scene | All trees: (0,16) |
+| StumpSprite/StumpCollider position | choppable_tree.gd `_ready()` | Set to Vector2(0, stump_y_offset) = (0,28) |
+
+### Tree Template Evaluation
+
+Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) + choppable_tree.gd:
+- Self-registers to "choppable_trees" group in `_ready()`
+- All visual/collision/interaction nodes are in the base scene
+- No world.tscn changes needed to add new tree instances
+- y_sort_offset=22 baked into base scene — survives all editor operations
+- **No refactor required.** Template system is complete.
+
+**Decisions Made:**
+
+1. **Restore y_sort_offset for 12 inline world.tscn nodes** — Added directly to node definitions via Edit tool (not via editor script). Inline nodes in world.tscn retain properties on editor resave; the loss mechanism was prior full-file rewrites in ADR-085→088 sessions that didn't carry these values forward.
+
+2. **Fix HouseTealCollider nested CollisionShape2D** — `WallFront` CollisionShape2D was a child of `WallCenter` CollisionShape2D (invalid in Godot — CollisionShape2D nodes must be direct children of physics bodies). Fixed by changing parent to `HouseTwostoryTeal/HouseTealCollider` and renaming to `WallFront`. The house now has two functioning wall segments.
+
+3. **Add y_sort_offset=14 to player.tscn** — ADR-086 set this value but it was never written to the base scene (was written as a world.tscn instance override which was later lost). Now baked into player.tscn permanently.
+
+4. **Collision layers: document and leave at defaults** — All objects on layer=1/mask=1 is intentional. No behavioral changes needed at current game scope.
+
+**Consequences:**
+- HouseTealCollider now has 2 active wall segments — player may be more blocked by the teal house side walls. Walk-around testing may reveal the y_sort_offset=42 estimate needs tuning.
+- Inline y_sort_offset values will survive editor resaves as long as they are written as part of the node's own definition (not as instance property overrides). A full file rewrite (Write tool on world.tscn) must preserve them.
+- **PREVENTION:** Never rewrite world.tscn in full. Always use targeted Edit tool calls for specific node changes.
+
+**Files changed:** `game/World/world.tscn` (12 y_sort_offset values + HouseTealCollider fix), `game/Player/player.tscn` (y_sort_offset=14 baked in)
+
+**Testing:** Player at y=170 behind pine tree (sort_y 184 < 203) ✅. Player at y=210 in front of pine tree (sort_y 224 > 203) ✅. Player at y=75 hidden behind bakery dome (sort_y 89 < 115) ✅. Player at y=130 in front of bakery door (sort_y 144 > 115) ✅. ForestCreature sorting correctly near tree trunk ✅. No regressions — game boots clean.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-23 | ADR-089: Full physics/collision/y-sort audit. Restored 12 y_sort_offset values in world.tscn inline nodes. Fixed HouseTealCollider nested CollisionShape2D bug. Baked player y_sort_offset=14 into player.tscn. Documented complete collision matrix and sprite ownership rules. |
 | 2026-05-23 | ADR-088: y_sort_offset persistence fix — baked into base tree scenes (not world.tscn instance overrides). Value calibrated 28→22 (lower branch tips, not trunk base). Removed y_sort_enabled=true from TreePine1 override. |
 | 2026-05-23 | ADR-087: Fixed tree y_sort_offset formula error — all 12 choppable trees 12→28. Player/ForestCreature now correctly render behind canopy until trunk base. |
 | 2026-05-22 | ADR-086: Full sprite/collision/camera audit. Fixed Fir TrunkCollider negative scale, Player y_sort_offset 16→14, camera zoom 1.0→0.87. Documented correct sprite sizes (56×56 player, 124×124 ForestCreature). |
