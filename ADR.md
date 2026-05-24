@@ -1547,9 +1547,23 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-094: ShT Elusiveness — Stuck Detection, Teleport Escape, Flee Hysteresis
+**Status:** Accepted
+**Date:** 2026-05-24
+**Context:** ShT (ForestCreature) could be permanently cornered against walls or map edges. Per-frame jitter (±0.30 rad `randf_range` every physics tick) caused visible stuttering. FLEE↔TREE_HOP state could flicker when player stood at exactly the flee radius boundary.
+**Decision:** Three changes to `forest_creature.gd`: (1) Remove per-frame jitter entirely. (2) Add stuck detection — sample position every 0.35s; if ShT moves less than 5px for 3 consecutive samples while fleeing, teleport escape fires. (3) Add map-edge escape — if ShT position is within 10px of any map boundary while fleeing, teleport escape fires immediately. (4) Add flee hysteresis — enter FLEE at 64px, only exit when distance exceeds 90px. (5) Teleport respawn picks a random off-screen position (>184px from player, >35px outside camera edge), clamped to map bounds, stump-excluded; fallback to farthest map corner.
+**Rationale:** Jitter root cause: `randf_range` at 60fps changes velocity direction every frame, producing per-pixel zigzag rather than organic movement. Hysteresis root cause: without it, any position exactly at FLEE_RADIUS causes a state toggle every frame (flee sets velocity away, tree-hop picks a tree target, alternating each tick). Teleport is the only practical escape on a map with no navmesh.
+**Consequences:** ShT paths are straight (no jitter). Elusiveness comes from speed, tree-seeking, and teleport — not direction noise. Stuck detection fires after ~1.05s of no movement. Map-edge fires within one frame of hitting the boundary. Respawn is always off-screen so the player never sees the pop.
+**Testing:** Flee triggered at 30px proximity — ShT fled 293px clean. Map-edge trigger: placed ShT at (220,115), instantly respawned 231px from player, 309px from stump ✅. State reads TREE_HOP + speed=34.0 after all teleports ✅. Output log clean throughout ✅.
+
+**Files changed:** `game/World/ForestCreature/forest_creature.gd`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-24 | ADR-094: ShT elusiveness — stuck detection (3×0.35s samples, 5px threshold → teleport), map-edge escape (10px margin → instant teleport), off-screen respawn (>184px from player, stump-excluded), flee hysteresis (enter 64px / exit 90px). Per-frame jitter removed (caused stutter). Playtested ✅. |
 | 2026-05-24 | ADR-093: ForestCreature refactored into self-contained forest_creature.tscn. Mirrors choppable tree pattern: root CharacterBody2D with y_sort_offset=11 baked in, CreatureSprite AnimatedSprite2D child, CreatureCollider child. world.tscn updated from inline node to scene instance. forest_creature.gd _ready() trimmed 18→4 lines. Playtested ✅. |
 | 2026-05-24 | ADR-092: Fay Grove mechanic. stump_shrine.gd replaced with passive drop-watcher (IDLE→ITEM_PRESENT→PROCESSING→REWARD_READY→REWARD_SPAWNED). forest_creature.gd: removed HIDING/TRUST_HOLD, always walking, 80px stump exclusion zone, start pos moved to (236,211). world_drop_item.gd: despawn_time meta override. world.gd: shrine removed from interactables. Full loop playtested ✅. |
 | 2026-05-24 | Wood icon: replaced rock3.png placeholder with wood_pile.png (48×48). Removed oversized inset hack from hud.gd. Roadmap audited — bucket animations confirmed done, cave entrance dropped, session-end rule updated to own roadmap accuracy. |
