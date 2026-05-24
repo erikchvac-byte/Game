@@ -6,13 +6,19 @@
 - **PLAYTEST RULE:** If you make it, you play test it. Always. Run the game via MCP, exercise the feature, take a screenshot to confirm correct behavior before reporting done.
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 - **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, stop and ask — do not pick a "close enough" alternative. Choosing replacement art is the user's job.
-- **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
+- **SESSION-END PRE-FLIGHT RULE:** Before executing SESSION-END, run these checks. If ANY fail, stop immediately, print `⚠ SESSION-END BLOCKED`, list every issue found, and wait for the user to either resolve the issue or type `override session-end` to bypass. Do NOT proceed with doc updates or commit until the user responds.
+  1. **`script = null` override check** — grep all `.tscn` files for lines matching `^script = null`. Each hit means a Godot editor operation silently nulled a scene script, breaking all logic on that node (root cause of the 2026-05-24 hotbar/input regression). Alert: "script = null found in [file:line] — this overrides [scene]'s script at runtime. Fix: remove the `script = null` line."
+  2. **Editor error check** — call `get_editor_errors` via MCP. If any errors are returned that are not pre-existing/known warnings (e.g. tile_bit_tools UID duplicates), list them and block.
+  3. **Game runability check** — call `play_scene` + `get_output_log` (brief run). If the output log contains `Parse Error`, `Script failed to load`, or `SCRIPT ERROR`, block with the log snippet. Stop the scene after checking.
+  4. **No block if:** all checks pass, or the only errors are the pre-approved known warnings (`tile_bit_tools` nested UID duplicates, `hud.gd INT_AS_ENUM_WITHOUT_CAST`). Those are not blocking.
+- **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — **first run SESSION-END PRE-FLIGHT**, then automatically perform all of the following: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 - **TSCN EDIT RULE:** Never rewrite any `.tscn` file in full using the Write tool. Always use targeted Edit tool calls for specific node changes. Full rewrites silently drop inline node properties — this was the root cause of the recurring y_sort_offset loss (ADR-073→090).
 - **TREE Y-SORT RULE (ADR-091 — canonical, permanent):** Tree node origin = trunk base (ground contact). TreeSprite child has `position = Vector2(0, -22)` (sprite draws upward). `y_sort_offset` stays at default 0 — never written to any tree .tscn, never stripped. Depth sort transition is at node Y (trunk base). To add a new tree species: set TreeSprite.position.y = -(half_tree_height_px), leave everything else at defaults. To move a tree in world.tscn: set instance position directly — no y_sort_offset override needed. TrunkCollider at origin (y=0). StumpCollider at origin. stump_y_offset export = 0.0 (stump appears at trunk base by default).
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Last completed:** Canonical y-sort tree architecture (2026-05-24, ADR-091). Switched all 3 tree species from `y_sort_offset=22` approach to canonical: node at trunk base, TreeSprite at `position=(0,-22)`, no y_sort_offset in any .tscn. Permanently eliminates the ADR-085→090 stripping loop. All 8 tree instances in world.tscn shifted +22Y (net visual position unchanged). stump_y_offset=0 (stump at node = trunk base). Depth sort verified: player behind tree at tree.y-10 ✅, in front at tree.y+15 ✅. Stump at trunk base after chop ✅. Playtested ✅.
+- **Last completed:** Pre-flight session-end validation added to CLAUDE.md (2026-05-24). Also fixed: `script = null` instance override in `main.tscn` (added by editor during ADR-091 MCP ops) that was nulling `world.gd` at runtime, killing hotbar, mouse nav, and all interactions. One-line fix. Playtested ✅.
+- **Previous (2026-05-24, ADR-091):** Canonical y-sort tree architecture. Switched all 3 tree species from `y_sort_offset=22` approach to canonical: node at trunk base, TreeSprite at `position=(0,-22)`, no y_sort_offset in any .tscn. Permanently eliminates the ADR-085→090 stripping loop. All 8 tree instances in world.tscn shifted +22Y (net visual position unchanged). stump_y_offset=0 (stump at node = trunk base). Depth sort verified: player behind tree at tree.y-10 ✅, in front at tree.y+15 ✅. Stump at trunk base after chop ✅. Playtested ✅.
 - **Previous (2026-05-23, ADR-090):** Pine tree TrunkCollider fix. TrunkCollider was left-side only (player could enter right side). Fixed: radius=6, height=4, centered. Also restored motion_mode=1 and y_sort_offset=14 to player.tscn.
 - **Previous (2026-05-23):** Full physics/collision/y-sort audit (ADR-089). Restored y_sort_offset for all 12 inline world.tscn nodes (Well=24, PlayerHome=35, Plant=24, DryingRack=30, Big Rock=31, WillowWeeping=53, HouseTwostoryTeal=42, BigMushroomStump=22, GreyHoodie=19, CaveEntrance=15, StumpHome001=12, ForestCreature=11). Baked player y_sort_offset=14 into player.tscn. Fixed HouseTealCollider nested CollisionShape2D bug. Wrote collision matrix, y-sort rule table, sprite ownership map, and validation script (game/tools/collision_validator.gd). All depth-sort transitions playtested ✅.
 - **Previous (2026-05-23):** Tree y_sort_offset persistence fix + value calibration (ADR-088). Root cause of the recurring loop: y_sort_offset was set as instance overrides in world.tscn, which the editor strips on every resave. Fix: baked y_sort_offset into base tree scenes (pine_tree.tscn, maple_tree.tscn, fir_tree.tscn) so it survives all editor operations. Also removed spurious `y_sort_enabled = true` from TreePine1 instance. Value calibrated 28→22 empirically: transition at player.y≈189 (feet at y≈203 = lower branch tips). Tests: y=175 fully behind ✅, y=185 correctly behind (mid-branch) ✅, y=190 fully in front ✅.
@@ -270,30 +276,26 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-24 (Canonical y-sort tree architecture — ADR-091)
-- **Game state:** Runnable. Playtested ✅. Tree depth sort working correctly. Stump at trunk base after chop ✅.
-- **y_sort_offset — TREES (authoritative, ADR-091):** Trees no longer use `y_sort_offset`. Node origin = trunk base. TreeSprite = `position=(0,-22)`. Depth-sort transition = node Y. ZERO ongoing maintenance. Editor saves cannot break this.
+### Session end — 2026-05-24 (Bug fix: script=null + SESSION-END PRE-FLIGHT RULE added)
+- **Game state:** Runnable. Playtested ✅. All systems confirmed working: hotbar, mouse nav, tool toggle, interactions, day/night.
+- **What was fixed:** `script = null` on the World instance in `main.tscn` (line 13). Added by Godot editor during ADR-091 MCP operations as an instance property override. Silently nulled `world.gd` at runtime — hotbar items missing, mouse clicks had no effect, no interactions. Fix: removed the one override line. Root cause pattern documented in SESSION-END PRE-FLIGHT RULE.
+- **New rule added:** SESSION-END PRE-FLIGHT RULE in CLAUDE.md. Before every session-end: (1) grep .tscn files for `^script = null`; (2) check editor errors; (3) brief play + log scan. Blocks with ⚠ alert if any check fails. Requires explicit acknowledgment to override.
+- **y_sort_offset — TREES (authoritative, ADR-091):** Trees do NOT use `y_sort_offset`. Node origin = trunk base. TreeSprite `position=(0,-22)`. Depth-sort transition = node Y. Cannot be stripped by editor.
 - **y_sort_offset — other nodes (AUTHORITATIVE):**
-  - **Player/creatures:** `y_sort_offset = half_height_px` (player=14, ForestCreature=11) — baked into player.tscn.
-  - **Buildings/props:** `y_sort_offset = door_base_y - node.position.y`. See ADR-089 table.
-  - Rule: `node.position.y + node.y_sort_offset` = world-y where player transitions behind → in front.
+  - Player/creatures: `y_sort_offset = half_height_px` (player=14, ForestCreature=11) — baked into player.tscn.
+  - Buildings/props: `y_sort_offset = door_base_y - node.position.y`. See ADR-089 table.
   - CRITICAL: `y_sort_offset` is NOT a runtime GDScript property. Never read/set via execute_game_script.
 - **Open issues:**
-  - `HouseTwostoryTeal` y_sort_offset=42 is estimated — teal house collision tuning pending
-  - `tile_bit_tools/tile_bit_tools/` nested UID duplicates causing ~34 editor warnings
+  - `HouseTwostoryTeal` y_sort_offset=42 estimated — teal house collision tuning pending
+  - `tile_bit_tools/tile_bit_tools/` nested UID duplicates — ~34 editor warnings (pre-approved known issue, non-blocking)
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
-  - `herb_bundle_dried.png` has no source art — placeholder in use
+  - `herb_bundle_dried.png` no source art — placeholder in use
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
   - Bucket animation variants not yet in `erik_sprites.tres`
   - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
-  - GreyHoodie y_sort_offset=19 is ~8.5px low vs correct 27.5 — no visible issue during NPC patrol
+  - GreyHoodie y_sort_offset=19 is ~8.5px low vs correct 27.5 — no visible issue during patrol
 - **Next priorities:** (1) Stump shrine trust progression. (2) Bucket animations. (3) Teal house collision tuning. (4) Wood icon. (5) Cave entrance rigging.
 - **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
-  - Bucket animation variants not yet in `erik_sprites.tres`
-  - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
-  - GreyHoodie y_sort_offset=19 is ~8.5px low vs correct 27.5 — no visible issue during NPC patrol
-- **Next priorities:** (1) Playtest pine tree depth-sort. (2) Stump shrine trust progression. (3) Bucket animations. (4) Teal house collision tuning. (5) Wood icon.
-- **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tileset_32x32, tree_oak_green.png.
 
 ### Permissions Allowlist (as of 2026-05-15)
 All Godot MCP and filesystem MCP tools are pre-approved in `.claude/settings.json`. No prompts expected for any of these:
