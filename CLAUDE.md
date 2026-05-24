@@ -17,7 +17,8 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Last completed (2026-05-24):** Wood icon — replaced `rock3.png` placeholder with `wood_pile.png` (48×48 pixel art pile). Removed oversized inset hack from `hud.gd`. Bucket animations confirmed already done (were in `erik_sprites.tres` but not marked off). Cave entrance removed from roadmap (user decision). Roadmap updated to stay current on session-end.
+- **Last completed (2026-05-24, ADR-092):** Fay Grove system. ShT (ForestCreature) always walks, never stops, never near stump (80px exclusion). Grove detects Q-dropped items in 60px radius; item vanishes when player leaves; 10s timer; reward appears at drop spot; auto-grants when player returns within 20px. 40% processed / 60% double-raw, never nothing. One trade at a time. Playtested ✅.
+- **Previous (2026-05-24):** Wood icon — replaced `rock3.png` placeholder with `wood_pile.png` (48×48 pixel art pile). Removed oversized inset hack from `hud.gd`. Bucket animations confirmed already done (were in `erik_sprites.tres` but not marked off). Cave entrance removed from roadmap (user decision). Roadmap updated to stay current on session-end.
 - **Previous (2026-05-24):** Pre-flight session-end validation added to CLAUDE.md. Also fixed: `script = null` instance override in `main.tscn` (added by editor during ADR-091 MCP ops) that was nulling `world.gd` at runtime, killing hotbar, mouse nav, and all interactions. One-line fix. Playtested ✅.
 - **Previous (2026-05-24, ADR-091):** Canonical y-sort tree architecture. Switched all 3 tree species from `y_sort_offset=22` approach to canonical: node at trunk base, TreeSprite at `position=(0,-22)`, no y_sort_offset in any .tscn. Permanently eliminates the ADR-085→090 stripping loop. All 8 tree instances in world.tscn shifted +22Y (net visual position unchanged). stump_y_offset=0 (stump at node = trunk base). Depth sort verified: player behind tree at tree.y-10 ✅, in front at tree.y+15 ✅. Stump at trunk base after chop ✅. Playtested ✅.
 - **Previous (2026-05-23, ADR-090):** Pine tree TrunkCollider fix. TrunkCollider was left-side only (player could enter right side). Fixed: radius=6, height=4, centered. Also restored motion_mode=1 and y_sort_offset=14 to player.tscn.
@@ -255,11 +256,9 @@
 
 1. **Teal house collision** — `HouseTwostoryTeal` needs proper collision: door gap + side walls. Node: `HouseTealCollider` StaticBody2D in `world.tscn` (currently has 2 shapes with suspicious rotations from ADR-089 — verify in-game). `y_sort_offset=42` estimated — walk around and tune via Inspector.
 
-2. **Stump shrine gameplay** — `StumpHome001` placed at (13, 311), `door_open` animation ready. Needs: drop-item offering (Q key → WorldDropItem), probabilistic exchange (gem→buds), trust 0–100 scale, stump visual evolves through 5 states. ShrineManager autoload already in place. ForestCreature hops near shrine.
+2. **Grove expansion** — Fay Grove exchange table currently supports bud/stone_pile/wood. More items to add as player gets them. `stump_home_001` door_open animation could trigger on item capture (currently unused). Visual feedback when ShT is "processing" (e.g. faint light at stump window).
 
-3. **Stump y-offset per-species** — `stump_y_offset = 0.0` canonical default. May need per-species tuning if stump appears off-center after chop.
-
-4. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. Animated stones at `game/assets/nature/rocks/` need SpriteFrames `.tres` before use. Currency icons at `game/assets/props/items/` ready for InventoryManager.
+3. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. Animated stones at `game/assets/nature/rocks/` need SpriteFrames `.tres` before use. Currency icons at `game/assets/props/items/` ready for InventoryManager.
 
 ### Blocked / waiting on user
 - **`herb_bundle_dried.png`** — no source art exists. Currently using `herb_plant_type_a.png` as placeholder in drying rack PRODUCTS. User to supply replacement before this slot is usable.
@@ -271,12 +270,23 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-24 (Wood icon + roadmap audit)
-- **Game state:** Runnable. Playtested ✅. All systems working: hotbar, wood icon in slot 5 correct, mouse nav, tool toggle, interactions, day/night.
-- **What changed this session:** Wood icon replaced (`rock3.png` → `wood_pile.png` 48×48). Oversized inset hack removed from `hud.gd`. Roadmap audited: bucket animations confirmed already done, cave entrance dropped per user, session-end rule updated to own roadmap accuracy going forward.
+### Session end — 2026-05-24 (Fay Grove + ShT behavior)
+- **Game state:** Runnable. Playtested ✅. All systems working: hotbar, mouse nav, tool toggle, interactions, day/night, Fay Grove full exchange loop.
+- **What changed this session:** Fay Grove mechanic (ADR-092). stump_shrine.gd replaced — passive drop-watcher, 10s exchange, 40/60 odds, never nothing. forest_creature.gd — always walking, no hiding, 80px stump exclusion. world_drop_item.gd — despawn_time meta support. world.gd — shrine removed from interactables. ForestCreature start pos moved to (236, 211), y_sort_offset=11 restored in world.tscn.
+- **Fay Grove architecture (ADR-092):**
+  - StumpShrine Node2D at (13, 311) runs `stump_shrine.gd` — no signals, no Space interaction.
+  - State machine: IDLE → ITEM_PRESENT → PROCESSING (10s) → REWARD_READY → REWARD_SPAWNED → IDLE
+  - Detects WorldDropItems in `world_drop_items` group within 60px. `grove_reward` meta on reward items prevents re-detection.
+  - Exchange table in `stump_shrine.gd`: bud/stone_pile/wood → processed(40%) or double-raw(60%).
+  - Reward WorldDropItem uses 120s despawn override (`despawn_time` meta).
+  - Auto-grant when player within 20px of reward item.
+- **ShT architecture (ADR-092):**
+  - Only TREE_HOP and FLEE states. Arrives at tree → immediately picks next (never pauses).
+  - Filters: invisible trees, trees outside map bounds, trees within 80px of StumpHome001 global_position.
+  - Gets stump position via `get_parent().get_node("StumpHome001").global_position` in `_gather_trees()`.
 - **y_sort_offset — TREES (authoritative, ADR-091):** Trees do NOT use `y_sort_offset`. Node origin = trunk base. TreeSprite `position=(0,-22)`. Depth-sort transition = node Y. Cannot be stripped by editor.
 - **y_sort_offset — other nodes (AUTHORITATIVE):**
-  - Player/creatures: `y_sort_offset = half_height_px` (player=14, ForestCreature=11) — baked into player.tscn.
+  - Player/creatures: `y_sort_offset = half_height_px` (player=14, ForestCreature=11).
   - Buildings/props: `y_sort_offset = door_base_y - node.position.y`. See ADR-089 table.
   - CRITICAL: `y_sort_offset` is NOT a runtime GDScript property. Never read/set via execute_game_script.
 - **Open issues:**
@@ -286,8 +296,9 @@
   - `herb_bundle_dried.png` no source art — placeholder in use
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
   - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
-  - Linter warnings in `world_drop_item.gd` (unused `_area`) and `stump_shrine.gd` (unused `player` params) — non-blocking
-- **Next priorities:** (1) Teal house collision tuning. (2) Stump shrine trust progression.
+  - Linter warning in `world_drop_item.gd` (unused `_area`) — non-blocking
+  - ShrineManager.gd autoload is now unused (old trust system) — harmless, can be removed later
+- **Next priorities:** (1) Teal house collision tuning. (2) Grove expansion (door animation on capture, more exchange items).
 - **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
 
 ### Permissions Allowlist (as of 2026-05-15)

@@ -738,6 +738,7 @@ scale = Vector2(1.34375, 1)
 texture = ExtResource("67_2hrtt")
 
 [node name="TreePine1" parent="." unique_id=467155269 instance=ExtResource("62_5aim4")]
+visible = false
 position = Vector2(189, 223)
 disable_mode = 1
 
@@ -782,7 +783,6 @@ visible = false
 position = Vector2(62, 289)
 
 [node name="MapleTree3" parent="." unique_id=1867104290 instance=ExtResource("66_2j1j3")]
-visible = false
 position = Vector2(110, 263)
 
 [node name="StumpHome001" type="AnimatedSprite2D" parent="." unique_id=1028054031]

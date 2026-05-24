@@ -1464,9 +1464,57 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-092: Fay Grove Exchange Mechanic
+**Status:** Accepted
+**Date:** 2026-05-24
+
+**Context:** The stump shrine needed a passive, mysterious exchange mechanic. The old `stump_shrine.gd` used Space-key interaction to directly offer items; the new design required: drop-item-and-leave flow, player-invisible processing, dual outcomes (processed vs double-raw), one trade at a time, ShT never seen near stump.
+
+**Decision:** Complete replacement of `stump_shrine.gd` with a passive groove watcher. `forest_creature.gd` simplified to always-walking, stump-exclusion behavior.
+
+**Grove mechanic (stump_shrine.gd):**
+- Node2D at stump position. No signals, no Space interaction. Removed from world.gd interactable list.
+- State machine: `IDLE → ITEM_PRESENT → PROCESSING → REWARD_READY → REWARD_SPAWNED → IDLE`
+- Scans `world_drop_items` group each frame for items within `GROVE_RADIUS = 60px`
+- `ITEM_PRESENT`: waits for player to leave grove. When player exits: queue_free the drop item (it "vanishes") → `PROCESSING`
+- `PROCESSING`: 10s countdown. Player can re-enter, timer keeps running.
+- `REWARD_READY`: if player NOT in grove → spawn reward WorldDropItem at original drop position. If player IS in grove → hold until player leaves.
+- `REWARD_SPAWNED`: reward sits at drop spot (120s despawn). When player enters grove and comes within 20px: auto-grant to inventory + toast → `IDLE`.
+- Exchange table: bud→hang_dry OR 2×bud; stone_pile→lumber OR 2×stone_pile; wood→lumber OR 2×wood. 40% processed / 60% double-raw. Never nothing.
+- `grove_reward` meta on reward WorldDropItem prevents re-detection as a new offering.
+
+**ShT behavior (forest_creature.gd):**
+- Removed `HIDING` and `TRUST_HOLD` states. Only `TREE_HOP` and `FLEE`.
+- Always walking: on arrival at tree, immediately picks next target (no pause).
+- `STUMP_EXCLUSION_RADIUS = 80px`: trees within 80px of StumpHome001 are filtered out of hop targets.
+- Invisible trees (`visible = false`) filtered from hop list.
+- Starting position moved to (236, 211) — near MapleTree, far from stump.
+- `y_sort_offset = 11` restored in world.tscn.
+
+**WorldDropItem update:**
+- Added `despawn_time` meta override. Grove reward items use 120s (vs normal 30–90s random), giving player time to return.
+
+**Rationale:**
+- Passive detection via group scan avoids physics body complexity (WorldDropItem is Node2D, not PhysicsBody).
+- State machine cleanly separates each phase; `grove_reward` meta prevents feedback loops.
+- Auto-grant on approach (no Space press) = satisfying pickup with no interface friction.
+- ShT always moving matches "mysterious creature" feel; stump exclusion prevents ShT from hovering near its own home.
+
+**Consequences:**
+- ShrineManager.gd autoload is now unused (trust system retired). Left in place (safe, no errors).
+- One trade at a time enforced by state machine — can't stack multiple drops.
+- If player drops a non-exchangeable item in grove, grove ignores it (item despawns normally).
+
+**Testing:** Full loop playtested via MCP. Dropped stone_pile → grove state ITEM_PRESENT → player moved away → 10s elapsed → REWARD_SPAWNED at drop pos → player returned within 20px → auto-granted 2× stone_pile (60% raw outcome) + toast. Grove back to IDLE. ShT at (639, 211) = 470px from stump, velocity non-zero (always moving), TREE_HOP state targeting WillowWeeping. ✅
+
+**Files changed:** `game/World/StumpShrine/stump_shrine.gd`, `game/World/ForestCreature/forest_creature.gd`, `game/World/WorldDropItem/world_drop_item.gd`, `game/World/world.gd`, `game/World/world.tscn` (ForestCreature position + y_sort_offset)
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-24 | ADR-092: Fay Grove mechanic. stump_shrine.gd replaced with passive drop-watcher (IDLE→ITEM_PRESENT→PROCESSING→REWARD_READY→REWARD_SPAWNED). forest_creature.gd: removed HIDING/TRUST_HOLD, always walking, 80px stump exclusion zone, start pos moved to (236,211). world_drop_item.gd: despawn_time meta override. world.gd: shrine removed from interactables. Full loop playtested ✅. |
 | 2026-05-24 | Wood icon: replaced rock3.png placeholder with wood_pile.png (48×48). Removed oversized inset hack from hud.gd. Roadmap audited — bucket animations confirmed done, cave entrance dropped, session-end rule updated to own roadmap accuracy. |
 | 2026-05-24 | Fix: `script = null` instance override in main.tscn removed — Godot editor had written it during ADR-091 MCP ops, nulling world.gd at runtime (broke hotbar, mouse nav, interactions). SESSION-END PRE-FLIGHT RULE added to CLAUDE.md to catch this pattern before future doc commits. |
 | 2026-05-24 | ADR-091: Canonical y-sort tree architecture — node at trunk base, sprite offset upward, no y_sort_offset. Permanently eliminates the y_sort_offset stripping loop (ADR-085→090). All 3 tree scenes + world.tscn updated. Playtested ✅. |

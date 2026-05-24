@@ -46,10 +46,6 @@ func _ready() -> void:
 		tree.connect("interactable_entered", _on_interactable_entered)
 		tree.connect("interactable_exited", _on_interactable_exited)
 		tree.connect("tree_chopped", _on_tree_chopped)
-	var shrine := get_node_or_null("StumpShrine")
-	if shrine:
-		shrine.connect("interactable_entered", _on_interactable_entered)
-		shrine.connect("interactable_exited", _on_interactable_exited)
 	_grant_starting_items()
 
 
