@@ -1467,6 +1467,7 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-24 | Wood icon: replaced rock3.png placeholder with wood_pile.png (48×48). Removed oversized inset hack from hud.gd. Roadmap audited — bucket animations confirmed done, cave entrance dropped, session-end rule updated to own roadmap accuracy. |
 | 2026-05-24 | Fix: `script = null` instance override in main.tscn removed — Godot editor had written it during ADR-091 MCP ops, nulling world.gd at runtime (broke hotbar, mouse nav, interactions). SESSION-END PRE-FLIGHT RULE added to CLAUDE.md to catch this pattern before future doc commits. |
 | 2026-05-24 | ADR-091: Canonical y-sort tree architecture — node at trunk base, sprite offset upward, no y_sort_offset. Permanently eliminates the y_sort_offset stripping loop (ADR-085→090). All 3 tree scenes + world.tscn updated. Playtested ✅. |
 | 2026-05-23 | ADR-090: Pine tree TrunkCollider fixed (left-side only → symmetric 12px wide). y_sort_offset stripping root cause identified (Godot editor strips it on standalone scene save). Safe tuning workflow established. motion_mode=1 restored to player.tscn. |

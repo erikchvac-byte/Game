@@ -337,16 +337,10 @@ func _on_slot_changed(index: int, item: Variant) -> void:
 	var count: int = 0 if item == null else item.count
 	set_slot_badge(index, count if count > 1 else -1)
 	var icon := (_slots[index] as Panel).get_node("Icon") as TextureRect
-	if item != null and item.key == "wood":
-		icon.offset_left = 6.0
-		icon.offset_top = 3.5
-		icon.offset_right = -6.0
-		icon.offset_bottom = -3.5
-	else:
-		icon.offset_left = 0.0
-		icon.offset_top = 0.0
-		icon.offset_right = 0.0
-		icon.offset_bottom = 0.0
+	icon.offset_left = 0.0
+	icon.offset_top = 0.0
+	icon.offset_right = 0.0
+	icon.offset_bottom = 0.0
 
 
 func _refresh_water_bar() -> void:

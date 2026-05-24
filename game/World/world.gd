@@ -61,7 +61,7 @@ func _grant_starting_items() -> void:
 	_inv_mgr.add_item("axe", preload("res://assets/props/items/tool_axe.png"))
 	_inv_mgr.add_item("stone_pile", preload("res://assets/props/items/stone_pile.png"))
 	_inv_mgr.add_item("bud", preload("res://assets/props/bud/dry_bud.png"))
-	_inv_mgr.add_item("wood", preload("res://assets/props/items/rock3.png"))
+	_inv_mgr.add_item("wood", preload("res://assets/props/items/wood_pile.png"))
 	Engine.set_meta("starting_items_granted", true)
 
 
@@ -340,4 +340,4 @@ func _on_door_entered(body: Node2D) -> void:
 
 func _on_tree_chopped() -> void:
 	if _inv_mgr:
-		_inv_mgr.add_item("wood", preload("res://assets/props/items/rock3.png"))
+		_inv_mgr.add_item("wood", preload("res://assets/props/items/wood_pile.png"))

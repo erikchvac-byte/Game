@@ -11,13 +11,14 @@
   2. **Editor error check** — call `get_editor_errors` via MCP. If any errors are returned that are not pre-existing/known warnings (e.g. tile_bit_tools UID duplicates), list them and block.
   3. **Game runability check** — call `play_scene` + `get_output_log` (brief run). If the output log contains `Parse Error`, `Script failed to load`, or `SCRIPT ERROR`, block with the log snippet. Stop the scene after checking.
   4. **No block if:** all checks pass, or the only errors are the pre-approved known warnings (`tile_bit_tools` nested UID duplicates, `hud.gd INT_AS_ENUM_WITHOUT_CAST`). Those are not blocking.
-- **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — **first run SESSION-END PRE-FLIGHT**, then automatically perform all of the following: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
+- **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — **first run SESSION-END PRE-FLIGHT**, then automatically perform all of the following: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) **update the Roadmap section** — remove completed items, remove dropped items, add new priorities discovered this session, keep it accurate and current; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
 - **TSCN EDIT RULE:** Never rewrite any `.tscn` file in full using the Write tool. Always use targeted Edit tool calls for specific node changes. Full rewrites silently drop inline node properties — this was the root cause of the recurring y_sort_offset loss (ADR-073→090).
 - **TREE Y-SORT RULE (ADR-091 — canonical, permanent):** Tree node origin = trunk base (ground contact). TreeSprite child has `position = Vector2(0, -22)` (sprite draws upward). `y_sort_offset` stays at default 0 — never written to any tree .tscn, never stripped. Depth sort transition is at node Y (trunk base). To add a new tree species: set TreeSprite.position.y = -(half_tree_height_px), leave everything else at defaults. To move a tree in world.tscn: set instance position directly — no y_sort_offset override needed. TrunkCollider at origin (y=0). StumpCollider at origin. stump_y_offset export = 0.0 (stump appears at trunk base by default).
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Last completed:** Pre-flight session-end validation added to CLAUDE.md (2026-05-24). Also fixed: `script = null` instance override in `main.tscn` (added by editor during ADR-091 MCP ops) that was nulling `world.gd` at runtime, killing hotbar, mouse nav, and all interactions. One-line fix. Playtested ✅.
+- **Last completed (2026-05-24):** Wood icon — replaced `rock3.png` placeholder with `wood_pile.png` (48×48 pixel art pile). Removed oversized inset hack from `hud.gd`. Bucket animations confirmed already done (were in `erik_sprites.tres` but not marked off). Cave entrance removed from roadmap (user decision). Roadmap updated to stay current on session-end.
+- **Previous (2026-05-24):** Pre-flight session-end validation added to CLAUDE.md. Also fixed: `script = null` instance override in `main.tscn` (added by editor during ADR-091 MCP ops) that was nulling `world.gd` at runtime, killing hotbar, mouse nav, and all interactions. One-line fix. Playtested ✅.
 - **Previous (2026-05-24, ADR-091):** Canonical y-sort tree architecture. Switched all 3 tree species from `y_sort_offset=22` approach to canonical: node at trunk base, TreeSprite at `position=(0,-22)`, no y_sort_offset in any .tscn. Permanently eliminates the ADR-085→090 stripping loop. All 8 tree instances in world.tscn shifted +22Y (net visual position unchanged). stump_y_offset=0 (stump at node = trunk base). Depth sort verified: player behind tree at tree.y-10 ✅, in front at tree.y+15 ✅. Stump at trunk base after chop ✅. Playtested ✅.
 - **Previous (2026-05-23, ADR-090):** Pine tree TrunkCollider fix. TrunkCollider was left-side only (player could enter right side). Fixed: radius=6, height=4, centered. Also restored motion_mode=1 and y_sort_offset=14 to player.tscn.
 - **Previous (2026-05-23):** Full physics/collision/y-sort audit (ADR-089). Restored y_sort_offset for all 12 inline world.tscn nodes (Well=24, PlayerHome=35, Plant=24, DryingRack=30, Big Rock=31, WillowWeeping=53, HouseTwostoryTeal=42, BigMushroomStump=22, GreyHoodie=19, CaveEntrance=15, StumpHome001=12, ForestCreature=11). Baked player y_sort_offset=14 into player.tscn. Fixed HouseTealCollider nested CollisionShape2D bug. Wrote collision matrix, y-sort rule table, sprite ownership map, and validation script (game/tools/collision_validator.gd). All depth-sort transitions playtested ✅.
@@ -248,23 +249,17 @@
 | Post | Drying rack 3-state mechanic | ✅ Done |
 
 ## Roadmap
-> **Persistent — session-end does NOT auto-replace this.** Update manually when priorities shift or tasks complete. Each entry: what to do, where to find the pieces, what's blocking it.
+> **Session-end DOES update this list** — completed items get marked done, new priorities get added. Each entry: what to do, where to find the pieces, what's blocking it.
 
 ### Active priorities (in order)
 
-1. **Bucket animations** — add `idle_down_bucket`, `idle_up_bucket`, `idle_side_bucket`, `walk_down_bucket`, `walk_up_bucket`, `walk_side_bucket` animations to `res://resources/characters/erik_sprites.tres`. Source PNGs exist at `res://assets/characters/erik/` (bucket idle/walk variants). No script changes needed — `player_animation.gd` already handles the `_bucket` suffix and falls back gracefully if missing.
+1. **Teal house collision** — `HouseTwostoryTeal` needs proper collision: door gap + side walls. Node: `HouseTealCollider` StaticBody2D in `world.tscn` (currently has 2 shapes with suspicious rotations from ADR-089 — verify in-game). `y_sort_offset=42` estimated — walk around and tune via Inspector.
 
-2. **Wood icon** — replace `rock3.png` placeholder with a real wood sprite. Key = `"wood"` in InventoryManager. Used in `world.gd:_grant_starting_items()` and `_on_tree_chopped()`. Hotbar slot has a 50% inset applied in `hud.gd` for `key == "wood"` because `rock3.png` is oversized — remove that inset once a proper icon is in place.
+2. **Stump shrine gameplay** — `StumpHome001` placed at (13, 311), `door_open` animation ready. Needs: drop-item offering (Q key → WorldDropItem), probabilistic exchange (gem→buds), trust 0–100 scale, stump visual evolves through 5 states. ShrineManager autoload already in place. ForestCreature hops near shrine.
 
-3. **Teal house collision** — `HouseTwostoryTeal` has a single 85×28 box collider. Needs: door gap cut into front wall, side wall shapes added to match sprite. Node: `HouseTealCollider` StaticBody2D in `world.tscn`. `y_sort_offset +42` is estimated — walk around and tune via Inspector.
+3. **Stump y-offset per-species** — `stump_y_offset = 0.0` canonical default. May need per-species tuning if stump appears off-center after chop.
 
-4. **Cave entrance** — Area2D trigger at world position (29, 409). No scene exists yet. Rigging needed: body_entered → fade → cave interior scene (to be created).
-
-5. **Stump y-offset per-species** — `stump_y_offset = 0.0` (canonical default, node at trunk base). May need per-species tuning via Inspector if stump visual appears off-center after chop.
-
-6. **Stump shrine gameplay** — `StumpHome001` is placed at (13, 311) with `door_open` animation ready. TBD trigger needed: drop-item offering → probabilistic exchange (gem→buds), trust 0–100 scale, stump visual evolves through 5 states. Drop mechanic (Q key → WorldDropItem), ShrineManager autoload already in place. ForestCreature now hops through wooded area near shrine.
-
-7. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. Animated stones at `game/assets/nature/rocks/` need SpriteFrames `.tres` before use. Currency icons at `game/assets/props/items/` ready for InventoryManager.
+4. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. Animated stones at `game/assets/nature/rocks/` need SpriteFrames `.tres` before use. Currency icons at `game/assets/props/items/` ready for InventoryManager.
 
 ### Blocked / waiting on user
 - **`herb_bundle_dried.png`** — no source art exists. Currently using `herb_plant_type_a.png` as placeholder in drying rack PRODUCTS. User to supply replacement before this slot is usable.
@@ -276,25 +271,23 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-24 (Bug fix: script=null + SESSION-END PRE-FLIGHT RULE added)
-- **Game state:** Runnable. Playtested ✅. All systems confirmed working: hotbar, mouse nav, tool toggle, interactions, day/night.
-- **What was fixed:** `script = null` on the World instance in `main.tscn` (line 13). Added by Godot editor during ADR-091 MCP operations as an instance property override. Silently nulled `world.gd` at runtime — hotbar items missing, mouse clicks had no effect, no interactions. Fix: removed the one override line. Root cause pattern documented in SESSION-END PRE-FLIGHT RULE.
-- **New rule added:** SESSION-END PRE-FLIGHT RULE in CLAUDE.md. Before every session-end: (1) grep .tscn files for `^script = null`; (2) check editor errors; (3) brief play + log scan. Blocks with ⚠ alert if any check fails. Requires explicit acknowledgment to override.
+### Session end — 2026-05-24 (Wood icon + roadmap audit)
+- **Game state:** Runnable. Playtested ✅. All systems working: hotbar, wood icon in slot 5 correct, mouse nav, tool toggle, interactions, day/night.
+- **What changed this session:** Wood icon replaced (`rock3.png` → `wood_pile.png` 48×48). Oversized inset hack removed from `hud.gd`. Roadmap audited: bucket animations confirmed already done, cave entrance dropped per user, session-end rule updated to own roadmap accuracy going forward.
 - **y_sort_offset — TREES (authoritative, ADR-091):** Trees do NOT use `y_sort_offset`. Node origin = trunk base. TreeSprite `position=(0,-22)`. Depth-sort transition = node Y. Cannot be stripped by editor.
 - **y_sort_offset — other nodes (AUTHORITATIVE):**
   - Player/creatures: `y_sort_offset = half_height_px` (player=14, ForestCreature=11) — baked into player.tscn.
   - Buildings/props: `y_sort_offset = door_base_y - node.position.y`. See ADR-089 table.
   - CRITICAL: `y_sort_offset` is NOT a runtime GDScript property. Never read/set via execute_game_script.
 - **Open issues:**
-  - `HouseTwostoryTeal` y_sort_offset=42 estimated — teal house collision tuning pending
-  - `tile_bit_tools/tile_bit_tools/` nested UID duplicates — ~34 editor warnings (pre-approved known issue, non-blocking)
+  - `HouseTwostoryTeal` collision has 2 shapes with suspicious rotations — verify/tune in-game (roadmap #1)
+  - `tile_bit_tools/tile_bit_tools/` nested UID duplicates — ~34 editor warnings (pre-approved, non-blocking)
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
   - `herb_bundle_dried.png` no source art — placeholder in use
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
-  - Bucket animation variants not yet in `erik_sprites.tres`
   - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
-  - GreyHoodie y_sort_offset=19 is ~8.5px low vs correct 27.5 — no visible issue during patrol
-- **Next priorities:** (1) Stump shrine trust progression. (2) Bucket animations. (3) Teal house collision tuning. (4) Wood icon. (5) Cave entrance rigging.
+  - Linter warnings in `world_drop_item.gd` (unused `_area`) and `stump_shrine.gd` (unused `player` params) — non-blocking
+- **Next priorities:** (1) Teal house collision tuning. (2) Stump shrine trust progression.
 - **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
 
 ### Permissions Allowlist (as of 2026-05-15)
