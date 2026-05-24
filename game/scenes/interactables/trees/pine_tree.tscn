@@ -4,24 +4,41 @@
 [ext_resource type="SpriteFrames" uid="uid://ddumottepyyq6" path="res://resources/trees/pine_frames.tres" id="2_pine"]
 [ext_resource type="SpriteFrames" uid="uid://bp7x3xs5mq8ub" path="res://resources/trees/stump_frames.tres" id="3_stump"]
 
-[sub_resource type="CapsuleShape2D" id="TrunkShape"]
-radius = 2.0
-height = 4.0
+[sub_resource type="CircleShape2D" id="TrunkShape"]
+radius = 8.0
 
 [sub_resource type="CircleShape2D" id="StumpShape"]
-radius = 5.000001
+radius = 7.0
 
 [sub_resource type="CircleShape2D" id="InteractShape"]
-radius = 10.777831
+radius = 22.0
 
 [node name="PineTree" type="StaticBody2D" unique_id=467155269]
 script = ExtResource("1_script")
 
 [node name="TreeSprite" type="AnimatedSprite2D" parent="." unique_id=631128920]
+position = Vector2(0, -22)
 scale = Vector2(0.75, 0.75)
 sprite_frames = ExtResource("2_pine")
 animation = &"idle"
 autoplay = "idle"
+metadata/_aseprite_wizard_interface_config_ = {
+"layer_section": true,
+"pending_changes": {
+"embed_tex": true,
+"layers": [],
+"o_ex_p": "",
+"o_folder": "",
+"o_name": "",
+"only_visible": false,
+"scale": "1.0",
+"should_round_fps": true,
+"slice": "",
+"source": "",
+"source_uid": -1
+},
+"slice_section": true
+}
 
 [node name="StumpSprite" type="AnimatedSprite2D" parent="." unique_id=1004487910]
 visible = false
@@ -30,19 +47,13 @@ sprite_frames = ExtResource("3_stump")
 animation = &"dissolve"
 
 [node name="TrunkCollider" type="CollisionShape2D" parent="." unique_id=240107372]
-position = Vector2(0, 22)
 shape = SubResource("TrunkShape")
 
 [node name="StumpCollider" type="CollisionShape2D" parent="." unique_id=112233445]
-position = Vector2(-3, 17)
-rotation = 7.8201017
+disabled = true
 shape = SubResource("StumpShape")
 
 [node name="InteractArea" type="Area2D" parent="." unique_id=394405981]
-position = Vector2(4, 0)
 
 [node name="InteractCol" type="CollisionShape2D" parent="InteractArea" unique_id=1621706817]
-position = Vector2(-6.9999995, -5.999999)
-rotation = -0.010288292
-scale = Vector2(2.5425556, 3.2308326)
 shape = SubResource("InteractShape")

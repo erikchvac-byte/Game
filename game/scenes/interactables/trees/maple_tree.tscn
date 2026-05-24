@@ -15,11 +15,11 @@ radius = 22.0
 radius = 7.0
 
 [node name="MapleTree" type="StaticBody2D" unique_id=2019391354]
-y_sort_offset = 22
 script = ExtResource("1_script")
 species = "maple"
 
 [node name="TreeSprite" type="AnimatedSprite2D" parent="." unique_id=1254046823]
+position = Vector2(0, -22)
 scale = Vector2(0.75, 0.75)
 sprite_frames = ExtResource("2_maple")
 animation = &"idle"
@@ -32,7 +32,7 @@ sprite_frames = ExtResource("3_stump")
 animation = &"dissolve"
 
 [node name="TrunkCollider" type="CollisionShape2D" parent="." unique_id=1033469786]
-position = Vector2(0, 16)
+position = Vector2(0, -6)
 shape = SubResource("TrunkShape")
 
 [node name="StumpCollider" type="CollisionShape2D" parent="." unique_id=223344556]

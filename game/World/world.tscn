@@ -379,7 +379,7 @@ load_path = "res://.godot/imported/tile_007.png-0745e9ee54feb566e6d6e2730cbf8be8
 
 [node name="World" type="Node2D" unique_id=1479370967]
 y_sort_enabled = true
-position = Vector2(34, 13)
+position = Vector2(-221, -13)
 script = ExtResource("4_worldgd")
 
 [node name="Well" type="Node2D" parent="." unique_id=770000001]
@@ -738,36 +738,36 @@ scale = Vector2(1.34375, 1)
 texture = ExtResource("67_2hrtt")
 
 [node name="TreePine1" parent="." unique_id=467155269 instance=ExtResource("62_5aim4")]
-position = Vector2(189, 201)
+position = Vector2(189, 223)
 disable_mode = 1
 
 [node name="TreeMaple1" parent="." unique_id=2019391354 instance=ExtResource("66_2j1j3")]
 visible = false
-position = Vector2(200, 162)
+position = Vector2(200, 184)
 
 [node name="TreeFir1" parent="." unique_id=442005024 instance=ExtResource("68_xmbla")]
 visible = false
-position = Vector2(50, 240)
+position = Vector2(50, 262)
 
 [node name="MapleTree" parent="." unique_id=300161114 instance=ExtResource("66_2j1j3")]
 visible = false
-position = Vector2(236, 189)
+position = Vector2(236, 211)
 
 [node name="MapleTree2" parent="." unique_id=445774007 instance=ExtResource("66_2j1j3")]
 visible = false
-position = Vector2(196, 213)
+position = Vector2(196, 235)
 
 [node name="FirTree" parent="." unique_id=1677230814 instance=ExtResource("68_xmbla")]
 visible = false
-position = Vector2(235, 237)
+position = Vector2(235, 259)
 
 [node name="FirTree2" parent="." unique_id=731925772 instance=ExtResource("68_xmbla")]
 visible = false
-position = Vector2(160, 180)
+position = Vector2(160, 202)
 
 [node name="PineTree" parent="." unique_id=9972895 instance=ExtResource("62_5aim4")]
 visible = false
-position = Vector2(163, 228)
+position = Vector2(163, 250)
 
 [node name="PineTree2" parent="." unique_id=43081839 instance=ExtResource("62_5aim4")]
 visible = false
@@ -797,18 +797,18 @@ position = Vector2(404, 209)
 texture = ExtResource("65_g3lo7")
 
 [node name="BushWideSpreading" type="Sprite2D" parent="." unique_id=2036693174]
-position = Vector2(379.99997, 217)
-scale = Vector2(0.6250001, 0.27083343)
+position = Vector2(432.00003, 218)
+scale = Vector2(1.166666, 0.63541675)
 texture = ExtResource("66_5aim4")
 
 [node name="BushRoundTall" type="Sprite2D" parent="." unique_id=1175772588]
-position = Vector2(400, 213.00002)
-scale = Vector2(0.6041659, 0.42708346)
+position = Vector2(397, 223)
+scale = Vector2(1.0781243, 0.64843726)
 texture = ExtResource("67_h4nnu")
 
 [node name="BushWildScraggly" type="Sprite2D" parent="." unique_id=1481937818]
-position = Vector2(419.00003, 219)
-scale = Vector2(1.3104957, 0.1887688)
+position = Vector2(468, 217)
+scale = Vector2(1.3104957, 0.42771772)
 texture = ExtResource("68_houwb")
 
 [node name="StumpShrine" type="Node2D" parent="." unique_id=457654152]

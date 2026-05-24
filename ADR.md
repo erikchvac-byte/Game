@@ -1433,9 +1433,41 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-091: Canonical Y-Sort Tree Architecture — Sprite Offset, No y_sort_offset
+**Status:** Accepted
+**Date:** 2026-05-24
+
+**Context:** The recurring y_sort_offset loss loop (ADR-085→090) was caused by a fundamental mismatch: we were using `y_sort_offset` on tree base scenes to offset the depth-sort point, but Godot strips this property every time the scene is saved standalone (no y_sort_enabled ancestor present). We kept patching the symptom. ADR-091 eliminates the root cause by switching to the canonical Godot Recipes approach.
+
+**Decision:** Node origin anchored at ground contact point (trunk base). Sprite child offset upward with negative Y. `y_sort_offset` stays at default 0 — never written to any .tscn, never stripped.
+
+**Changes:**
+1. **pine_tree.tscn, maple_tree.tscn, fir_tree.tscn** — removed `y_sort_offset = 22` from root node; added `position = Vector2(0, -22)` to TreeSprite. TrunkCollider moved from `(0, -6)` (legacy offset) to origin `(0, 0)` — collider is now at trunk base (node position). InteractArea at origin.
+2. **choppable_tree.gd** — `stump_y_offset` default changed to `0.0`. With node at trunk base, stump renders exactly at ground contact by default. No export value needed unless per-species tuning is required.
+3. **world.tscn** — All 8 tree instance positions shifted +22 Y (anchor moved down 22px to compensate for sprite offset). Visual position on screen is unchanged (node down 22, sprite up 22 = net zero shift). Only the depth-sort transition point changed: now exactly at trunk base.
+
+**Rationale:**
+- Canonical Godot Recipes pattern: origin = ground contact, sprite = offset child. This is how every professionally documented top-down 2D tree works.
+- `y_sort_offset` at default 0 is never serialized to .tscn. Can never be stripped. The entire ADR-085→090 loop cannot repeat.
+- TrunkCollider at origin is semantically correct: tree trunk physics IS at the trunk base.
+- No special workflow required after editor saves. Depth sort is stable.
+
+**Consequences:**
+- Y_SORT_OFFSET TUNING RULE in CLAUDE.md is now obsolete for trees — removed.
+- Depth-sort transition is at trunk base (node Y). Player transitions from behind → in front exactly when crossing the trunk. Verified: player at tree.y-10 = behind ✅, player at tree.y+15 = in front ✅.
+- Stump appears at trunk base after chopping ✅.
+- Any new tree species: set TreeSprite position Y = -(half_tree_height_px), leave y_sort_offset at 0 (default). Drop in world.tscn — no post-placement edits needed.
+
+**Files changed:** `game/scenes/interactables/trees/pine_tree.tscn`, `game/scenes/interactables/trees/maple_tree.tscn`, `game/scenes/interactables/trees/fir_tree.tscn`, `game/scenes/interactables/trees/choppable_tree.gd`, `game/World/world.tscn` (all 8 tree instance Y positions +22)
+
+**Testing:** Playtested via MCP execute_game_script. TreePine1 at global_y=223 (after +22 shift). Player at y=213 hidden behind tree ✅. Player at y=238 visible in front of trunk ✅. Stump rendered at trunk base after 3 chops ✅.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-24 | ADR-091: Canonical y-sort tree architecture — node at trunk base, sprite offset upward, no y_sort_offset. Permanently eliminates the y_sort_offset stripping loop (ADR-085→090). All 3 tree scenes + world.tscn updated. Playtested ✅. |
 | 2026-05-23 | ADR-090: Pine tree TrunkCollider fixed (left-side only → symmetric 12px wide). y_sort_offset stripping root cause identified (Godot editor strips it on standalone scene save). Safe tuning workflow established. motion_mode=1 restored to player.tscn. |
 | 2026-05-23 | ADR-089: Full physics/collision/y-sort audit. Restored 12 y_sort_offset values in world.tscn inline nodes. Fixed HouseTealCollider nested CollisionShape2D bug. Baked player y_sort_offset=14 into player.tscn. Documented complete collision matrix and sprite ownership rules. |
 | 2026-05-23 | ADR-088: y_sort_offset persistence fix — baked into base tree scenes (not world.tscn instance overrides). Value calibrated 28→22 (lower branch tips, not trunk base). Removed y_sort_enabled=true from TreePine1 override. |

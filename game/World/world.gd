@@ -46,6 +46,10 @@ func _ready() -> void:
 		tree.connect("interactable_entered", _on_interactable_entered)
 		tree.connect("interactable_exited", _on_interactable_exited)
 		tree.connect("tree_chopped", _on_tree_chopped)
+	var shrine := get_node_or_null("StumpShrine")
+	if shrine:
+		shrine.connect("interactable_entered", _on_interactable_entered)
+		shrine.connect("interactable_exited", _on_interactable_exited)
 	_grant_starting_items()
 
 
@@ -55,6 +59,7 @@ func _grant_starting_items() -> void:
 	if not _inv_mgr:
 		return
 	_inv_mgr.add_item("axe", preload("res://assets/props/items/tool_axe.png"))
+	_inv_mgr.add_item("stone_pile", preload("res://assets/props/items/stone_pile.png"))
 	_inv_mgr.add_item("bud", preload("res://assets/props/bud/dry_bud.png"))
 	_inv_mgr.add_item("wood", preload("res://assets/props/items/rock3.png"))
 	Engine.set_meta("starting_items_granted", true)
@@ -99,6 +104,9 @@ func _input(event: InputEvent) -> void:
 		if event.is_action_pressed(EQUIPPABLE_TOOLS[tool_key]):
 			_handle_tool_toggle(tool_key)
 			return
+	if event.is_action_pressed("drop_item"):
+		_handle_drop_item()
+		return
 	if event.is_action_pressed("interact"):
 		var target := _get_nearest_interactable()
 		if target and target.has_method("interact"):
@@ -148,6 +156,29 @@ func _handle_npc_trade() -> void:
 		_player.is_trading = true
 	if _hud:
 		_hud.show_toast("Traded: +1 Gem" if success else "No product available", 2.5 if success else 2.0)
+
+
+func _handle_drop_item() -> void:
+	if not _inv_mgr or not _player:
+		return
+	var selected_slot: int = _hud.selected_slot if _hud else -1
+	if selected_slot < 0:
+		return
+	var item = _inv_mgr.get_slot(selected_slot)
+	if item == null:
+		return
+	# Don't allow dropping tools
+	if item.key in EQUIPPABLE_TOOLS:
+		if _hud:
+			_hud.show_toast("Can't drop equipped tools", 1.5)
+		return
+	_inv_mgr.remove_item(item.key)
+	var drop_scene := preload("res://World/WorldDropItem/world_drop_item.tscn")
+	var drop := drop_scene.instantiate() as Node2D
+	drop.set_meta("item_key", item.key)
+	drop.set_meta("item_tex", item.tex)
+	drop.position = _player.position + Vector2(0, 8)
+	add_child(drop)
 
 
 func _get_nearest_interactable() -> Node:

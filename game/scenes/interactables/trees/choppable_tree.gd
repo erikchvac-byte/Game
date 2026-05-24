@@ -6,7 +6,7 @@ signal tree_chopped
 
 @export var species: String = "pine"
 @export var chops_required: int = 3
-@export var stump_y_offset: float = 28.0
+@export var stump_y_offset: float = 0.0
 
 @onready var _tree_sprite: AnimatedSprite2D = $TreeSprite
 @onready var _stump_sprite: AnimatedSprite2D = $StumpSprite
