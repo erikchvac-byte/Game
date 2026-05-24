@@ -5,17 +5,16 @@
 [ext_resource type="SpriteFrames" uid="uid://bp7x3xs5mq8ub" path="res://resources/trees/stump_frames.tres" id="3_stump"]
 
 [sub_resource type="CapsuleShape2D" id="TrunkShape"]
-radius = 5.0
-height = 10.0
-
-[sub_resource type="CircleShape2D" id="InteractShape"]
-radius = 22.0
+radius = 2.0
+height = 4.0
 
 [sub_resource type="CircleShape2D" id="StumpShape"]
-radius = 7.0
+radius = 5.000001
+
+[sub_resource type="CircleShape2D" id="InteractShape"]
+radius = 10.777831
 
 [node name="PineTree" type="StaticBody2D" unique_id=467155269]
-y_sort_offset = 22
 script = ExtResource("1_script")
 
 [node name="TreeSprite" type="AnimatedSprite2D" parent="." unique_id=631128920]
@@ -31,14 +30,19 @@ sprite_frames = ExtResource("3_stump")
 animation = &"dissolve"
 
 [node name="TrunkCollider" type="CollisionShape2D" parent="." unique_id=240107372]
-position = Vector2(0, 16)
+position = Vector2(0, 22)
 shape = SubResource("TrunkShape")
 
 [node name="StumpCollider" type="CollisionShape2D" parent="." unique_id=112233445]
-disabled = true
+position = Vector2(-3, 17)
+rotation = 7.8201017
 shape = SubResource("StumpShape")
 
 [node name="InteractArea" type="Area2D" parent="." unique_id=394405981]
+position = Vector2(4, 0)
 
 [node name="InteractCol" type="CollisionShape2D" parent="InteractArea" unique_id=1621706817]
+position = Vector2(-6.9999995, -5.999999)
+rotation = -0.010288292
+scale = Vector2(2.5425556, 3.2308326)
 shape = SubResource("InteractShape")

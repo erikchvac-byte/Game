@@ -7,11 +7,13 @@
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 - **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, stop and ask — do not pick a "close enough" alternative. Choosing replacement art is the user's job.
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — automatically perform all of the following before stopping: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) update the Roadmap section to mark completed items done and add any new priorities discovered this session; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
-- **TSCN EDIT RULE:** Never rewrite any `.tscn` file in full using the Write tool. Always use targeted Edit tool calls for specific node changes. Full rewrites silently drop `y_sort_offset` and other inline node properties that aren't in your working context — this is the root cause of the recurring y_sort_offset loss (ADR-073→085→088→089).
+- **TSCN EDIT RULE:** Never rewrite any `.tscn` file in full using the Write tool. Always use targeted Edit tool calls for specific node changes. Full rewrites silently drop `y_sort_offset` and other inline node properties that aren't in your working context — this is the root cause of the recurring y_sort_offset loss (ADR-073→085→088→089→090).
+- **Y_SORT_OFFSET TUNING RULE:** `y_sort_offset` is stripped by the Godot editor whenever pine_tree.tscn (or any tree base scene) is saved standalone — the editor only keeps this property when the node has a y_sort_enabled parent, which doesn't exist in the base scene context. SAFE WORKFLOW: (1) make visual/collider edits in the Godot editor if needed, (2) save the scene, (3) IMMEDIATELY open the .tscn file in a text editor and restore `y_sort_offset = 22` under the root node line. Never skip step 3. To tune the feel: edit the number in the text file only — higher = transition lower on tree (closer to stump), lower = transition higher (into canopy). Range: 14–28.
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Last completed:** Full physics/collision/y-sort audit (2026-05-23, ADR-089). Restored y_sort_offset for all 12 inline world.tscn nodes (Well=24, PlayerHome=35, Plant=24, DryingRack=30, Big Rock=31, WillowWeeping=53, HouseTwostoryTeal=42, BigMushroomStump=22, GreyHoodie=19, CaveEntrance=15, StumpHome001=12, ForestCreature=11). Baked player y_sort_offset=14 into player.tscn. Fixed HouseTealCollider nested CollisionShape2D bug (WallFront was child of WallCenter — now direct child of StaticBody2D). Wrote collision matrix, y-sort rule table, sprite ownership map, and validation script (game/tools/collision_validator.gd). All depth-sort transitions playtested ✅.
+- **Last completed:** Pine tree depth-sort + TrunkCollider fix (2026-05-23, ADR-090). pine_tree.tscn was missing `y_sort_offset = 22` (lost to editor resave). TrunkCollider was left-side only (x range [-6,0] — player could enter right side of trunk freely). Fixed: TrunkCollider now `radius=6, height=4, position=(0,22)` — 12px wide, symmetric. Restored `motion_mode=1` and `y_sort_offset=14` to player.tscn (editor had overwritten both). Removed spurious `y_sort_enabled=true` from StumpCollider and TreePine1 instance. Root cause of recurring y_sort_offset stripping finally understood — see Y_SORT_OFFSET TUNING RULE above. Not yet playtested this session.
+- **Previous (2026-05-23):** Full physics/collision/y-sort audit (ADR-089). Restored y_sort_offset for all 12 inline world.tscn nodes (Well=24, PlayerHome=35, Plant=24, DryingRack=30, Big Rock=31, WillowWeeping=53, HouseTwostoryTeal=42, BigMushroomStump=22, GreyHoodie=19, CaveEntrance=15, StumpHome001=12, ForestCreature=11). Baked player y_sort_offset=14 into player.tscn. Fixed HouseTealCollider nested CollisionShape2D bug. Wrote collision matrix, y-sort rule table, sprite ownership map, and validation script (game/tools/collision_validator.gd). All depth-sort transitions playtested ✅.
 - **Previous (2026-05-23):** Tree y_sort_offset persistence fix + value calibration (ADR-088). Root cause of the recurring loop: y_sort_offset was set as instance overrides in world.tscn, which the editor strips on every resave. Fix: baked y_sort_offset into base tree scenes (pine_tree.tscn, maple_tree.tscn, fir_tree.tscn) so it survives all editor operations. Also removed spurious `y_sort_enabled = true` from TreePine1 instance. Value calibrated 28→22 empirically: transition at player.y≈189 (feet at y≈203 = lower branch tips). Tests: y=175 fully behind ✅, y=185 correctly behind (mid-branch) ✅, y=190 fully in front ✅.
 - **Previous (2026-05-23):** Tree y_sort_offset formula fix (ADR-087). Root cause: ADR-079 formula `stump_y_offset − player_half_height = 28 − 16 = 12` was wrong. Correct value = `stump_y_offset = 28` directly. Changed all 12 choppable tree instances in world.tscn from 12→28. ✅
 - **Previous (2026-05-22):** Full sprite/collision/camera audit (ADR-086). Fixed 3 bugs: (1) Fir TrunkCollider scale.y=-0.94 flipped physics — reset to (1,1); (2) Player y_sort_offset 16→14 (sprite is 56×56 at scale 0.5 = 28px, half=14); (3) Camera zoom (0.87,0.87) lost from player.tscn — restored. Playtested ✅.
@@ -267,20 +269,24 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-23 (Full physics/collision/y-sort audit — ADR-089)
-- **Game state:** Runnable. 0 boot errors. All 25 world objects depth-sort correctly. All y_sort_offset values confirmed present and correct. Playtested tree, bakery, and player spawn transitions ✅.
+### Session end — 2026-05-23 (Pine tree depth-sort + TrunkCollider fix — ADR-090)
+- **Game state:** Runnable. Files correct. Not playtested this session — user ended before confirmation run. Playtest pine tree depth-sort at start of next session.
+- **REMINDER — y_sort_offset tuning workflow (read this every session):**
+  - `y_sort_offset` is stripped by the Godot editor when pine_tree.tscn is saved standalone (no y_sort_enabled parent in base scene context).
+  - **To tune the feel:** open `game/scenes/interactables/trees/pine_tree.tscn` in a TEXT EDITOR, change the number on `y_sort_offset = 22`. Higher = transition lower (closer to stump). Range: 14–28.
+  - **After any Godot editor save of pine_tree.tscn:** immediately text-edit and restore `y_sort_offset = 22` under `[node name="PineTree" type="StaticBody2D"...]`. This is mandatory every time.
+  - Collider edits (radius, position) CAN be made in the Godot editor and WILL survive saves. Only `y_sort_offset` is the problem.
 - **y_sort_offset formula (AUTHORITATIVE):**
   - **Player/creatures:** `offset = half_height_px` (player=14, ForestCreature=11).
-  - **Trees (choppable pine/maple/fir):** `offset = 22` — baked into base scenes, never set as world.tscn instance overrides.
-  - **Buildings/props:** `offset = door_base_y - node.position.y` (manual measurement). See ADR-089 table.
+  - **Trees (choppable pine/maple/fir):** `offset = 22` — in base scene. NOT an instance override in world.tscn.
+  - **Buildings/props:** `offset = door_base_y - node.position.y`. See ADR-089 table.
   - Rule: `node.position.y + node.y_sort_offset` = world-y where player transitions from behind → in front.
   - **CRITICAL:** `y_sort_offset` is NOT a runtime GDScript property. Do not read/set via execute_game_script.
-  - **CRITICAL:** Set in BASE SCENE for instanced nodes. Write inline in world.tscn definition for non-instanced nodes. Never use instance overrides in world.tscn — stripped on every editor resave.
-  - **CRITICAL:** Never fully rewrite any .tscn file — use targeted Edit calls only (TSCN EDIT RULE).
-- **Changes this session (ADR-089):** Restored 12 y_sort_offset values in world.tscn (Well=24, PlayerHome=35, Plant=24, DryingRack=30, Big Rock=31, WillowWeeping=53, HouseTwostoryTeal=42, BigMushroomStump=22, GreyHoodie=19, CaveEntrance=15, StumpHome001=12, ForestCreature=11). Baked player y_sort_offset=14 into player.tscn. Fixed HouseTealCollider: WallFront CollisionShape2D was nested inside another CollisionShape2D (invalid) — moved to direct child of StaticBody2D, giving teal house 2 active wall segments. Added TSCN EDIT RULE to CLAUDE.md and memory. Created `game/tools/collision_validator.gd`.
+- **Changes this session (ADR-090):** pine_tree.tscn: `y_sort_offset=22` restored, TrunkCollider centered (radius=6,height=4,pos=(0,22)), StumpCollider junk property removed. player.tscn: `y_sort_offset=14` + `motion_mode=1` restored. world.tscn: `y_sort_enabled=true` removed from TreePine1 instance.
 - **Open issues (carried forward):**
-  - `HouseTwostoryTeal` y_sort_offset=42 is estimated — now WallFront is active, walk-around tuning may be needed to confirm both value and collision feel
-  - `stump_y_offset=28.0` uniform across pine/maple/fir — may need per-species tuning (offset=22 was calibrated on pine)
+  - Pine tree depth-sort not yet playtested this session — do it first next session
+  - `HouseTwostoryTeal` y_sort_offset=42 is estimated — teal house collision tuning still pending
+  - `stump_y_offset=28.0` uniform across pine/maple/fir — may need per-species tuning
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates causing ~34 editor warnings
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
   - `herb_bundle_dried.png` has no source art — placeholder in use
@@ -288,7 +294,7 @@
   - Bucket animation variants not yet in `erik_sprites.tres`
   - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
   - GreyHoodie y_sort_offset=19 is ~8.5px low vs correct 27.5 — no visible issue during NPC patrol
-- **Next priorities:** Stump shrine trust progression; bucket animations; teal house collision tuning (walk around with WallFront now active); wood icon.
+- **Next priorities:** (1) Playtest pine tree depth-sort. (2) Stump shrine trust progression. (3) Bucket animations. (4) Teal house collision tuning. (5) Wood icon.
 - **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tileset_32x32, tree_oak_green.png.
 
 ### Permissions Allowlist (as of 2026-05-15)

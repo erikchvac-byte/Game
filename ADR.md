@@ -1398,9 +1398,45 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-090: Pine Tree TrunkCollider Fix + y_sort_offset Stripping Root Cause
+**Status:** Accepted
+**Date:** 2026-05-23
+
+**Context:** Player could physically enter the right side of the pine tree trunk and render in front of the tree from certain approach angles. Investigation also finally identified why y_sort_offset keeps disappearing from pine_tree.tscn despite being "baked in."
+
+**Findings:**
+
+1. **TrunkCollider was left-side only.** Old values: `position=(-3,15), scale=(2.07,0.375), CapsuleShape2D r=1.45 h=32`. After scale: ~6px wide × ~13px tall, x range [-6, 0] — entirely to the left of the tree center. Player approaching from the right had zero physics resistance.
+
+2. **y_sort_offset root cause identified.** Godot editor strips `y_sort_offset` from a .tscn file when saving that scene standalone. The editor only treats `y_sort_offset` as an active property when the node has a y_sort_enabled ancestor. In pine_tree.tscn opened alone, the root StaticBody2D has no parent with `y_sort_enabled=true`, so the editor considers the property inactive and drops it on every save. This is the root cause of the entire ADR-085→089→090 loop.
+
+3. **Misc junk properties found:** `y_sort_enabled=true` on StumpCollider (CollisionShape2D — doesn't support this property). `y_sort_enabled=true` on TreePine1 instance in world.tscn (spurious, sorts tree's own children by Y — harmless but wrong). `motion_mode=1` dropped from player.tscn when Godot editor resaved it after user added y_sort_enabled to player node.
+
+**Decisions:**
+
+1. **Fixed TrunkCollider** — `radius=6, height=4, position=(0,22), scale removed`. Now 12px wide × 16px tall, centered on trunk. Covers local y=[14,30] (world y 215–231 for TreePine1 at y=201). Player blocked from both sides at trunk height.
+
+2. **Established safe tuning workflow** — If collider visual tweaks are needed in the editor: open pine_tree.tscn → adjust → save → immediately text-edit pine_tree.tscn to restore `y_sort_offset = 22` on the PineTree root node (line after `[node name="PineTree"...]`). Never leave pine_tree.tscn without this line present.
+
+3. **Tuning y_sort_offset** — To change the depth-sort feel (where player transitions behind→in-front), edit the number on line `y_sort_offset = 22` in pine_tree.tscn via text only. Range: 14 (transition near top of trunk) to 28 (transition exactly at stump level). Current value 22 = lower branch tips.
+
+4. **Removed junk properties** — `y_sort_enabled=true` stripped from StumpCollider and TreePine1 instance. `motion_mode=1` restored to player.tscn.
+
+**Consequences:**
+- TrunkCollider now blocks lateral access to trunk zone from both sides — player can no longer walk into the right side of the tree trunk.
+- y_sort_offset is fragile: any save of pine_tree.tscn via the Godot editor destroys it. Tuning must be done via text edit only.
+- ADR-089 claim "y_sort_offset=22 baked into base scene — survives all editor operations" was incorrect. It survives world.tscn resaves (because it's in the base scene, not an override) but does NOT survive pine_tree.tscn resaves via the editor.
+
+**Files changed:** `game/scenes/interactables/trees/pine_tree.tscn` (y_sort_offset=22, TrunkCollider fixed, StumpCollider junk removed), `game/Player/player.tscn` (y_sort_offset=14, motion_mode=1 restored), `game/World/world.tscn` (y_sort_enabled=true removed from TreePine1 instance)
+
+**Testing:** Not yet playtested — session ended before confirmation run.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-23 | ADR-090: Pine tree TrunkCollider fixed (left-side only → symmetric 12px wide). y_sort_offset stripping root cause identified (Godot editor strips it on standalone scene save). Safe tuning workflow established. motion_mode=1 restored to player.tscn. |
 | 2026-05-23 | ADR-089: Full physics/collision/y-sort audit. Restored 12 y_sort_offset values in world.tscn inline nodes. Fixed HouseTealCollider nested CollisionShape2D bug. Baked player y_sort_offset=14 into player.tscn. Documented complete collision matrix and sprite ownership rules. |
 | 2026-05-23 | ADR-088: y_sort_offset persistence fix — baked into base tree scenes (not world.tscn instance overrides). Value calibrated 28→22 (lower branch tips, not trunk base). Removed y_sort_enabled=true from TreePine1 override. |
 | 2026-05-23 | ADR-087: Fixed tree y_sort_offset formula error — all 12 choppable trees 12→28. Player/ForestCreature now correctly render behind canopy until trunk base. |
