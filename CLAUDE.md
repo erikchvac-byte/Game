@@ -17,7 +17,8 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Last completed (2026-05-24, ADR-092):** Fay Grove system. ShT (ForestCreature) always walks, never stops, never near stump (80px exclusion). Grove detects Q-dropped items in 60px radius; item vanishes when player leaves; 10s timer; reward appears at drop spot; auto-grants when player returns within 20px. 40% processed / 60% double-raw, never nothing. One trade at a time. Playtested ✅.
+- **Last completed (2026-05-24, ADR-093):** ForestCreature refactored into self-contained `forest_creature.tscn` — mirrors choppable tree pattern. Root CharacterBody2D with `y_sort_offset=11` baked in; `CreatureSprite` AnimatedSprite2D and `CreatureCollider` as static children. `forest_creature.gd` _ready() trimmed from 18→4 lines. `world.tscn` now holds a scene instance (not an inline node). No behavior changes — flee, tree-hop, stump exclusion all intact. Playtested ✅.
+- **Previous (2026-05-24, ADR-092):** Fay Grove system. ShT (ForestCreature) always walks, never stops, never near stump (80px exclusion). Grove detects Q-dropped items in 60px radius; item vanishes when player leaves; 10s timer; reward appears at drop spot; auto-grants when player returns within 20px. 40% processed / 60% double-raw, never nothing. One trade at a time. Playtested ✅.
 - **Previous (2026-05-24):** Wood icon — replaced `rock3.png` placeholder with `wood_pile.png` (48×48 pixel art pile). Removed oversized inset hack from `hud.gd`. Bucket animations confirmed already done (were in `erik_sprites.tres` but not marked off). Cave entrance removed from roadmap (user decision). Roadmap updated to stay current on session-end.
 - **Previous (2026-05-24):** Pre-flight session-end validation added to CLAUDE.md. Also fixed: `script = null` instance override in `main.tscn` (added by editor during ADR-091 MCP ops) that was nulling `world.gd` at runtime, killing hotbar, mouse nav, and all interactions. One-line fix. Playtested ✅.
 - **Previous (2026-05-24, ADR-091):** Canonical y-sort tree architecture. Switched all 3 tree species from `y_sort_offset=22` approach to canonical: node at trunk base, TreeSprite at `position=(0,-22)`, no y_sort_offset in any .tscn. Permanently eliminates the ADR-085→090 stripping loop. All 8 tree instances in world.tscn shifted +22Y (net visual position unchanged). stump_y_offset=0 (stump at node = trunk base). Depth sort verified: player behind tree at tree.y-10 ✅, in front at tree.y+15 ✅. Stump at trunk base after chop ✅. Playtested ✅.
@@ -270,9 +271,15 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-24 (Fay Grove + ShT behavior)
-- **Game state:** Runnable. Playtested ✅. All systems working: hotbar, mouse nav, tool toggle, interactions, day/night, Fay Grove full exchange loop.
-- **What changed this session:** Fay Grove mechanic (ADR-092). stump_shrine.gd replaced — passive drop-watcher, 10s exchange, 40/60 odds, never nothing. forest_creature.gd — always walking, no hiding, 80px stump exclusion. world_drop_item.gd — despawn_time meta support. world.gd — shrine removed from interactables. ForestCreature start pos moved to (236, 211), y_sort_offset=11 restored in world.tscn.
+### Session end — 2026-05-24 (ForestCreature scene refactor)
+- **Game state:** Runnable. Playtested ✅. All systems working: hotbar, mouse nav, tool toggle, interactions, day/night, Fay Grove full exchange loop, ShT walking.
+- **What changed this session:** ForestCreature refactored into `forest_creature.tscn` (ADR-093). Now a self-contained instanced scene matching the choppable tree pattern. `world.tscn` holds only a position override. `y_sort_offset=11` baked into scene root — permanent. Old inline node and dynamic child creation fully removed.
+- **ShT scene architecture (ADR-093):**
+  - Scene: `res://World/ForestCreature/forest_creature.tscn`
+  - Root: `CharacterBody2D`, `y_sort_offset=11`, script=`forest_creature.gd`
+  - `CreatureSprite` AnimatedSprite2D: hobo_man_sprites.tres, scale 0.177, autoplay `idle_south`
+  - `CreatureCollider` CollisionShape2D: CapsuleShape2D radius=4/height=4, position=(0,3)
+  - world.tscn: `instance=ExtResource("70_houwb")`, only position=(40,320) overridden
 - **Fay Grove architecture (ADR-092):**
   - StumpShrine Node2D at (13, 311) runs `stump_shrine.gd` — no signals, no Space interaction.
   - State machine: IDLE → ITEM_PRESENT → PROCESSING (10s) → REWARD_READY → REWARD_SPAWNED → IDLE
@@ -280,13 +287,13 @@
   - Exchange table in `stump_shrine.gd`: bud/stone_pile/wood → processed(40%) or double-raw(60%).
   - Reward WorldDropItem uses 120s despawn override (`despawn_time` meta).
   - Auto-grant when player within 20px of reward item.
-- **ShT architecture (ADR-092):**
+- **ShT behavior (ADR-092):**
   - Only TREE_HOP and FLEE states. Arrives at tree → immediately picks next (never pauses).
   - Filters: invisible trees, trees outside map bounds, trees within 80px of StumpHome001 global_position.
   - Gets stump position via `get_parent().get_node("StumpHome001").global_position` in `_gather_trees()`.
 - **y_sort_offset — TREES (authoritative, ADR-091):** Trees do NOT use `y_sort_offset`. Node origin = trunk base. TreeSprite `position=(0,-22)`. Depth-sort transition = node Y. Cannot be stripped by editor.
 - **y_sort_offset — other nodes (AUTHORITATIVE):**
-  - Player/creatures: `y_sort_offset = half_height_px` (player=14, ForestCreature=11).
+  - Player/creatures: `y_sort_offset = half_height_px` (player=14, ForestCreature=11 — now baked into forest_creature.tscn).
   - Buildings/props: `y_sort_offset = door_base_y - node.position.y`. See ADR-089 table.
   - CRITICAL: `y_sort_offset` is NOT a runtime GDScript property. Never read/set via execute_game_script.
 - **Open issues:**

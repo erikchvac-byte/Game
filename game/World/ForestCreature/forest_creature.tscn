@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://csh5fr4mkn7b2"]
+
+[ext_resource type="Script" uid="uid://blb55d2t8741v" path="res://World/ForestCreature/forest_creature.gd" id="1_script"]
+[ext_resource type="SpriteFrames" uid="uid://bhnpjlcsr3is0" path="res://resources/characters/hobo_man_sprites.tres" id="2_frames"]
+
+[sub_resource type="CapsuleShape2D" id="CreatureShape"]
+radius = 4.0
+height = 4.0
+
+[node name="ForestCreature" type="CharacterBody2D" unique_id=321654987]
+y_sort_offset = 11
+script = ExtResource("1_script")
+
+[node name="CreatureSprite" type="AnimatedSprite2D" parent="." unique_id=111222333]
+sprite_frames = ExtResource("2_frames")
+scale = Vector2(0.177, 0.177)
+animation = &"idle_south"
+autoplay = "idle_south"
+
+[node name="CreatureCollider" type="CollisionShape2D" parent="." unique_id=444555666]
+position = Vector2(0, 3)
+shape = SubResource("CreatureShape")

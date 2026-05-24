@@ -1511,9 +1511,46 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-093: ForestCreature Scene Refactor — Self-Contained .tscn
+**Status:** Accepted
+**Date:** 2026-05-24
+
+**Context:** ShT (ForestCreature) was an inline `CharacterBody2D` node in `world.tscn` with its sprite and collision created dynamically in `_ready()`. This pattern diverged from all other world inhabitants (trees, player) which are self-contained instanced scenes. Dynamic child creation hid the node structure from the editor, prevented drag-to-place multi-instancing, and made `y_sort_offset` invisible/fragile in `world.tscn`.
+
+**Decision:** Refactored ShT into `res://World/ForestCreature/forest_creature.tscn` following the exact same pattern as `pine_tree.tscn` / `maple_tree.tscn` / `fir_tree.tscn`.
+
+**Scene structure:**
+- Root: `CharacterBody2D` — `y_sort_offset = 11` baked in, script attached
+- `CreatureSprite` (AnimatedSprite2D) — hobo_man_sprites, scale 0.177, autoplay `idle_south`
+- `CreatureCollider` (CollisionShape2D) — CapsuleShape2D radius=4/height=4 at position (0, 3)
+
+**Script changes:**
+- `_ready()` reduced from 18 lines to 4: removed all dynamic `AnimatedSprite2D` / `CapsuleShape2D` construction
+- `_anim = $CreatureSprite` replaces dynamic creation + `add_child()`
+- All behavior (flee, tree-hop, stump exclusion, stuck detection) unchanged
+
+**world.tscn changes (2 targeted edits):**
+- ext_resource `70_houwb` type changed from `Script` → `PackedScene` pointing to the new `.tscn`
+- Inline `[node name="ForestCreature" type="CharacterBody2D"...]` replaced with `instance=ExtResource("70_houwb")` + position override only
+
+**Rationale:**
+- Mirrors choppable tree pattern exactly — ShT is now a sibling scene to pine/maple/fir
+- `y_sort_offset=11` baked into scene root — survives editor saves, never needs restoration
+- Drag-to-place multi-instancing becomes possible with zero script changes
+- No hardcoded world-position dependencies; `get_parent()` / `get_tree().current_scene` paths unchanged
+
+**Consequences:** None negative. Dead code removed. Editor now shows full node hierarchy for ForestCreature. Script ext_resource no longer referenced in world.tscn (owned by scene).
+
+**Testing:** Playtested via `play_scene`. Output log clean. ShT confirmed at `(309, 352)`, velocity `(-30, 14)`, `CreatureSprite` exists, animation `walk_west`. ✅
+
+**Files changed:** `game/World/ForestCreature/forest_creature.tscn` (new), `game/World/ForestCreature/forest_creature.gd`, `game/World/world.tscn`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-24 | ADR-093: ForestCreature refactored into self-contained forest_creature.tscn. Mirrors choppable tree pattern: root CharacterBody2D with y_sort_offset=11 baked in, CreatureSprite AnimatedSprite2D child, CreatureCollider child. world.tscn updated from inline node to scene instance. forest_creature.gd _ready() trimmed 18→4 lines. Playtested ✅. |
 | 2026-05-24 | ADR-092: Fay Grove mechanic. stump_shrine.gd replaced with passive drop-watcher (IDLE→ITEM_PRESENT→PROCESSING→REWARD_READY→REWARD_SPAWNED). forest_creature.gd: removed HIDING/TRUST_HOLD, always walking, 80px stump exclusion zone, start pos moved to (236,211). world_drop_item.gd: despawn_time meta override. world.gd: shrine removed from interactables. Full loop playtested ✅. |
 | 2026-05-24 | Wood icon: replaced rock3.png placeholder with wood_pile.png (48×48). Removed oversized inset hack from hud.gd. Roadmap audited — bucket animations confirmed done, cave entrance dropped, session-end rule updated to own roadmap accuracy. |
 | 2026-05-24 | Fix: `script = null` instance override in main.tscn removed — Godot editor had written it during ADR-091 MCP ops, nulling world.gd at runtime (broke hotbar, mouse nav, interactions). SESSION-END PRE-FLIGHT RULE added to CLAUDE.md to catch this pattern before future doc commits. |

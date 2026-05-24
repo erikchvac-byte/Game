@@ -27,21 +27,7 @@ var _stump_pos : Vector2 = Vector2.ZERO
 func _ready() -> void:
 	motion_mode = MOTION_MODE_FLOATING
 	_player = get_tree().current_scene.get_node_or_null("World/Player")
-
-	_anim = AnimatedSprite2D.new()
-	_anim.sprite_frames = load("res://resources/characters/hobo_man_sprites.tres")
-	_anim.scale = Vector2(0.177, 0.177)
-	_anim.play("idle_south")
-	add_child(_anim)
-
-	var cshape := CollisionShape2D.new()
-	var cap    := CapsuleShape2D.new()
-	cap.radius = 4.0
-	cap.height = 4.0
-	cshape.position = Vector2(0.0, 3.0)
-	cshape.shape = cap
-	add_child(cshape)
-
+	_anim = $CreatureSprite
 	call_deferred("_gather_trees")
 
 
