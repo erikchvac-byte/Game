@@ -1560,9 +1560,38 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-095: StumpHome001 Self-Contained Scene Refactor
+**Status:** Accepted
+**Date:** 2026-05-25
+**Context:** StumpHome001 (AnimatedSprite2D) and StumpShrine (Node2D with stump_shrine.gd) were two separate inline nodes in world.tscn at the same position. Inline nodes accumulate y_sort_offset stripping, can't be drag-placed, and split logically coupled things across the file.
+**Decision:** Created `res://World/StumpShrine/stump_home_001.tscn`. Root Node2D with `y_sort_offset=12` baked in and `stump_shrine.gd` attached. Children: `StumpSprite` AnimatedSprite2D (scale 0.1953125, idle anim), `StumpCollider` StaticBody2D → `StumpShape` CircleShape2D (r=46, offset y=18). world.tscn updated: two inline nodes replaced with single instance at (13, 311).
+**Rationale:** Mirrors ADR-093 (ForestCreature) pattern. y_sort_offset=12 baked into .tscn survives all editor operations. stump_shrine.gd uses `get_parent()` to find World — still works with root as direct child of World.
+**Consequences:** Grove exchange mechanic unchanged. stump_home_001.tscn is drag-placeable if additional dwellings are needed.
+**Testing:** Game ran clean (4-line output log). StumpHome001 visible at correct position ✅.
+
+**Files changed:** `game/World/StumpShrine/stump_home_001.tscn` (created), `game/World/world.tscn`
+
+---
+
+## ADR-096: WillowTree Self-Contained Scene Refactor + Proximity Bug Fix
+**Status:** Accepted
+**Date:** 2026-05-25
+**Context:** ADR-061's proximity shake system (willow triggers once on player enter, holds last frame 120s) regressed silently. The ADR-074 editor save accidentally modified the `CollisionShape2D` under `ProximityArea` — its Y scale was flipped to `-1.1442387`. Godot 4's physics engine does not support negative-scale collision shapes; the shape is silently ignored, `body_entered` never fires, shake never triggers. Additionally, the willow was an inline node block in world.tscn (~40 lines, 11 ext_resources, 3 SubResources).
+**Decision:** (1) Fixed root cause: `CollisionShape2D.scale.y` under `ProximityArea` restored to positive (`1.1442387`). (2) Created `res://World/WillowTree/willow_tree.tscn`. Root `Node2D` with `y_sort_offset=53` baked in, `willow_tree.gd` script, scale `(2.975, 2.5)`. All children migrated: `AnimatedSprite2D` (WillowFrames with idle/shake), `ProximityArea` (centered at origin, `CollisionShape2D` with `ProxShape` r=38 → ~113px world reach), `Shadow` (obj_shadow_script), `TreeCollider`. world.tscn: entire inline block replaced with single instance at (467, 97).
+**Rationale:** Self-contained scene bakes `y_sort_offset=53` and the script so both survive editor operations. Simplified ProximityArea (no cascading scales) makes the world-radius predictable: `38 * 2.975 = 113px` — covers the teal house to the right and equal distance left.
+**Consequences:** Shake triggers from all directions ✅. ProxShape r=38 gives ~113px world X reach. `y_sort_offset=53` permanent in .tscn, no longer stripped by world.tscn saves.
+**CRITICAL WARNING:** Dragging `CollisionShape2D` under `ProximityArea` in the Godot viewport silently re-introduces a negative Y scale, breaking the system. The editor does this when dragging shapes — it's a Godot editor behavior, not a bug we can prevent. Rule: **always edit CollisionShape2D position via Inspector field, never via viewport drag.**
+**Testing:** Area monitoring=true, shape not disabled, overlapping bodies detected ✅. Output log clean ✅.
+
+**Files changed:** `game/World/WillowTree/willow_tree.tscn` (created), `game/World/world.tscn`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-25 | ADR-096: WillowTree self-contained .tscn created. Root cause of ADR-061 regression identified (ADR-074 editor save flipped CollisionShape2D.scale.y negative under ProximityArea → body_entered never fires). Fixed. ProxShape r=38 → ~113px world reach (covers teal house + equal distance other side). y_sort_offset=53 baked in. CRITICAL WARNING documented: never drag CollisionShape2D in viewport — editor silently re-flips Y scale. Area verified: overlapping bodies detected ✅. |
+| 2026-05-25 | ADR-095: StumpHome001 converted to self-contained stump_home_001.tscn. Root Node2D with y_sort_offset=12 baked in + stump_shrine.gd attached. Two inline world.tscn nodes (StumpHome001 AnimatedSprite2D + StumpShrine Node2D) replaced with single scene instance at (13, 311). Grove exchange mechanic unchanged. |
 | 2026-05-24 | ADR-094: ShT elusiveness — stuck detection (3×0.35s samples, 5px threshold → teleport), map-edge escape (10px margin → instant teleport), off-screen respawn (>184px from player, stump-excluded), flee hysteresis (enter 64px / exit 90px). Per-frame jitter removed (caused stutter). Playtested ✅. |
 | 2026-05-24 | ADR-093: ForestCreature refactored into self-contained forest_creature.tscn. Mirrors choppable tree pattern: root CharacterBody2D with y_sort_offset=11 baked in, CreatureSprite AnimatedSprite2D child, CreatureCollider child. world.tscn updated from inline node to scene instance. forest_creature.gd _ready() trimmed 18→4 lines. Playtested ✅. |
 | 2026-05-24 | ADR-092: Fay Grove mechanic. stump_shrine.gd replaced with passive drop-watcher (IDLE→ITEM_PRESENT→PROCESSING→REWARD_READY→REWARD_SPAWNED). forest_creature.gd: removed HIDING/TRUST_HOLD, always walking, 80px stump exclusion zone, start pos moved to (236,211). world_drop_item.gd: despawn_time meta override. world.gd: shrine removed from interactables. Full loop playtested ✅. |

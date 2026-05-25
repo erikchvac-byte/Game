@@ -17,7 +17,9 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Last completed (2026-05-24, ADR-094):** ShT elusiveness overhaul. Stuck detection: samples position every 0.35s, 3 consecutive samples < 5px movement → teleport escape. Map-edge escape: within 10px of any map boundary while fleeing → instant teleport. Off-screen respawn: random position > 184px from player + 35px pad, stump-excluded, map-clamped; fallback to farthest map corner. Flee hysteresis: enter at 64px, exit at 90px (prevents FLEE↔TREE_HOP flicker). Per-frame jitter removed (was causing visible stutter). Panic burst (1.75×) and wary-idle-slow (0.4×) retained. Playtested ✅.
+- **Last completed (2026-05-25, ADR-096):** WillowTree converted to self-contained `willow_tree.tscn`. Root cause of ADR-061 proximity shake regression identified: ADR-074 editor save had silently flipped `CollisionShape2D.scale.y` negative under `ProximityArea` — Godot 4 physics ignores negative-scale shapes, so `body_entered` never fired. Fixed. `ProxShape r=38` gives ~113px world X reach (covers teal house right of willow + equal distance left). `y_sort_offset=53` baked into .tscn root. **CRITICAL:** Never drag `CollisionShape2D` in the Godot viewport — editor silently re-introduces negative Y scale. Use Inspector position field only. Area verified functional (overlapping bodies detected ✅).
+- **Previous (2026-05-25, ADR-095):** StumpHome001 converted to self-contained `stump_home_001.tscn`. Root Node2D with `y_sort_offset=12` baked in + `stump_shrine.gd` attached. Two inline world.tscn nodes (StumpHome001 AnimatedSprite2D + StumpShrine Node2D at the same position) replaced with single scene instance at (13, 311). Grove exchange mechanic unchanged.
+- **Previous (2026-05-24, ADR-094):** ShT elusiveness overhaul. Stuck detection: samples position every 0.35s, 3 consecutive samples < 5px movement → teleport escape. Map-edge escape: within 10px of any map boundary while fleeing → instant teleport. Off-screen respawn: random position > 184px from player + 35px pad, stump-excluded, map-clamped; fallback to farthest map corner. Flee hysteresis: enter at 64px, exit at 90px (prevents FLEE↔TREE_HOP flicker). Per-frame jitter removed (was causing visible stutter). Panic burst (1.75×) and wary-idle-slow (0.4×) retained. Playtested ✅.
 - **Previous (2026-05-24, ADR-093):** ForestCreature refactored into self-contained `forest_creature.tscn` — mirrors choppable tree pattern. Root CharacterBody2D with `y_sort_offset=11` baked in; `CreatureSprite` AnimatedSprite2D and `CreatureCollider` as static children. `forest_creature.gd` _ready() trimmed from 18→4 lines. `world.tscn` now holds a scene instance (not an inline node). No behavior changes — flee, tree-hop, stump exclusion all intact. Playtested ✅.
 - **Previous (2026-05-24, ADR-092):** Fay Grove system. ShT (ForestCreature) always walks, never stops, never near stump (80px exclusion). Grove detects Q-dropped items in 60px radius; item vanishes when player leaves; 10s timer; reward appears at drop spot; auto-grants when player returns within 20px. 40% processed / 60% double-raw, never nothing. One trade at a time. Playtested ✅.
 - **Previous (2026-05-24):** Wood icon — replaced `rock3.png` placeholder with `wood_pile.png` (48×48 pixel art pile). Removed oversized inset hack from `hud.gd`. Bucket animations confirmed already done (were in `erik_sprites.tres` but not marked off). Cave entrance removed from roadmap (user decision). Roadmap updated to stay current on session-end.
@@ -272,37 +274,37 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-24 (ShT elusiveness overhaul)
-- **Game state:** Runnable. Playtested ✅. All systems working.
-- **What changed this session:** ShT elusiveness overhaul (ADR-094). Stuck detection + teleport, map-edge escape, off-screen respawn, flee hysteresis. Per-frame jitter removed (stutter fix).
+### Session end — 2026-05-25 (scene refactors + willow bug fix)
+- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). All systems working.
+- **What changed this session:** (1) StumpHome001 + StumpShrine combined into `stump_home_001.tscn` (ADR-095). (2) WillowTree converted to `willow_tree.tscn` — root cause of ADR-061 shake regression diagnosed and fixed (negative CollisionShape2D Y scale under ProximityArea, ADR-096).
+- **WillowTree architecture (ADR-096):**
+  - Scene: `res://World/WillowTree/willow_tree.tscn` (uid://c3wlwtree001x)
+  - Root Node2D "WillowTree": scale=(2.975,2.5), y_sort_offset=53, script=willow_tree.gd (uid://ciy6hj2sxk2o2)
+  - `AnimatedSprite2D`: position=(-2.69,-3.2), scale=(0.505,0.505), WillowFrames (idle loop + shake 9fr speed=8)
+  - `ProximityArea`: centered at origin, CollisionShape2D ProxShape r=38.0 (→ 113px world reach)
+  - `Shadow`: obj_shadow_script, ground_offset=(0,22), shadow_size=(20,7), cast_length=14
+  - `TreeCollider`: StaticBody2D at (2.65,-24.88) scale=(0.648,1.712), TrunkShape r≈13.55
+  - world.tscn: instance at (467,97)
+  - **CRITICAL:** Never drag CollisionShape2D in viewport — editor silently flips scale.y negative, breaks body_entered.
+- **StumpHome001 architecture (ADR-095):**
+  - Scene: `res://World/StumpShrine/stump_home_001.tscn` (uid://c2stmph001x3s)
+  - Root Node2D: y_sort_offset=12, stump_shrine.gd
+  - `StumpSprite` AnimatedSprite2D: scale=0.1953125, stump_home_001_frames.tres, idle anim
+  - `StumpCollider` StaticBody2D → `StumpShape` CircleShape2D r=46 at (0,18)
+  - world.tscn: instance at (13,311)
 - **ShT elusiveness (ADR-094) — key constants:**
-  - `FLEE_RADIUS=64` / `FLEE_EXIT_RADIUS=90` — hysteresis band, prevents flicker at boundary
+  - `FLEE_RADIUS=64` / `FLEE_EXIT_RADIUS=90` — hysteresis band
   - `STUCK_CHECK_SEC=0.35`, `STUCK_DIST_THRESH=5.0`, `STUCK_COUNT_TRIGGER=3` — ~1.05s to fire
   - `PANIC_DIST=28`, `PANIC_SPEED_MULT=1.75`, `WARY_IDLE_SPEED_FRAC=0.4`
   - `CAM_HALF_W=184`, `CAM_HALF_H=104`, `OFF_SCREEN_PAD=35` — respawn geometry
-  - Map-edge fires when within 10px of any MAP_MIN/MAX boundary while fleeing
-- **ShT scene architecture (ADR-093):**
-  - Scene: `res://World/ForestCreature/forest_creature.tscn`
-  - Root: `CharacterBody2D`, `y_sort_offset=11`, script=`forest_creature.gd`
-  - `CreatureSprite` AnimatedSprite2D: hobo_man_sprites.tres, scale 0.177, autoplay `idle_south`
-  - `CreatureCollider` CollisionShape2D: CapsuleShape2D radius=4/height=4, position=(0,3)
-  - world.tscn: `instance=ExtResource("70_houwb")`, only position=(40,320) overridden
 - **Fay Grove architecture (ADR-092):**
-  - StumpShrine Node2D at (13, 311) runs `stump_shrine.gd` — no signals, no Space interaction.
-  - State machine: IDLE → ITEM_PRESENT → PROCESSING (10s) → REWARD_READY → REWARD_SPAWNED → IDLE
-  - Detects WorldDropItems in `world_drop_items` group within 60px. `grove_reward` meta on reward items prevents re-detection.
-  - Exchange table in `stump_shrine.gd`: bud/stone_pile/wood → processed(40%) or double-raw(60%).
-  - Reward WorldDropItem uses 120s despawn override (`despawn_time` meta).
-  - Auto-grant when player within 20px of reward item.
-- **ShT behavior (ADR-092/094):**
-  - States: TREE_HOP and FLEE only. Arrives at tree → immediately picks next.
-  - Flee: straight away from player, tree-seeking, panic burst, wary-idle-slow, stuck/edge teleport.
-  - Filters: invisible trees, out-of-bounds trees, trees within 80px of StumpHome001.
-- **y_sort_offset — TREES (authoritative, ADR-091):** Trees do NOT use `y_sort_offset`. Node origin = trunk base. TreeSprite `position=(0,-22)`. Depth-sort transition = node Y. Cannot be stripped by editor.
+  - stump_shrine.gd passive drop-watcher: IDLE→ITEM_PRESENT→PROCESSING(10s)→REWARD_READY→REWARD_SPAWNED→IDLE
+  - Detects WorldDropItems in `world_drop_items` group within 60px. `grove_reward` meta prevents re-detection.
+  - Exchange table: bud/stone_pile/wood → processed(40%) or double-raw(60%). Auto-grant within 20px.
+- **y_sort_offset — TREES (authoritative, ADR-091):** Trees do NOT use `y_sort_offset`. Node origin = trunk base. TreeSprite `position=(0,-22)`. Depth-sort transition = node Y.
 - **y_sort_offset — other nodes (AUTHORITATIVE):**
-  - Player/creatures: `y_sort_offset = half_height_px` (player=14, ForestCreature=11 — baked into forest_creature.tscn).
-  - Buildings/props: `y_sort_offset = door_base_y - node.position.y`. See ADR-089 table.
-  - CRITICAL: `y_sort_offset` is NOT a runtime GDScript property. Never read/set via execute_game_script.
+  - Player/creatures: baked into .tscn (player=14, ForestCreature=11). Buildings/props: see ADR-089 table.
+  - CRITICAL: NOT a runtime GDScript property. Never read/set via execute_game_script.
 - **Open issues:**
   - `HouseTwostoryTeal` collision has 2 shapes with suspicious rotations — verify/tune in-game (roadmap #1)
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates — ~34 editor warnings (pre-approved, non-blocking)
@@ -311,7 +313,7 @@
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
   - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
   - Linter warning in `world_drop_item.gd` (unused `_area`) — non-blocking
-  - ShrineManager.gd autoload is now unused (old trust system) — harmless, can be removed later
+  - ShrineManager.gd autoload is now unused — harmless, can be removed later
 - **Next priorities:** (1) Teal house collision tuning. (2) Grove expansion (door animation on capture, more exchange items).
 - **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
 

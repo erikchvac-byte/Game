@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://c2stmph001x3s"]
+
+[ext_resource type="Script" uid="uid://cp78hu25e8wku" path="res://World/StumpShrine/stump_shrine.gd" id="1_script"]
+[ext_resource type="SpriteFrames" uid="uid://boeery8s56gy3" path="res://resources/structures/stump_home_001_frames.tres" id="2_frames"]
+
+[sub_resource type="CircleShape2D" id="StumpShape"]
+radius = 46.0
+
+[node name="StumpHome001" type="Node2D"]
+y_sort_offset = 12
+script = ExtResource("1_script")
+
+[node name="StumpSprite" type="AnimatedSprite2D" parent="." unique_id=101010101]
+scale = Vector2(0.1953125, 0.1953125)
+sprite_frames = ExtResource("2_frames")
+animation = &"idle"
+
+[node name="StumpCollider" type="StaticBody2D" parent="." unique_id=202020202]
+
+[node name="StumpShape" type="CollisionShape2D" parent="StumpCollider" unique_id=303030303]
+position = Vector2(0, 18)
+shape = SubResource("StumpShape")
