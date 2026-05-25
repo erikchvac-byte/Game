@@ -1587,9 +1587,23 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-097: NavigationRegion2D Baked in world.tscn
+**Status:** Accepted
+**Date:** 2026-05-25
+**Context:** Click-to-navigate (world.gd `_update_mouse_navigation`) drives the player with a direct vector to the target — no pathfinding. This causes the player to walk into walls and get stuck. A baked NavigationRegion2D is the prerequisite for wiring NavigationAgent2D to route around obstacles.
+**Decision:** Added `NavRegion` NavigationRegion2D as a direct child of World in world.tscn. NavigationPolygon: outer boundary 640×480 at world-local origin, `parsed_geometry_type=PARSED_GEOMETRY_STATIC_COLLIDERS`, `source_geometry_mode=SOURCE_GEOMETRY_ROOT_NODE_CHILDREN`, `agent_radius=6.0`. Baked result: 231 vertices / 136 polygons, 28 obstacle outlines from all StaticBody2D shapes in the scene tree (buildings, trees, rocks, well, drying rack, border walls, stump — including shapes inside instanced tree scenes).
+**Rationale:** Auto-parse from static colliders handles instanced scene obstacles (TrunkCollider, StumpCollider inside pine/maple/fir/willow .tscn) without manual polygon authoring. agent_radius=6.0 matches the player's ~6px collision capsule half-width. Baking required explicitly calling `NavigationServer2D.parse_source_geometry_data(nav_poly, source_geo, root)` with the scene root passed as the geometry root — calling `bake_navigation_polygon(false)` alone produced only 4 vertices (no obstacles), because the navigation polygon's source root defaults to the NavRegion node itself (no children), not its parent.
+**Consequences:** Nav mesh is baked/static — rebake required if new StaticBody2D obstacles are added to world.tscn. Existing click-nav in world.gd is NOT yet wired to the nav mesh (still direct vector). NavRegion is ready for NavigationAgent2D to be added to player or NPCs.
+**Testing:** Baked: 231 vertices / 136 polygons. Output log clean (4 lines). Game runs ✅.
+
+**Files changed:** `game/World/world.tscn`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-25 | ADR-097: NavigationRegion2D (NavRegion) added and baked in world.tscn. 640×480 outer boundary, PARSED_GEOMETRY_STATIC_COLLIDERS, agent_radius=6.0. 28 obstacles parsed (buildings, trees, rocks, well, drying rack, border walls, stump). Baked: 231 vertices / 136 polygons. Playtested ✅. |
 | 2026-05-25 | Fix: ADR-096 completion — world.tscn inline TreeWillowWeeping still had viewport-dragged ProximityArea offsets (position/scale on both Area2D and CollisionShape2D) left from before ADR-096. willow_tree.tscn was correctly created (r=38, centered) but world.tscn was never updated to use it. Fixed inline node directly: reset ProximityArea + CollisionShape2D to origin, radius 14.55→38.0, added missing y_sort_offset=53. Shake now triggers from all directions including below. HouseTealCollider confirmed inside zone. Playtested ✅. |
 | 2026-05-25 | ADR-096: WillowTree self-contained .tscn created. Root cause of ADR-061 regression identified (ADR-074 editor save flipped CollisionShape2D.scale.y negative under ProximityArea → body_entered never fires). Fixed. ProxShape r=38 → ~113px world reach (covers teal house + equal distance other side). y_sort_offset=53 baked in. CRITICAL WARNING documented: never drag CollisionShape2D in viewport — editor silently re-flips Y scale. Area verified: overlapping bodies detected ✅. |
 | 2026-05-25 | ADR-095: StumpHome001 converted to self-contained stump_home_001.tscn. Root Node2D with y_sort_offset=12 baked in + stump_shrine.gd attached. Two inline world.tscn nodes (StumpHome001 AnimatedSprite2D + StumpShrine Node2D) replaced with single scene instance at (13, 311). Grove exchange mechanic unchanged. |
