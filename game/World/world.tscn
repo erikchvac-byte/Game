@@ -337,7 +337,7 @@ animations = [{
 }]
 
 [sub_resource type="CircleShape2D" id="WillowProxShape"]
-radius = 14.550927
+radius = 38.0
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_h4hkh"]
 radius = 7.4067616
@@ -530,6 +530,7 @@ position = Vector2(0, 18)
 shape = SubResource("RectangleShape2D_dlis5")
 
 [node name="TreeWillowWeeping" type="Node2D" parent="." unique_id=1732131370]
+y_sort_offset = 53
 position = Vector2(467, 97)
 scale = Vector2(2.975, 2.5)
 script = ExtResource("willow_tree_script")
@@ -542,12 +543,8 @@ animation = &"idle"
 autoplay = "idle"
 
 [node name="ProximityArea" type="Area2D" parent="TreeWillowWeeping" unique_id=2111111002]
-position = Vector2(-8.403351, -3.2000015)
-scale = Vector2(1.242016, 0.712)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TreeWillowWeeping/ProximityArea" unique_id=2111111003]
-position = Vector2(2.1650805, -3.3707857)
-scale = Vector2(0.7370032, 1.1442387)
 shape = SubResource("WillowProxShape")
 
 [node name="Shadow" type="Node2D" parent="TreeWillowWeeping" unique_id=514637950]
