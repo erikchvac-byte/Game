@@ -281,11 +281,6 @@ func _do_nav_interact(player: CharacterBody2D, target: Node) -> void:
 	if not target.has_method("interact"):
 		return
 	if target.has_method("can_interact") and not target.can_interact(player):
-		var msg := "Equip axe first (C)"
-		if target.has_method("blocked_message"):
-			msg = target.blocked_message(player)
-		if msg != "" and _hud:
-			_hud.show_toast(msg, 1.5)
 		return
 	target.interact(player)
 

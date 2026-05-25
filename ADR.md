@@ -1642,6 +1642,7 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-25 | Fix: Right-click tree nav no longer shows "Equip axe first" toast. `_do_nav_interact()` in world.gd silently returns when `can_interact()` is false; toast is shown only on spacebar (`_input` path). Two-line change, no ADR needed. Playtested ✅. |
 | 2026-05-25 | ADR-100: GreyHoodie NPC patrol converted from position lerp (Node2D) to NavigationAgent2D (CharacterBody2D). _physics_process drives nav movement; World-local waypoints converted to global via get_parent().to_global(). Full patrol cycle playtested ✅. |
 | 2026-05-25 | ADR-099: world.gd mouse navigation wired to NavigationAgent2D. Manual `auto_walk = direction` replaced with `nav_agent.set_target_position()`. NPC target updated per-frame. Arrival via `is_navigation_finished() or dist < ARRIVE_DIST`. All 3 nav paths validated. Playtested ✅. |
 | 2026-05-25 | ADR-098: NavigationAgent2D (NavAgent) added as child of Player in world.tscn. player.gd: public `nav_agent` var, `_ready()` caches `$NavAgent`, `_physics_process()` elif branch (auto_walk > nav_agent > keyboard). path_desired_distance=4.0, target_desired_distance=5.0. Playtested ✅. |
