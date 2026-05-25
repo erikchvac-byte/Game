@@ -1,4 +1,4 @@
-extends Node2D
+extends CharacterBody2D
 
 const SPEED := 45.0
 const IDLE_DURATION := 2.5
@@ -20,10 +20,32 @@ var _home_elapsed_t := 0.0
 var _prev_cycle_t := -1.0
 
 var _player_nearby := false
+var _walking := false
+
+var nav_agent: NavigationAgent2D
 
 
 func _ready() -> void:
+	nav_agent = $NavAgent
 	$AnimatedSprite2D.play("idle_south")
+	_arrive_at_waypoint()
+
+
+func _physics_process(_delta: float) -> void:
+	if _inside_home or _idle_timer > 0.0 or _player_nearby or not _walking:
+		velocity = Vector2.ZERO
+		move_and_slide()
+		return
+
+	if nav_agent.is_navigation_finished():
+		_walking = false
+		_arrive_at_waypoint()
+		return
+
+	var next_pos := nav_agent.get_next_path_position()
+	var dir := (next_pos - global_position).normalized()
+	velocity = dir * SPEED
+	move_and_slide()
 
 
 func _process(delta: float) -> void:
@@ -45,21 +67,6 @@ func _process(delta: float) -> void:
 				_start_walk()
 			else:
 				$AnimatedSprite2D.play("idle_south")
-		return
-
-	if _player_nearby:
-		return
-
-	var target: Vector2 = _waypoints[_target_idx]
-	var diff: Vector2 = target - position
-	var dist: float = diff.length()
-
-	if dist < 2.0:
-		position = target
-		_arrive_at_waypoint()
-		return
-
-	position += diff.normalized() * SPEED * delta
 
 
 func _arrive_at_waypoint() -> void:
@@ -94,7 +101,7 @@ func _tick_home_cycle() -> void:
 	var current_t: float = dnc._t
 	var dt: float = current_t - _prev_cycle_t
 	if dt < 0.0:
-		dt += 1.0  # wrap around
+		dt += 1.0
 	_home_elapsed_t += dt
 	_prev_cycle_t = current_t
 	if _home_elapsed_t >= 1.0:
@@ -153,8 +160,9 @@ func attempt_trade() -> bool:
 func _start_walk() -> void:
 	if _inside_home:
 		return
-	var target: Vector2 = _waypoints[_target_idx]
-	var dir: Vector2 = (target - position).normalized()
+	_walking = true
+	nav_agent.set_target_position(get_parent().to_global(_waypoints[_target_idx]))
+	var dir: Vector2 = (_waypoints[_target_idx] - position).normalized()
 	if dir.x >= 0.0:
 		$AnimatedSprite2D.play("walk_east")
 	else:

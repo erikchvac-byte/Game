@@ -1626,9 +1626,23 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-100: GreyHoodie NPC Patrol Converted to NavigationAgent2D
+**Status:** Accepted
+**Date:** 2026-05-25
+**Context:** The NPC used direct position lerp in `_process()` (`position += diff.normalized() * SPEED * delta`), bypassing the nav mesh added in ADR-097. Arrival was a distance threshold against `position` (World-local coords). The NPC was a `Node2D` with no physics body.
+**Decision:** (1) Converted `GreyHoodie` from `Node2D` to `CharacterBody2D` in `world.tscn` — `motion_mode=1` (FLOATING), `collision_layer=2`, `collision_mask=0`. (2) Added `CapsuleShape2D` (r=4, h=12) and `NavigationAgent2D` ("NavAgent", `path_desired_distance=4.0`, `target_desired_distance=5.0`) as children. (3) `npc_grey_hoodie.gd` now `extends CharacterBody2D`. `_physics_process()` drives nav movement: `_walking` bool guard → `is_navigation_finished()` arrival check → `get_next_path_position()` normalized × SPEED → `move_and_slide()`. `_process()` retains all state/timer logic unchanged. (4) `_start_walk()` calls `nav_agent.set_target_position(get_parent().to_global(waypoint))` — converts World-local waypoints to global coords for the nav agent. (5) `_arrive_at_waypoint()` called from `_ready()` to replicate original "spawn at wp1, idle first" behavior.
+**Rationale:** Consistent with player nav architecture (ADR-098/099). NPC now routes around static obstacles on the baked nav mesh. Waypoint coordinates preserved (ADR, 2026-05-13). `collision_mask=0` prevents NPC physics colliding with the player while `collision_layer=2` keeps it on its own layer.
+**Consequences:** Coordinate conversion required (World-local waypoints → global via `get_parent().to_global()`). Nav mesh is static — new NPC-blocking obstacles would require a rebake. `_walking` flag is essential: without it, `is_navigation_finished()` returns `true` on startup (no target set) and triggers a premature arrival.
+**Testing:** Full patrol cycle confirmed at runtime — NPC position (431.65, 149.51) mid-patrol toward wp1 with `walking=true`, `target_idx=1` after ~12s. Log clean ✅. Playtested ✅.
+
+**Files changed:** `game/World/world.tscn`, `game/NPCs/npc_grey_hoodie.gd`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-25 | ADR-100: GreyHoodie NPC patrol converted from position lerp (Node2D) to NavigationAgent2D (CharacterBody2D). _physics_process drives nav movement; World-local waypoints converted to global via get_parent().to_global(). Full patrol cycle playtested ✅. |
 | 2026-05-25 | ADR-099: world.gd mouse navigation wired to NavigationAgent2D. Manual `auto_walk = direction` replaced with `nav_agent.set_target_position()`. NPC target updated per-frame. Arrival via `is_navigation_finished() or dist < ARRIVE_DIST`. All 3 nav paths validated. Playtested ✅. |
 | 2026-05-25 | ADR-098: NavigationAgent2D (NavAgent) added as child of Player in world.tscn. player.gd: public `nav_agent` var, `_ready()` caches `$NavAgent`, `_physics_process()` elif branch (auto_walk > nav_agent > keyboard). path_desired_distance=4.0, target_desired_distance=5.0. Playtested ✅. |
 | 2026-05-25 | ADR-097: NavigationRegion2D (NavRegion) added and baked in world.tscn. 640×480 outer boundary, PARSED_GEOMETRY_STATIC_COLLIDERS, agent_radius=6.0. 28 obstacles parsed (buildings, trees, rocks, well, drying rack, border walls, stump). Baked: 231 vertices / 136 polygons. Playtested ✅. |

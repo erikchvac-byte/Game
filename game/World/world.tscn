@@ -387,6 +387,10 @@ outlines = Array[PackedVector2Array]([PackedVector2Array(0, 0, 640, 0, 640, 480,
 parsed_geometry_type = 1
 agent_radius = 6.0
 
+[sub_resource type="CapsuleShape2D" id="NpcBodyShape"]
+radius = 4.0
+height = 12.0
+
 [node name="World" type="Node2D" unique_id=1479370967]
 y_sort_enabled = true
 position = Vector2(-221, -13)
@@ -651,8 +655,12 @@ energy = 0.09
 texture = SubResource("GradientTexture2D_h4hkh")
 texture_scale = 1.6
 
-[node name="GreyHoodie" type="Node2D" parent="." unique_id=1551921560]
+[node name="GreyHoodie" type="CharacterBody2D" parent="." unique_id=1551921560]
+motion_mode = 1
 position = Vector2(534, 158)
+y_sort_offset = 19
+collision_layer = 2
+collision_mask = 0
 script = ExtResource("46_xu702")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="GreyHoodie" unique_id=132381470]
@@ -663,6 +671,13 @@ sprite_frames = ExtResource("47_i363k")
 animation = &"idle_south"
 autoplay = "idle_south"
 frame_progress = 0.74741143
+
+[node name="NpcCollider" type="CollisionShape2D" parent="GreyHoodie" unique_id=1551921561]
+shape = SubResource("NpcBodyShape")
+
+[node name="NavAgent" type="NavigationAgent2D" parent="GreyHoodie" unique_id=1551921562]
+path_desired_distance = 4.0
+target_desired_distance = 5.0
 
 [node name="Cave entrance" type="Sprite2D" parent="." unique_id=1053984708]
 position = Vector2(31, 407)

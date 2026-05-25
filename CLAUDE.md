@@ -17,7 +17,8 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Last completed (2026-05-25):** Click-to-navigate fully wired to nav mesh (ADR-098 + ADR-099). `NavAgent` (NavigationAgent2D, `path_desired_distance=4.0`, `target_desired_distance=5.0`) added as child of Player in `world.tscn`. `player.gd` steers via `get_next_path_position()` in `_physics_process()` — priority: `auto_walk` > nav_agent > keyboard. `world.gd` calls `nav_agent.set_target_position()` for all 3 right-click paths (terrain, tree, NPC); NPC target updated every frame to chase wandering NPC; `_cancel_navigation()` stops agent via `set_target_position(player.global_position)`. Manual `auto_walk = direction` removed from nav. Stuck detection unchanged. All 3 paths playtested ✅.
+- **Last completed (2026-05-25):** GreyHoodie NPC patrol converted from position lerp to NavigationAgent2D (ADR-100). `GreyHoodie` node type changed `Node2D` → `CharacterBody2D` (`motion_mode=1`, `collision_layer=2`, `collision_mask=0`). `NpcCollider` (CapsuleShape2D r=4 h=12) and `NavAgent` (NavigationAgent2D) added as children in `world.tscn`. `npc_grey_hoodie.gd` now `extends CharacterBody2D`; `_physics_process()` drives nav movement via `get_next_path_position()` → velocity → `move_and_slide()`; `_process()` handles all state/timers unchanged. `_start_walk()` converts World-local waypoints to global via `get_parent().to_global()` before calling `nav_agent.set_target_position()`. `_arrive_at_waypoint()` called from `_ready()` to replicate original idle-first startup. Full patrol cycle confirmed: wp1→wp0→idle→back to wp1. Log clean ✅. Playtested ✅.
+- **Previous (2026-05-25):** Click-to-navigate fully wired to nav mesh (ADR-098 + ADR-099). `NavAgent` (NavigationAgent2D, `path_desired_distance=4.0`, `target_desired_distance=5.0`) added as child of Player in `world.tscn`. `player.gd` steers via `get_next_path_position()` in `_physics_process()` — priority: `auto_walk` > nav_agent > keyboard. `world.gd` calls `nav_agent.set_target_position()` for all 3 right-click paths (terrain, tree, NPC); NPC target updated every frame to chase wandering NPC; `_cancel_navigation()` stops agent via `set_target_position(player.global_position)`. Manual `auto_walk = direction` removed from nav. Stuck detection unchanged. All 3 paths playtested ✅.
 - **Previous (2026-05-25):** NavigationRegion2D (`NavRegion`) added and baked in `world.tscn` (ADR-097). 640×480 outer boundary, `PARSED_GEOMETRY_STATIC_COLLIDERS`, `agent_radius=6.0`. 28 obstacles auto-parsed from all StaticBody2D shapes (includes instanced tree scenes). Baked: 231 vertices / 136 polygons. Nav mesh is static — rebake if new StaticBody2D obstacles are added. Playtested ✅.
 - **Previous (2026-05-25):** WillowWeeping shake fixed in `world.tscn`. ADR-096 had created `willow_tree.tscn` correctly (r=38, centered) but the inline `TreeWillowWeeping` in `world.tscn` was never updated — it retained viewport-dragged position/scale offsets on both `ProximityArea` and its `CollisionShape2D`, plus the original tiny radius (14.55). Reset both nodes to origin, radius 14.55→38.0, added missing `y_sort_offset=53`. Shake now triggers from all directions. Playtested ✅.
 - **Previous (2026-05-25, ADR-096):** WillowTree converted to self-contained `willow_tree.tscn`. Root cause of ADR-061 proximity shake regression identified: ADR-074 editor save had silently flipped `CollisionShape2D.scale.y` negative under `ProximityArea` — Godot 4 physics ignores negative-scale shapes, so `body_entered` never fired. Fixed. `ProxShape r=38` gives ~113px world X reach (covers teal house right of willow + equal distance left). `y_sort_offset=53` baked into .tscn root. **CRITICAL:** Never drag `CollisionShape2D` in the Godot viewport — editor silently re-introduces negative Y scale. Use Inspector position field only. Area verified functional (overlapping bodies detected ✅).
@@ -277,15 +278,19 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-25 (NavigationAgent2D wired — click-nav uses nav mesh)
+### Session end — 2026-05-25 (NPC patrol on NavigationAgent2D — ADR-100)
 - **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). All systems working.
-- **What changed this session:** (1) `NavAgent` (NavigationAgent2D) added as child of Player in `world.tscn` (ADR-098). (2) `world.gd` mouse navigation refactored to drive via `nav_agent.set_target_position()` instead of manual `auto_walk = direction` (ADR-099). Click-to-navigate now routes around obstacles using the baked nav mesh from ADR-097.
-- **NavigationAgent2D architecture (ADR-098 + ADR-099):**
-  - `world.tscn`: `[node name="NavAgent" type="NavigationAgent2D" parent="Player"]` — `path_desired_distance=4.0`, `target_desired_distance=5.0`
-  - `player.gd`: public `nav_agent: NavigationAgent2D`, cached in `_ready()`. `_physics_process()` priority: `auto_walk` (door transitions) → `nav_agent` path → keyboard input
-  - `world.gd`: `_on_right_click()` all 3 branches call `_player.nav_agent.set_target_position()`. NPC branch updates target each frame (NPC wanders). Arrival: `is_navigation_finished() or dist < ARRIVE_DIST`. `_cancel_navigation()` stops agent via `set_target_position(player.global_position)`.
-  - `auto_walk` door-transition assignments (lines 318/327 in world.gd) are untouched — door transitions still work.
-  - Stuck detection unchanged (`_nav_best_dist`, `_nav_stuck_time`, `NAV_STUCK_MAX=1.0s`).
+- **What changed this session:** GreyHoodie NPC patrol converted from Node2D position lerp to CharacterBody2D + NavigationAgent2D (ADR-100). Full patrol cycle confirmed at runtime.
+- **NPC nav architecture (ADR-100):**
+  - `world.tscn`: `GreyHoodie` type `Node2D` → `CharacterBody2D` (`motion_mode=1`, `collision_layer=2`, `collision_mask=0`, `y_sort_offset=19`). Children: `NpcCollider` (CapsuleShape2D r=4 h=12) + `NavAgent` (NavigationAgent2D, `path_desired_distance=4.0`, `target_desired_distance=5.0`).
+  - `npc_grey_hoodie.gd`: `extends CharacterBody2D`. `nav_agent` cached in `_ready()`. `_physics_process()` handles movement (`_walking` guard → `is_navigation_finished()` → `get_next_path_position()` → velocity → `move_and_slide()`). `_process()` unchanged for state/timers.
+  - Waypoints stored in World-local coords — converted to global in `_start_walk()` via `get_parent().to_global(waypoint)`.
+  - `_arrive_at_waypoint()` called from `_ready()` — NPC idles 2.5s at wp1 before first patrol.
+  - `_walking` flag critical: prevents `is_navigation_finished()` (returns true before any target set) from triggering false arrival on startup.
+- **Player nav architecture (ADR-098 + ADR-099):**
+  - `player.gd` `_physics_process()` priority: `auto_walk` (door transitions) → `nav_agent` path → keyboard input.
+  - `world.gd` all 3 right-click branches → `nav_agent.set_target_position()`. NPC branch updates target each frame (NPC wanders).
+  - Stuck detection unchanged. `auto_walk` door-transition assignments untouched.
 - **WillowTree architecture (ADR-096):**
   - Scene: `res://World/WillowTree/willow_tree.tscn` (uid://c3wlwtree001x)
   - Root Node2D "WillowTree": scale=(2.975,2.5), y_sort_offset=53, script=willow_tree.gd
@@ -306,7 +311,7 @@
   - Exchange table: bud/stone_pile/wood → processed(40%) or double-raw(60%). Auto-grant within 20px.
 - **y_sort_offset — TREES (authoritative, ADR-091):** Trees do NOT use `y_sort_offset`. Node origin = trunk base. TreeSprite `position=(0,-22)`. Depth-sort transition = node Y.
 - **y_sort_offset — other nodes (AUTHORITATIVE):**
-  - Player/creatures: baked into .tscn (player=14, ForestCreature=11). Buildings/props: see ADR-089 table.
+  - Player/creatures: baked into .tscn (player=14, ForestCreature=11). Buildings/props: see ADR-089 table. GreyHoodie=19.
   - CRITICAL: NOT a runtime GDScript property. Never read/set via execute_game_script.
 - **Open issues:**
   - `HouseTwostoryTeal` collision has 2 shapes with suspicious rotations — verify/tune in-game (roadmap #1)
@@ -317,7 +322,7 @@
   - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
   - Linter warning in `world_drop_item.gd` (unused `_area`) — non-blocking
   - ShrineManager.gd autoload is now unused — harmless, can be removed later
-  - Nav mesh is static — rebake (`NavRegion` in world.tscn) if new StaticBody2D obstacles are added
+  - Nav mesh is static — rebake (`NavRegion` in world.tscn) if new StaticBody2D obstacle nodes are added
 - **Next priorities:** (1) Teal house collision tuning. (2) Grove expansion (door animation on capture, more exchange items).
 - **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
 
