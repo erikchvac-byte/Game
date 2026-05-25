@@ -1600,9 +1600,37 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-098: NavigationAgent2D Added as Child of Player
+**Status:** Accepted
+**Date:** 2026-05-25
+**Context:** ADR-097 baked a NavRegion. To use pathfinding the player needs a NavigationAgent2D that queries the nav mesh each frame for the next waypoint.
+**Decision:** Added `NavAgent` (NavigationAgent2D) as a child of Player in world.tscn via `.tscn` node override on the instanced scene (`parent="Player"`). `path_desired_distance=4.0`, `target_desired_distance=5.0`. In `player.gd`: added public `nav_agent: NavigationAgent2D`, `_ready()` caches `$NavAgent`, and `_physics_process()` gains an `elif` branch between `auto_walk` and keyboard input: if `nav_agent` has an active path compute direction from `get_next_path_position() - global_position`.
+**Rationale:** Priority order auto_walk > nav_agent > keyboard is required because door transitions set `auto_walk` directly and must not be overridden. Public var (`nav_agent` not `_nav_agent`) required so world.gd can call `set_target_position()`.
+**Consequences:** player.gd drives movement from 3 sources in priority order. `auto_walk` (door transitions) unchanged. nav_agent steers only when it has an active path. Keyboard falls through when neither is active.
+**Testing:** NavAgent found at runtime under Player. Target set to (400,300), player navigated to (395,299), `is_navigation_finished()=true`. Output log clean ✅. Playtested ✅.
+
+**Files changed:** `game/Player/player.gd`, `game/World/world.tscn`
+
+---
+
+## ADR-099: world.gd Mouse Navigation Wired to NavigationAgent2D
+**Status:** Accepted
+**Date:** 2026-05-25
+**Context:** ADR-055/056 mouse nav drove the player with `auto_walk = direction.normalized()` per frame — direct vector steering that ignores the nav mesh. With ADR-097 nav mesh and ADR-098 nav agent in place, manual direction math can be replaced.
+**Decision:** In `world.gd`: (1) All 3 `_on_right_click()` branches call `_player.nav_agent.set_target_position()` on nav start. (2) NPC branch in `_update_mouse_navigation()` adds `_player.nav_agent.set_target_position(_nav_target_pos)` each frame to chase the wandering NPC. (3) Bottom arrival check changed to `nav_agent.is_navigation_finished() or dist < ARRIVE_DIST`. (4) `_player.auto_walk = direction` assignment removed — steering is now handled entirely by the nav_agent branch in player.gd. (5) `_cancel_navigation()` adds `_player.nav_agent.set_target_position(_player.global_position)` to halt the agent immediately. `_player.auto_walk = Vector2.ZERO` kept (still needed for door transitions). All existing state vars (`_nav_active`, `_nav_target_pos`, `_nav_target_node`, `_nav_pending_interact`, `_nav_best_dist`, `_nav_stuck_time`) and stuck detection logic unchanged.
+**Rationale:** Separating "set destination" (world.gd) from "steer toward next waypoint" (player.gd via nav_agent) is cleaner. Stuck detection preserved because nav mesh obstacles don't cover dynamic scenarios. NPC target updated per-frame because NPC wanders and the nav_agent would otherwise steer toward a stale position.
+**Consequences:** Click-nav now routes around all static obstacles in the nav mesh. Arrival check via `is_navigation_finished()` is more reliable than dist threshold alone for varied terrain. Regression risk: none — `auto_walk` door-transition assignments untouched, all 3 nav paths validated.
+**Testing:** Terrain nav ✅ (arrived (397,202) → target (400,200)). Tree nav ✅ (interactable zone entered, interact triggered). NPC nav ✅ (tracked wandering NPC, arrived dist=35.7px ≤ NPC_TRADE_RADIUS=36). Output log clean ✅. Playtested ✅.
+
+**Files changed:** `game/World/world.gd`, `game/Player/player.gd`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-25 | ADR-099: world.gd mouse navigation wired to NavigationAgent2D. Manual `auto_walk = direction` replaced with `nav_agent.set_target_position()`. NPC target updated per-frame. Arrival via `is_navigation_finished() or dist < ARRIVE_DIST`. All 3 nav paths validated. Playtested ✅. |
+| 2026-05-25 | ADR-098: NavigationAgent2D (NavAgent) added as child of Player in world.tscn. player.gd: public `nav_agent` var, `_ready()` caches `$NavAgent`, `_physics_process()` elif branch (auto_walk > nav_agent > keyboard). path_desired_distance=4.0, target_desired_distance=5.0. Playtested ✅. |
 | 2026-05-25 | ADR-097: NavigationRegion2D (NavRegion) added and baked in world.tscn. 640×480 outer boundary, PARSED_GEOMETRY_STATIC_COLLIDERS, agent_radius=6.0. 28 obstacles parsed (buildings, trees, rocks, well, drying rack, border walls, stump). Baked: 231 vertices / 136 polygons. Playtested ✅. |
 | 2026-05-25 | Fix: ADR-096 completion — world.tscn inline TreeWillowWeeping still had viewport-dragged ProximityArea offsets (position/scale on both Area2D and CollisionShape2D) left from before ADR-096. willow_tree.tscn was correctly created (r=38, centered) but world.tscn was never updated to use it. Fixed inline node directly: reset ProximityArea + CollisionShape2D to origin, radius 14.55→38.0, added missing y_sort_offset=53. Shake now triggers from all directions including below. HouseTealCollider confirmed inside zone. Playtested ✅. |
 | 2026-05-25 | ADR-096: WillowTree self-contained .tscn created. Root cause of ADR-061 regression identified (ADR-074 editor save flipped CollisionShape2D.scale.y negative under ProximityArea → body_entered never fires). Fixed. ProxShape r=38 → ~113px world reach (covers teal house + equal distance other side). y_sort_offset=53 baked in. CRITICAL WARNING documented: never drag CollisionShape2D in viewport — editor silently re-flips Y scale. Area verified: overlapping bodies detected ✅. |

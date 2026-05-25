@@ -17,7 +17,8 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Last completed (2026-05-25):** NavigationRegion2D (`NavRegion`) added and baked in `world.tscn` (ADR-097). 640×480 outer boundary, `PARSED_GEOMETRY_STATIC_COLLIDERS`, `agent_radius=6.0`. 28 obstacles auto-parsed from all StaticBody2D shapes (includes instanced tree scenes). Baked: 231 vertices / 136 polygons. Nav mesh is static — rebake if new StaticBody2D obstacles are added. Click-nav in world.gd is NOT yet wired to nav mesh (still direct vector). Ready for NavigationAgent2D. Playtested ✅.
+- **Last completed (2026-05-25):** Click-to-navigate fully wired to nav mesh (ADR-098 + ADR-099). `NavAgent` (NavigationAgent2D, `path_desired_distance=4.0`, `target_desired_distance=5.0`) added as child of Player in `world.tscn`. `player.gd` steers via `get_next_path_position()` in `_physics_process()` — priority: `auto_walk` > nav_agent > keyboard. `world.gd` calls `nav_agent.set_target_position()` for all 3 right-click paths (terrain, tree, NPC); NPC target updated every frame to chase wandering NPC; `_cancel_navigation()` stops agent via `set_target_position(player.global_position)`. Manual `auto_walk = direction` removed from nav. Stuck detection unchanged. All 3 paths playtested ✅.
+- **Previous (2026-05-25):** NavigationRegion2D (`NavRegion`) added and baked in `world.tscn` (ADR-097). 640×480 outer boundary, `PARSED_GEOMETRY_STATIC_COLLIDERS`, `agent_radius=6.0`. 28 obstacles auto-parsed from all StaticBody2D shapes (includes instanced tree scenes). Baked: 231 vertices / 136 polygons. Nav mesh is static — rebake if new StaticBody2D obstacles are added. Playtested ✅.
 - **Previous (2026-05-25):** WillowWeeping shake fixed in `world.tscn`. ADR-096 had created `willow_tree.tscn` correctly (r=38, centered) but the inline `TreeWillowWeeping` in `world.tscn` was never updated — it retained viewport-dragged position/scale offsets on both `ProximityArea` and its `CollisionShape2D`, plus the original tiny radius (14.55). Reset both nodes to origin, radius 14.55→38.0, added missing `y_sort_offset=53`. Shake now triggers from all directions. Playtested ✅.
 - **Previous (2026-05-25, ADR-096):** WillowTree converted to self-contained `willow_tree.tscn`. Root cause of ADR-061 proximity shake regression identified: ADR-074 editor save had silently flipped `CollisionShape2D.scale.y` negative under `ProximityArea` — Godot 4 physics ignores negative-scale shapes, so `body_entered` never fired. Fixed. `ProxShape r=38` gives ~113px world X reach (covers teal house right of willow + equal distance left). `y_sort_offset=53` baked into .tscn root. **CRITICAL:** Never drag `CollisionShape2D` in the Godot viewport — editor silently re-introduces negative Y scale. Use Inspector position field only. Area verified functional (overlapping bodies detected ✅).
 - **Previous (2026-05-25, ADR-095):** StumpHome001 converted to self-contained `stump_home_001.tscn`. Root Node2D with `y_sort_offset=12` baked in + `stump_shrine.gd` attached. Two inline world.tscn nodes (StumpHome001 AnimatedSprite2D + StumpShrine Node2D at the same position) replaced with single scene instance at (13, 311). Grove exchange mechanic unchanged.
@@ -276,24 +277,24 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-25 (scene refactors + willow bug fix)
+### Session end — 2026-05-25 (NavigationAgent2D wired — click-nav uses nav mesh)
 - **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). All systems working.
-- **What changed this session:** (1) StumpHome001 + StumpShrine combined into `stump_home_001.tscn` (ADR-095). (2) WillowTree converted to `willow_tree.tscn` — root cause of ADR-061 shake regression diagnosed and fixed (negative CollisionShape2D Y scale under ProximityArea, ADR-096).
+- **What changed this session:** (1) `NavAgent` (NavigationAgent2D) added as child of Player in `world.tscn` (ADR-098). (2) `world.gd` mouse navigation refactored to drive via `nav_agent.set_target_position()` instead of manual `auto_walk = direction` (ADR-099). Click-to-navigate now routes around obstacles using the baked nav mesh from ADR-097.
+- **NavigationAgent2D architecture (ADR-098 + ADR-099):**
+  - `world.tscn`: `[node name="NavAgent" type="NavigationAgent2D" parent="Player"]` — `path_desired_distance=4.0`, `target_desired_distance=5.0`
+  - `player.gd`: public `nav_agent: NavigationAgent2D`, cached in `_ready()`. `_physics_process()` priority: `auto_walk` (door transitions) → `nav_agent` path → keyboard input
+  - `world.gd`: `_on_right_click()` all 3 branches call `_player.nav_agent.set_target_position()`. NPC branch updates target each frame (NPC wanders). Arrival: `is_navigation_finished() or dist < ARRIVE_DIST`. `_cancel_navigation()` stops agent via `set_target_position(player.global_position)`.
+  - `auto_walk` door-transition assignments (lines 318/327 in world.gd) are untouched — door transitions still work.
+  - Stuck detection unchanged (`_nav_best_dist`, `_nav_stuck_time`, `NAV_STUCK_MAX=1.0s`).
 - **WillowTree architecture (ADR-096):**
   - Scene: `res://World/WillowTree/willow_tree.tscn` (uid://c3wlwtree001x)
-  - Root Node2D "WillowTree": scale=(2.975,2.5), y_sort_offset=53, script=willow_tree.gd (uid://ciy6hj2sxk2o2)
-  - `AnimatedSprite2D`: position=(-2.69,-3.2), scale=(0.505,0.505), WillowFrames (idle loop + shake 9fr speed=8)
+  - Root Node2D "WillowTree": scale=(2.975,2.5), y_sort_offset=53, script=willow_tree.gd
   - `ProximityArea`: centered at origin, CollisionShape2D ProxShape r=38.0 (→ 113px world reach)
-  - `Shadow`: obj_shadow_script, ground_offset=(0,22), shadow_size=(20,7), cast_length=14
-  - `TreeCollider`: StaticBody2D at (2.65,-24.88) scale=(0.648,1.712), TrunkShape r≈13.55
-  - world.tscn: instance at (467,97)
   - **CRITICAL:** Never drag CollisionShape2D in viewport — editor silently flips scale.y negative, breaks body_entered.
 - **StumpHome001 architecture (ADR-095):**
   - Scene: `res://World/StumpShrine/stump_home_001.tscn` (uid://c2stmph001x3s)
   - Root Node2D: y_sort_offset=12, stump_shrine.gd
-  - `StumpSprite` AnimatedSprite2D: scale=0.1953125, stump_home_001_frames.tres, idle anim
-  - `StumpCollider` StaticBody2D → `StumpShape` CircleShape2D r=46 at (0,18)
-  - world.tscn: instance at (13,311)
+  - `StumpCollider` StaticBody2D → `StumpShape` CircleShape2D r=46 at (0,18), world.tscn instance at (13,311)
 - **ShT elusiveness (ADR-094) — key constants:**
   - `FLEE_RADIUS=64` / `FLEE_EXIT_RADIUS=90` — hysteresis band
   - `STUCK_CHECK_SEC=0.35`, `STUCK_DIST_THRESH=5.0`, `STUCK_COUNT_TRIGGER=3` — ~1.05s to fire
@@ -316,6 +317,7 @@
   - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
   - Linter warning in `world_drop_item.gd` (unused `_area`) — non-blocking
   - ShrineManager.gd autoload is now unused — harmless, can be removed later
+  - Nav mesh is static — rebake (`NavRegion` in world.tscn) if new StaticBody2D obstacles are added
 - **Next priorities:** (1) Teal house collision tuning. (2) Grove expansion (door animation on capture, more exchange items).
 - **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
 

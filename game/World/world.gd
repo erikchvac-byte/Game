@@ -208,6 +208,7 @@ func _on_right_click(world_pos: Vector2) -> void:
 			_nav_target_pos = (_npc as Node2D).global_position
 			_nav_target_node = _npc
 			_nav_pending_interact = true
+			_player.nav_agent.set_target_position(_nav_target_pos)
 			return
 	# Trees — click anywhere on sprite navigates and interacts
 	for tree in get_tree().get_nodes_in_group("choppable_trees"):
@@ -219,11 +220,13 @@ func _on_right_click(world_pos: Vector2) -> void:
 			_nav_target_pos = tree_node.global_position
 			_nav_target_node = tree
 			_nav_pending_interact = true
+			_player.nav_agent.set_target_position(_nav_target_pos)
 			return
 	_nav_active = true
 	_nav_target_pos = world_pos
 	_nav_target_node = null
 	_nav_pending_interact = false
+	_player.nav_agent.set_target_position(world_pos)
 
 
 func _update_mouse_navigation(delta: float) -> void:
@@ -235,6 +238,7 @@ func _update_mouse_navigation(delta: float) -> void:
 	# NPC arrival: track NPC position and trigger trade when in range
 	if _nav_target_node == _npc and _npc != null:
 		_nav_target_pos = (_npc as Node2D).global_position
+		_player.nav_agent.set_target_position(_nav_target_pos)
 		if _player.global_position.distance_to(_nav_target_pos) <= NPC_TRADE_RADIUS:
 			var pending := _nav_pending_interact
 			_cancel_navigation()
@@ -249,7 +253,7 @@ func _update_mouse_navigation(delta: float) -> void:
 			_do_nav_interact(_player, target)
 		return
 	var dist := _player.global_position.distance_to(_nav_target_pos)
-	if dist < ARRIVE_DIST:
+	if _player.nav_agent.is_navigation_finished() or dist < ARRIVE_DIST:
 		_cancel_navigation()
 		return
 	if dist < _nav_best_dist - 0.5:
@@ -260,7 +264,6 @@ func _update_mouse_navigation(delta: float) -> void:
 		if _nav_stuck_time >= NAV_STUCK_MAX:
 			_cancel_navigation()
 			return
-	_player.auto_walk = (_nav_target_pos - _player.global_position).normalized()
 
 
 func _cancel_navigation() -> void:
@@ -271,6 +274,7 @@ func _cancel_navigation() -> void:
 	_nav_stuck_time = 0.0
 	if _player:
 		_player.auto_walk = Vector2.ZERO
+		_player.nav_agent.set_target_position(_player.global_position)
 
 
 func _do_nav_interact(player: CharacterBody2D, target: Node) -> void:

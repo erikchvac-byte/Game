@@ -466,6 +466,10 @@ shape = SubResource("DoorArea")
 [node name="Player" parent="." unique_id=1585494498 instance=ExtResource("8_player")]
 position = Vector2(112, 200)
 
+[node name="NavAgent" type="NavigationAgent2D" parent="Player"]
+path_desired_distance = 4.0
+target_desired_distance = 5.0
+
 [node name="Plant" type="Node2D" parent="." unique_id=280000001]
 position = Vector2(173, 109)
 script = ExtResource("plant_script")

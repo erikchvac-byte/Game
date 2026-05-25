@@ -15,6 +15,11 @@ var auto_walk := Vector2.ZERO
 var is_chopping := false
 var is_trading := false
 
+var nav_agent: NavigationAgent2D
+
+func _ready() -> void:
+	nav_agent = $NavAgent
+
 func facing_name() -> String:
 	match facing:
 		Facing.UP: return "up"
@@ -25,6 +30,9 @@ func _physics_process(_delta: float) -> void:
 	var dir: Vector2
 	if auto_walk != Vector2.ZERO:
 		dir = auto_walk.normalized()
+		is_running = false
+	elif nav_agent != null and not nav_agent.is_navigation_finished():
+		dir = (nav_agent.get_next_path_position() - global_position).normalized()
 		is_running = false
 	else:
 		dir = Vector2(
