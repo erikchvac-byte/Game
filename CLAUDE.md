@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-26):** Runnable, pre-flight ✅, output log clean (4 lines). Asset-prep session only — no gameplay/script changes. Game systems unchanged from 2026-05-25. Right-click tree nav silently returns when axe not equipped (no toast). NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working.
+- **Current state (2026-05-26):** Runnable, pre-flight ✅, output log clean (4 lines). Door entry fixed — player can now enter PlayerHome via right-click nav or keyboard. Right-click tree nav silently returns when axe not equipped (no toast). NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -213,15 +213,11 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-26 (asset prep: temp/ → res://)
-- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). No gameplay or script changes this session.
-- **What changed this session:** Full asset import from `temp/` directory. All 127 PNGs individually inspected. Deleted `StusyRockAnimation/` (byte-identical duplicate of `RoundedPokyRock/`). Copied and renamed assets to 5 res:// destinations:
-  - `res://assets/props/furniture/` (new) — 3 files: `furniture_grandfather_clock.png`, `furniture_bed.png`, `furniture_plant_shelf.png` — **not yet in interior.tscn**
-  - `res://assets/props/items/` — 39 new files (14 wood piles, 12 metal ingots, 7 copper ingots, 5 currency/chest items, 1 wood pallet)
-  - `res://assets/nature/rocks/rounded_poky_rock/` (new) — 20 files (idle, pile_broken, 9 break frames, 9 hit frames)
-  - `res://assets/nature/rocks/tower_rock/` (new) — 20 files (idle, pile_broken, 9 hit frames, 9 collapse frames)
-  - `res://assets/nature/rocks/square_rock/` (new) — 21 files (idle, 4 pile variants, 16 break frames)
-  - Report written to `temp/asset_prep_report.md`
+### Session end — 2026-05-26 (door entry fix)
+- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines).
+- **What changed this session:**
+  - **Door entry fix:** `DoorEntrance` Area2D was 14×6 px centered at world-local (108, 117) — partially embedded in wall collision (wall bottom y=117.5). Right-click nav stopped player at y≈126, capsule top at 122, trigger bottom at 120 → no overlap → never fired. Fixed: enlarged to 20×20, moved center to (108, 130). Now overlaps player capsule reliably from both keyboard and nav. Playtested ✅.
+  - **player.gd null fix:** `$NavAgent` → `get_node_or_null("NavAgent")` — suppresses runtime error when Player runs in interior.tscn (no NavAgent child there). Null-guard on line 34 already prevented crashes; this eliminates the logged error.
 - **Flagged items (user decision needed):** `ingot_copper_05.png` = green/verdigris (unusual), `ingot_copper_06.png` = looks like ore chunks rather than refined ingot — both imported, usability is user's call.
 - **NPC nav architecture (ADR-100):**
   - `world.tscn`: `GreyHoodie` type `CharacterBody2D` (`motion_mode=1`, `collision_layer=2`, `collision_mask=0`, `y_sort_offset=19`). Children: `NpcCollider` (CapsuleShape2D r=4 h=12) + `NavAgent` (NavigationAgent2D, `path_desired_distance=4.0`, `target_desired_distance=5.0`).

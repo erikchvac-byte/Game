@@ -18,7 +18,7 @@ var is_trading := false
 var nav_agent: NavigationAgent2D
 
 func _ready() -> void:
-	nav_agent = $NavAgent
+	nav_agent = get_node_or_null("NavAgent")
 
 func facing_name() -> String:
 	match facing:
