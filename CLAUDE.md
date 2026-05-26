@@ -3,6 +3,7 @@
 > **Session start:** Read `ADR.md` for full architectural context and history. Then read the **Roadmap** and **Notes** sections at the bottom of this file.
 
 ## Rules
+- **ASSET INSPECTION RULE:** When instructed to check, review, or analyze PNG files or other discrete asset files, EVERY file in the specified set must be individually inspected before responding or taking action. Do not sample, skip, or assume similarity between assets. Confirm each file has been individually opened and viewed before proceeding. Never claim to have reviewed files that were not explicitly opened.
 - **PLAYTEST RULE:** If you make it, you play test it. Always. Run the game via MCP, exercise the feature, take a screenshot to confirm correct behavior before reporting done.
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
 - **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, stop and ask — do not pick a "close enough" alternative. Choosing replacement art is the user's job.
@@ -17,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-25):** Runnable, pre-flight ✅, output log clean. Right-click tree nav silently returns when axe not equipped (no toast). NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working.
+- **Current state (2026-05-26):** Runnable, pre-flight ✅, output log clean (4 lines). Asset-prep session only — no gameplay/script changes. Game systems unchanged from 2026-05-25. Right-click tree nav silently returns when axe not equipped (no toast). NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -196,7 +197,11 @@
 
 2. **Grove expansion** — Fay Grove exchange table currently supports bud/stone_pile/wood. More items to add as player gets them. `stump_home_001` door_open animation could trigger on item capture (currently unused). Visual feedback when ShT is "processing" (e.g. faint light at stump window).
 
-3. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. Animated stones at `game/assets/nature/rocks/` need SpriteFrames `.tres` before use. Currency icons at `game/assets/props/items/` ready for InventoryManager.
+3. **Wire furniture into interior.tscn** — `res://assets/props/furniture/` now has 3 Sprite2D-ready PNGs: `furniture_grandfather_clock.png`, `furniture_bed.png`, `furniture_plant_shelf.png`. Add as Sprite2D nodes to `interior.tscn`, position in room.
+
+4. **Rock SpriteFrames + placement** — 3 rock sets now in `res://assets/nature/rocks/`: `rounded_poky_rock/` (2 anims × 9 frames), `tower_rock/` (2 anims × 9 frames), `square_rock/` (1 anim × 16 frames). Each needs a `.tres` SpriteFrames before use in AnimatedSprite2D. Then wire into world.tscn.
+
+5. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. 39 new items in `props/items/` (ingots, wood piles, currency) available for InventoryManager.
 
 ### Blocked / waiting on user
 - **`herb_bundle_dried.png`** — no source art exists. Currently using `herb_plant_type_a.png` as placeholder in drying rack PRODUCTS. User to supply replacement before this slot is usable.
@@ -208,19 +213,20 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-25 (right-click tree toast removed)
-- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). All systems working.
-- **What changed this session:** Right-click nav to tree no longer shows "Equip axe first (C)" toast — `_do_nav_interact()` in `world.gd` silently returns when `can_interact()` is false. Toast is preserved on spacebar (`_input` path). Two-line change. Playtested ✅.
-- **Tree interaction UX (current):**
-  - Right-click tree without axe: player navigates to tree, nothing happens on arrival (silent).
-  - Right-click tree with axe: player navigates and chops on arrival.
-  - Spacebar near tree without axe: shows "Equip axe first (C)" toast.
-  - Spacebar near tree with axe: chops immediately.
+### Session end — 2026-05-26 (asset prep: temp/ → res://)
+- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). No gameplay or script changes this session.
+- **What changed this session:** Full asset import from `temp/` directory. All 127 PNGs individually inspected. Deleted `StusyRockAnimation/` (byte-identical duplicate of `RoundedPokyRock/`). Copied and renamed assets to 5 res:// destinations:
+  - `res://assets/props/furniture/` (new) — 3 files: `furniture_grandfather_clock.png`, `furniture_bed.png`, `furniture_plant_shelf.png` — **not yet in interior.tscn**
+  - `res://assets/props/items/` — 39 new files (14 wood piles, 12 metal ingots, 7 copper ingots, 5 currency/chest items, 1 wood pallet)
+  - `res://assets/nature/rocks/rounded_poky_rock/` (new) — 20 files (idle, pile_broken, 9 break frames, 9 hit frames)
+  - `res://assets/nature/rocks/tower_rock/` (new) — 20 files (idle, pile_broken, 9 hit frames, 9 collapse frames)
+  - `res://assets/nature/rocks/square_rock/` (new) — 21 files (idle, 4 pile variants, 16 break frames)
+  - Report written to `temp/asset_prep_report.md`
+- **Flagged items (user decision needed):** `ingot_copper_05.png` = green/verdigris (unusual), `ingot_copper_06.png` = looks like ore chunks rather than refined ingot — both imported, usability is user's call.
 - **NPC nav architecture (ADR-100):**
-  - `world.tscn`: `GreyHoodie` type `Node2D` → `CharacterBody2D` (`motion_mode=1`, `collision_layer=2`, `collision_mask=0`, `y_sort_offset=19`). Children: `NpcCollider` (CapsuleShape2D r=4 h=12) + `NavAgent` (NavigationAgent2D, `path_desired_distance=4.0`, `target_desired_distance=5.0`).
+  - `world.tscn`: `GreyHoodie` type `CharacterBody2D` (`motion_mode=1`, `collision_layer=2`, `collision_mask=0`, `y_sort_offset=19`). Children: `NpcCollider` (CapsuleShape2D r=4 h=12) + `NavAgent` (NavigationAgent2D, `path_desired_distance=4.0`, `target_desired_distance=5.0`).
   - `npc_grey_hoodie.gd`: `extends CharacterBody2D`. `nav_agent` cached in `_ready()`. `_physics_process()` handles movement (`_walking` guard → `is_navigation_finished()` → `get_next_path_position()` → velocity → `move_and_slide()`). `_process()` unchanged for state/timers.
   - Waypoints stored in World-local coords — converted to global in `_start_walk()` via `get_parent().to_global(waypoint)`.
-  - `_arrive_at_waypoint()` called from `_ready()` — NPC idles 2.5s at wp1 before first patrol.
   - `_walking` flag critical: prevents `is_navigation_finished()` (returns true before any target set) from triggering false arrival on startup.
 - **Player nav architecture (ADR-098 + ADR-099):**
   - `player.gd` `_physics_process()` priority: `auto_walk` (door transitions) → `nav_agent` path → keyboard input.
@@ -251,6 +257,7 @@
 - **Open issues:**
   - `HouseTwostoryTeal` collision has 2 shapes with suspicious rotations — verify/tune in-game (roadmap #1)
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates — ~34 editor warnings (pre-approved, non-blocking)
+  - 2 editor theme font warnings (main_button_font, main_button_font_size) — cosmetic editor UI only, non-blocking
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
   - `herb_bundle_dried.png` no source art — placeholder in use
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
@@ -258,8 +265,9 @@
   - Linter warning in `world_drop_item.gd` (unused `_area`) — non-blocking
   - ShrineManager.gd autoload is now unused — harmless, can be removed later
   - Nav mesh is static — rebake (`NavRegion` in world.tscn) if new StaticBody2D obstacle nodes are added
-- **Next priorities:** (1) Teal house collision tuning. (2) Grove expansion (door animation on capture, more exchange items).
-- **Available but unwired:** stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), animated stones (6), currency icons (4), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
+  - `ingot_copper_05.png` (green/verdigris) and `ingot_copper_06.png` (ore-like) — imported but may not match intended copper ingot look
+- **Next priorities:** (1) Teal house collision tuning. (2) Wire furniture into interior.tscn. (3) Rock SpriteFrames + placement.
+- **Available but unwired:** Furniture (clock, bed, plant shelf in props/furniture/), rock sets ×3 (need SpriteFrames .tres), ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
 
 ### Permissions Allowlist
 All Godot MCP, filesystem MCP, and PixelLab MCP tools are pre-approved in `.claude/settings.json` — no prompts expected for any of them.
