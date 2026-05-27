@@ -1,0 +1,22 @@
+{
+  "group_id": null,
+  "objects": [
+    {
+      "id": "417ff2e9-be75-4dc9-9836-07e3cfc9e9c3",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-18T16:58:05.477426"
+}

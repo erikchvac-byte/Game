@@ -1,0 +1,48 @@
+{
+  "group_id": null,
+  "objects": [
+    {
+      "id": "a5508a54-de9c-46a2-b04f-3f91beab4dd4",
+      "name": null,
+      "prompt": "Tree stump, top-down oblique pixel art, same palette and style as matching tree. Short cut trunk in lower half of canvas, concentric ring pattern on flat top, rough bark texture on sides, small wood chips at base, transparent background, crisp outlines, no anti-aliasing.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {
+        "he_center_of_the_stump_trunk_should_begin_spiralin": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_000.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_001.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_002.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_003.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_004.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_005.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_006.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_007.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_008.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_009.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_010.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_011.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_012.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_013.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_014.png",
+                "animations/he_center_of_the_stump_trunk_should_begin_spiralin/unknown/frame_015.png"
+              ],
+              "frame_count": 16
+            }
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-19T01:08:19.470204"
+}

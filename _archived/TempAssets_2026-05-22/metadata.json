@@ -1,0 +1,63 @@
+{
+  "group_id": "0a6feb51-a09c-4b98-a06f-254fe51f40ee",
+  "objects": [
+    {
+      "id": "8a54018c-6c63-4426-8e09-56a5ca96aa7b",
+      "name": null,
+      "prompt": "Stump of great tree with a front door and a window, red brick chimney and a flattish moss roof",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {
+        "The_door_of_the_stump_house_opens_and_closes_slowl": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_000.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_001.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_002.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_003.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_004.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_005.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_006.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_007.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_008.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_009.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_010.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_011.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_012.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_013.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_014.png",
+                "animations/The_door_of_the_stump_house_opens_and_closes_slowl/unknown/frame_015.png"
+              ],
+              "frame_count": 16
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "016e4852-3d44-413b-a163-16ef36abbff2",
+      "name": "lights on in the win",
+      "prompt": "Stump of great tree with a front door and a window, red brick chimney and a flattish moss roof",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-22T15:34:43.347266"
+}

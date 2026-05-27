@@ -1,0 +1,116 @@
+{
+  "objects": [
+    {
+      "id": "63c770b6-748b-478a-8203-b0a9cfca50f3",
+      "name": null,
+      "prompt": "Stump of great tree with a front door and a window, red brick chimney and a flattish moss roof",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "74967400-2471-4e60-b6f8-24d1ba35114a",
+      "name": null,
+      "prompt": "Stump of great tree with a front door and a window, red brick chimney and a flattish moss roof",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ad59de4b-1a1a-4f4c-91b9-bc9e2a4f4e71",
+      "name": null,
+      "prompt": "Stump of great tree with a front door and a window, red brick chimney and a flattish moss roof",
+      "size": {
+        "width": 128,
+        "height": 128
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "groups": [
+    {
+      "group_id": null,
+      "folder": "objects/Stump_of_great_tree_with_a_fro",
+      "objects": [
+        {
+          "id": "63c770b6-748b-478a-8203-b0a9cfca50f3",
+          "name": null,
+          "prompt": "Stump of great tree with a front door and a window, red brick chimney and a flattish moss roof",
+          "size": {
+            "width": 128,
+            "height": 128
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Stump_of_great_tree_with_a_fro_2",
+      "objects": [
+        {
+          "id": "74967400-2471-4e60-b6f8-24d1ba35114a",
+          "name": null,
+          "prompt": "Stump of great tree with a front door and a window, red brick chimney and a flattish moss roof",
+          "size": {
+            "width": 128,
+            "height": 128
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Stump_of_great_tree_with_a_fro_3",
+      "objects": [
+        {
+          "id": "ad59de4b-1a1a-4f4c-91b9-bc9e2a4f4e71",
+          "name": null,
+          "prompt": "Stump of great tree with a front door and a window, red brick chimney and a flattish moss roof",
+          "size": {
+            "width": 128,
+            "height": 128
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-22T15:29:58.958311"
+}

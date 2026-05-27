@@ -1,0 +1,41 @@
+{
+  "group_id": null,
+  "objects": [
+    {
+      "id": "8f941184-9b0b-45a1-9754-ca40781a800e",
+      "name": null,
+      "prompt": "willow",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {
+        "Shakes off some annoying pest that just poked it t": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/Shakes off some annoying pest that just poked it t/unknown/frame_000.png",
+                "animations/Shakes off some annoying pest that just poked it t/unknown/frame_001.png",
+                "animations/Shakes off some annoying pest that just poked it t/unknown/frame_002.png",
+                "animations/Shakes off some annoying pest that just poked it t/unknown/frame_003.png",
+                "animations/Shakes off some annoying pest that just poked it t/unknown/frame_004.png",
+                "animations/Shakes off some annoying pest that just poked it t/unknown/frame_005.png",
+                "animations/Shakes off some annoying pest that just poked it t/unknown/frame_006.png",
+                "animations/Shakes off some annoying pest that just poked it t/unknown/frame_007.png",
+                "animations/Shakes off some annoying pest that just poked it t/unknown/frame_008.png"
+              ],
+              "frame_count": 9
+            }
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-17T00:28:57.093300"
+}

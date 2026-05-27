@@ -1,0 +1,80 @@
+{
+  "objects": [
+    {
+      "id": "4fdb14cc-10be-43f3-9c71-a4529910978d",
+      "name": null,
+      "prompt": "SEAMLESS WOOD",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "36a2131f-4cf0-4383-a280-f247e6994571",
+      "name": null,
+      "prompt": "Mushroom frog",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "groups": [
+    {
+      "group_id": null,
+      "folder": "objects/SEAMLESS_WOOD",
+      "objects": [
+        {
+          "id": "4fdb14cc-10be-43f3-9c71-a4529910978d",
+          "name": null,
+          "prompt": "SEAMLESS WOOD",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Mushroom_frog",
+      "objects": [
+        {
+          "id": "36a2131f-4cf0-4383-a280-f247e6994571",
+          "name": null,
+          "prompt": "Mushroom frog",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-22T16:28:34.238778"
+}

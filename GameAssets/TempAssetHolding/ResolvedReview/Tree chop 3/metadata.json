@@ -1,0 +1,59 @@
+{
+  "group_id": null,
+  "objects": [
+    {
+      "id": "291c36f2-1cf1-405c-b6df-eea1a7def9f5",
+      "name": null,
+      "prompt": "fir",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {
+        "Tree_falls_over_hitting_the_ground_hard": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/Tree_falls_over_hitting_the_ground_hard/unknown/frame_000.png",
+                "animations/Tree_falls_over_hitting_the_ground_hard/unknown/frame_001.png",
+                "animations/Tree_falls_over_hitting_the_ground_hard/unknown/frame_002.png",
+                "animations/Tree_falls_over_hitting_the_ground_hard/unknown/frame_003.png",
+                "animations/Tree_falls_over_hitting_the_ground_hard/unknown/frame_004.png",
+                "animations/Tree_falls_over_hitting_the_ground_hard/unknown/frame_005.png",
+                "animations/Tree_falls_over_hitting_the_ground_hard/unknown/frame_006.png",
+                "animations/Tree_falls_over_hitting_the_ground_hard/unknown/frame_007.png",
+                "animations/Tree_falls_over_hitting_the_ground_hard/unknown/frame_008.png"
+              ],
+              "frame_count": 9
+            }
+          }
+        },
+        "4-frame_chopping_animation_top-down_oblique_pixel": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/4-frame_chopping_animation_top-down_oblique_pixel/unknown/frame_000.png",
+                "animations/4-frame_chopping_animation_top-down_oblique_pixel/unknown/frame_001.png",
+                "animations/4-frame_chopping_animation_top-down_oblique_pixel/unknown/frame_002.png",
+                "animations/4-frame_chopping_animation_top-down_oblique_pixel/unknown/frame_003.png",
+                "animations/4-frame_chopping_animation_top-down_oblique_pixel/unknown/frame_004.png",
+                "animations/4-frame_chopping_animation_top-down_oblique_pixel/unknown/frame_005.png",
+                "animations/4-frame_chopping_animation_top-down_oblique_pixel/unknown/frame_006.png",
+                "animations/4-frame_chopping_animation_top-down_oblique_pixel/unknown/frame_007.png",
+                "animations/4-frame_chopping_animation_top-down_oblique_pixel/unknown/frame_008.png"
+              ],
+              "frame_count": 9
+            }
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-19T01:18:50.278800"
+}

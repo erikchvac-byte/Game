@@ -1,0 +1,483 @@
+{
+  "group_id": "fd1dda62-9291-4b4f-aecb-5024f2b29bad",
+  "objects": [
+    {
+      "id": "6a0c3b3f-39ca-46a1-b0e9-b427a823303e",
+      "name": "LongDirtPatch",
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {
+        "The brown square pulsates rhythmically, slightly e": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/The brown square pulsates rhythmically, slightly e/unknown/frame_000.png",
+                "animations/The brown square pulsates rhythmically, slightly e/unknown/frame_001.png",
+                "animations/The brown square pulsates rhythmically, slightly e/unknown/frame_002.png",
+                "animations/The brown square pulsates rhythmically, slightly e/unknown/frame_003.png",
+                "animations/The brown square pulsates rhythmically, slightly e/unknown/frame_004.png",
+                "animations/The brown square pulsates rhythmically, slightly e/unknown/frame_005.png",
+                "animations/The brown square pulsates rhythmically, slightly e/unknown/frame_006.png",
+                "animations/The brown square pulsates rhythmically, slightly e/unknown/frame_007.png",
+                "animations/The brown square pulsates rhythmically, slightly e/unknown/frame_008.png"
+              ],
+              "frame_count": 9
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "1a318a30-3199-45f6-a1ae-35a0df2f9eeb",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "16d2a3ac-6f9d-40e9-89e1-3c5931333c10",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "eb5b4e50-f836-4dfc-a737-715adf7a46f3",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "b65682e8-e231-47e3-881d-667439399c0a",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "89317abf-57bf-4d24-adf0-6a7e037e6ae7",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ff141d2c-e696-418f-96cc-8c4a0135bb78",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "6df876b7-19f3-4715-a182-5b89afde27dd",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 8,
+      "view": "low top-down",
+      "rotations": {
+        "south": "rotations/south.png",
+        "south-east": "rotations/south-east.png",
+        "east": "rotations/east.png",
+        "north-east": "rotations/north-east.png",
+        "north": "rotations/north.png",
+        "north-west": "rotations/north-west.png",
+        "west": "rotations/west.png",
+        "south-west": "rotations/south-west.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "0cd318c5-d52e-4734-ae5f-f3ec406fbaa0",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "b924d165-f18f-4e52-8ed0-7cda5603ceca",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "79e26345-97eb-488f-b79d-b04d3967c2d5",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "672ace88-1fb6-4e46-b8bd-b527638d6ff0",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "7c0b1103-1b4e-4a19-8bb0-73a71966e08f",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "7810515b-c391-4d45-b329-7dc5624910e4",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "d6f5a508-299f-4d8c-9c5c-b59fe06f80d6",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "7b1914c6-e73c-4b49-a28a-ed1220228ae7",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "77f1448b-ebd9-4d9f-b5d6-c35a6f9c0215",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "3b102e76-11f7-4aeb-8816-09e0e0406ace",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "f88e0cc0-b004-44ff-a7c4-a5e424981940",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "e8440e47-af45-458d-b7fb-fb9667064c90",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "129c202d-643d-4fde-b334-a67e0246d44f",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "89c4ed95-ebba-4e65-b456-7f153e88002e",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "78127ffe-6e48-4e33-a84a-564ab557f2e9",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "1f034112-2edc-4bce-ad2a-1e97b94e5685",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "831ea594-0911-4e3e-a5c9-875920be7ae0",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "121c3294-aa5f-43eb-84d0-9e7167fd2355",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "3bfe7f10-4443-456e-a020-8517e75acf5c",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "22de77e5-08cc-44cd-8bcc-2d1e728aaeef",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ebf52f11-766f-4982-9f2c-d6022b727d07",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "5c1ff967-4c0f-4c7b-a9a1-4b21e3e814a5",
+      "name": null,
+      "prompt": "Crops in a dirt patch, Garden, Summer garden, spring garden, dirt bare garden",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-18T17:02:12.030383"
+}

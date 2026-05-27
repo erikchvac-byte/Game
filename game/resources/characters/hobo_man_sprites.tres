@@ -1,0 +1,157 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://bhnpjlcsr3is0"]
+
+[ext_resource type="Texture2D" uid="uid://dxwljg0q6ctlq" path="res://assets/characters/forest_creature/hobo/idle/east.png" id="1_rhdc6"]
+[ext_resource type="Texture2D" uid="uid://dt1h8nq3u43vj" path="res://assets/characters/forest_creature/hobo/idle/north.png" id="2_4romj"]
+[ext_resource type="Texture2D" uid="uid://cxblk4e2umdav" path="res://assets/characters/forest_creature/hobo/idle/south.png" id="3_jgw4l"]
+[ext_resource type="Texture2D" uid="uid://d2n62xybnxvo3" path="res://assets/characters/forest_creature/hobo/idle/west.png" id="4_qvv24"]
+[ext_resource type="Texture2D" uid="uid://b7vlko8c8yvob" path="res://assets/characters/forest_creature/hobo/walk_east/frame_000.png" id="5_n584e"]
+[ext_resource type="Texture2D" uid="uid://djyi6a4la8s01" path="res://assets/characters/forest_creature/hobo/walk_east/frame_001.png" id="6_6yh1t"]
+[ext_resource type="Texture2D" uid="uid://c0rnwgatbri4o" path="res://assets/characters/forest_creature/hobo/walk_east/frame_002.png" id="7_1u6ca"]
+[ext_resource type="Texture2D" uid="uid://b2wtmt663ew0s" path="res://assets/characters/forest_creature/hobo/walk_east/frame_003.png" id="8_aa3tp"]
+[ext_resource type="Texture2D" uid="uid://c2hc7vv35fgxb" path="res://assets/characters/forest_creature/hobo/walk_east/frame_004.png" id="9_thm3n"]
+[ext_resource type="Texture2D" uid="uid://cksnepnhckmrx" path="res://assets/characters/forest_creature/hobo/walk_east/frame_005.png" id="10_0mquh"]
+[ext_resource type="Texture2D" uid="uid://b82oflb3d1i8l" path="res://assets/characters/forest_creature/hobo/walk_north/frame_000.png" id="11_m2v57"]
+[ext_resource type="Texture2D" uid="uid://dsdsdrf00sqpo" path="res://assets/characters/forest_creature/hobo/walk_north/frame_001.png" id="12_2dagf"]
+[ext_resource type="Texture2D" uid="uid://d163kth14olrc" path="res://assets/characters/forest_creature/hobo/walk_north/frame_002.png" id="13_cvwvs"]
+[ext_resource type="Texture2D" uid="uid://do5w221pu7q3s" path="res://assets/characters/forest_creature/hobo/walk_north/frame_003.png" id="14_37u65"]
+[ext_resource type="Texture2D" uid="uid://dy6puetoogdm4" path="res://assets/characters/forest_creature/hobo/walk_north/frame_004.png" id="15_gtsvo"]
+[ext_resource type="Texture2D" uid="uid://ugjqyxg07l87" path="res://assets/characters/forest_creature/hobo/walk_north/frame_005.png" id="16_g68oo"]
+[ext_resource type="Texture2D" uid="uid://dh3c7m2bwsdnv" path="res://assets/characters/forest_creature/hobo/walk_south/frame_000.png" id="17_ir4wc"]
+[ext_resource type="Texture2D" uid="uid://c2g4eaaeuaoo5" path="res://assets/characters/forest_creature/hobo/walk_south/frame_001.png" id="18_51s26"]
+[ext_resource type="Texture2D" uid="uid://dtrrlhley6la0" path="res://assets/characters/forest_creature/hobo/walk_south/frame_002.png" id="19_hbl2e"]
+[ext_resource type="Texture2D" uid="uid://bhnw8n6h2bnt3" path="res://assets/characters/forest_creature/hobo/walk_south/frame_003.png" id="20_oidhl"]
+[ext_resource type="Texture2D" uid="uid://cu4etrugv3afr" path="res://assets/characters/forest_creature/hobo/walk_south/frame_004.png" id="21_rhc38"]
+[ext_resource type="Texture2D" uid="uid://ckkhf0uqqiqs5" path="res://assets/characters/forest_creature/hobo/walk_south/frame_005.png" id="22_77srh"]
+[ext_resource type="Texture2D" uid="uid://c5ocbqfmmf5xt" path="res://assets/characters/forest_creature/hobo/walk_west/frame_000.png" id="23_i0jy3"]
+[ext_resource type="Texture2D" uid="uid://4cxr5d52lmoa" path="res://assets/characters/forest_creature/hobo/walk_west/frame_001.png" id="24_tmqla"]
+[ext_resource type="Texture2D" uid="uid://bimkf8jeoj1rg" path="res://assets/characters/forest_creature/hobo/walk_west/frame_002.png" id="25_bjhac"]
+[ext_resource type="Texture2D" uid="uid://cbk16uahxguh0" path="res://assets/characters/forest_creature/hobo/walk_west/frame_003.png" id="26_pw3qq"]
+[ext_resource type="Texture2D" uid="uid://374soicios0" path="res://assets/characters/forest_creature/hobo/walk_west/frame_004.png" id="27_8mx0l"]
+[ext_resource type="Texture2D" uid="uid://drslc1e8vmqnt" path="res://assets/characters/forest_creature/hobo/walk_west/frame_005.png" id="28_rbbax"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_rhdc6")
+}],
+"loop": true,
+"name": &"idle_east",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_4romj")
+}],
+"loop": true,
+"name": &"idle_north",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_jgw4l")
+}],
+"loop": true,
+"name": &"idle_south",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("4_qvv24")
+}],
+"loop": true,
+"name": &"idle_west",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_n584e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_6yh1t")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_1u6ca")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_aa3tp")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_thm3n")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_0mquh")
+}],
+"loop": true,
+"name": &"walk_east",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("11_m2v57")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_2dagf")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_cvwvs")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_37u65")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_gtsvo")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_g68oo")
+}],
+"loop": true,
+"name": &"walk_north",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_ir4wc")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_51s26")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_hbl2e")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_oidhl")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_rhc38")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_77srh")
+}],
+"loop": true,
+"name": &"walk_south",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("23_i0jy3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_tmqla")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_bjhac")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_pw3qq")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_8mx0l")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_rbbax")
+}],
+"loop": true,
+"name": &"walk_west",
+"speed": 8.0
+}]

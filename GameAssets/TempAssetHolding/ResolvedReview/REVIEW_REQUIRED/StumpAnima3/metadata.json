@@ -1,0 +1,51 @@
+{
+  "group_id": "98e41376-27a7-4cc6-8252-aa639d085596",
+  "objects": [
+    {
+      "id": "c8c694d0-f765-4c04-bc1f-047d18828d6c",
+      "name": null,
+      "prompt": "Tree stump, top-down oblique pixel art, same palette and style as matching tree. Short cut trunk in lower half of canvas, concentric ring pattern on flat top, rough bark texture on sides, small wood chips at base, transparent background, crisp outlines, no anti-aliasing.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {
+        "Center_of_the_stump_trunk_should_begin_spiraling_i": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/Center_of_the_stump_trunk_should_begin_spiraling_i/unknown/frame_000.png",
+                "animations/Center_of_the_stump_trunk_should_begin_spiraling_i/unknown/frame_001.png",
+                "animations/Center_of_the_stump_trunk_should_begin_spiraling_i/unknown/frame_002.png",
+                "animations/Center_of_the_stump_trunk_should_begin_spiraling_i/unknown/frame_003.png"
+              ],
+              "frame_count": 4
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "e285dfaf-f292-439a-a5c1-e77824aa00bc",
+      "name": null,
+      "prompt": "Tree stump, top-down oblique pixel art, same palette and style as matching tree. Short cut trunk in lower half of canvas, concentric ring pattern on flat top, rough bark texture on sides, small wood chips at base, transparent background, crisp outlines, no anti-aliasing.",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-19T01:08:36.114137"
+}

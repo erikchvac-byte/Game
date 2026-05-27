@@ -1,0 +1,41 @@
+{
+  "group_id": null,
+  "objects": [
+    {
+      "id": "291c36f2-1cf1-405c-b6df-eea1a7def9f5",
+      "name": null,
+      "prompt": "fir",
+      "size": {
+        "width": 96,
+        "height": 96
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {
+        "4-frame chopping animation, top-down oblique pixel": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/4-frame chopping animation, top-down oblique pixel/unknown/frame_000.png",
+                "animations/4-frame chopping animation, top-down oblique pixel/unknown/frame_001.png",
+                "animations/4-frame chopping animation, top-down oblique pixel/unknown/frame_002.png",
+                "animations/4-frame chopping animation, top-down oblique pixel/unknown/frame_003.png",
+                "animations/4-frame chopping animation, top-down oblique pixel/unknown/frame_004.png",
+                "animations/4-frame chopping animation, top-down oblique pixel/unknown/frame_005.png",
+                "animations/4-frame chopping animation, top-down oblique pixel/unknown/frame_006.png",
+                "animations/4-frame chopping animation, top-down oblique pixel/unknown/frame_007.png",
+                "animations/4-frame chopping animation, top-down oblique pixel/unknown/frame_008.png"
+              ],
+              "frame_count": 9
+            }
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-17T00:29:35.301613"
+}

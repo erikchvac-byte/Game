@@ -1,0 +1,224 @@
+{
+  "objects": [
+    {
+      "id": "e675e86f-74a9-4fb1-992f-ba5d3ea770ab",
+      "name": "Hang Dry Weed",
+      "prompt": " Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "7f168ba8-e138-4147-97b7-2297f0baf2f3",
+      "name": null,
+      "prompt": "Nice looking marijuana plant",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "bcd25568-0dcc-4c34-a74a-0e9168cf52f9",
+      "name": null,
+      "prompt": "Nice looking marijuana plant",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "82b03f87-e128-4811-9d7f-26305f612222",
+      "name": null,
+      "prompt": "Weed plant",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "352f2981-fc6c-44cb-bb30-1ed4b879e193",
+      "name": null,
+      "prompt": "Purple weed",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ae4be618-b3b8-46f2-8eb4-e303979b0064",
+      "name": null,
+      "prompt": "Weed plant",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "groups": [
+    {
+      "group_id": null,
+      "folder": "objects/Hang_Dry_Weed",
+      "objects": [
+        {
+          "id": "e675e86f-74a9-4fb1-992f-ba5d3ea770ab",
+          "name": "Hang Dry Weed",
+          "prompt": " Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Nice_looking_marijuana_plant",
+      "objects": [
+        {
+          "id": "7f168ba8-e138-4147-97b7-2297f0baf2f3",
+          "name": null,
+          "prompt": "Nice looking marijuana plant",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Nice_looking_marijuana_plant_2",
+      "objects": [
+        {
+          "id": "bcd25568-0dcc-4c34-a74a-0e9168cf52f9",
+          "name": null,
+          "prompt": "Nice looking marijuana plant",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Weed_plant",
+      "objects": [
+        {
+          "id": "82b03f87-e128-4811-9d7f-26305f612222",
+          "name": null,
+          "prompt": "Weed plant",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Purple_weed",
+      "objects": [
+        {
+          "id": "352f2981-fc6c-44cb-bb30-1ed4b879e193",
+          "name": null,
+          "prompt": "Purple weed",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Weed_plant_2",
+      "objects": [
+        {
+          "id": "ae4be618-b3b8-46f2-8eb4-e303979b0064",
+          "name": null,
+          "prompt": "Weed plant",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-13T19:00:07.469847"
+}

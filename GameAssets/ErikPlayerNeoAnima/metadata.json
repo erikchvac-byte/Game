@@ -1,0 +1,353 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "1a82d8e0-8484-4355-a907-fc32e6cc62fe",
+        "name": "Erik",
+        "prompt": "Teenager from the year 2001. City Suburb kid",
+        "size": {
+          "width": 56,
+          "height": 56
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "high top-down",
+        "created_at": "2026-04-26T16:34:35.427319+00:00"
+      },
+      "folder": "states/1a82d8e0",
+      "frames": {
+        "rotations": {
+          "south": "states/1a82d8e0/rotations/south.png",
+          "south-east": "states/1a82d8e0/rotations/south-east.png",
+          "east": "states/1a82d8e0/rotations/east.png",
+          "north-east": "states/1a82d8e0/rotations/north-east.png",
+          "north": "states/1a82d8e0/rotations/north.png",
+          "north-west": "states/1a82d8e0/rotations/north-west.png",
+          "west": "states/1a82d8e0/rotations/west.png",
+          "south-west": "states/1a82d8e0/rotations/south-west.png"
+        },
+        "animations": {
+          "Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53": {
+            "south": [
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_000.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_001.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_002.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_003.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_004.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_005.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_006.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_007.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_008.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_009.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_010.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_011.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_012.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_013.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_014.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/south/frame_015.png"
+            ],
+            "east": [
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_000.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_001.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_002.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_003.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_004.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_005.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_006.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_007.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_008.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_009.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_010.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_011.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_012.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_013.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_014.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/east/frame_015.png"
+            ],
+            "north": [
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_000.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_001.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_002.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_003.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_004.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_005.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_006.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_007.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_008.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_009.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_010.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_011.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_012.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_013.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_014.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/north/frame_015.png"
+            ],
+            "west": [
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_000.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_001.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_002.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_003.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_004.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_005.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_006.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_007.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_008.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_009.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_010.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_011.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_012.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_013.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_014.png",
+              "states/1a82d8e0/animations/Eating_big_red_cap_mushroom_and_seeing_red_sparks-1712ee53/west/frame_015.png"
+            ]
+          },
+          "animation-4105fc51": {
+            "west": [
+              "states/1a82d8e0/animations/animation-4105fc51/west/frame_000.png",
+              "states/1a82d8e0/animations/animation-4105fc51/west/frame_001.png",
+              "states/1a82d8e0/animations/animation-4105fc51/west/frame_002.png",
+              "states/1a82d8e0/animations/animation-4105fc51/west/frame_003.png",
+              "states/1a82d8e0/animations/animation-4105fc51/west/frame_004.png",
+              "states/1a82d8e0/animations/animation-4105fc51/west/frame_005.png"
+            ],
+            "north": [
+              "states/1a82d8e0/animations/animation-4105fc51/north/frame_000.png",
+              "states/1a82d8e0/animations/animation-4105fc51/north/frame_001.png",
+              "states/1a82d8e0/animations/animation-4105fc51/north/frame_002.png",
+              "states/1a82d8e0/animations/animation-4105fc51/north/frame_003.png",
+              "states/1a82d8e0/animations/animation-4105fc51/north/frame_004.png",
+              "states/1a82d8e0/animations/animation-4105fc51/north/frame_005.png"
+            ],
+            "south": [
+              "states/1a82d8e0/animations/animation-4105fc51/south/frame_000.png",
+              "states/1a82d8e0/animations/animation-4105fc51/south/frame_001.png",
+              "states/1a82d8e0/animations/animation-4105fc51/south/frame_002.png",
+              "states/1a82d8e0/animations/animation-4105fc51/south/frame_003.png",
+              "states/1a82d8e0/animations/animation-4105fc51/south/frame_004.png",
+              "states/1a82d8e0/animations/animation-4105fc51/south/frame_005.png"
+            ],
+            "east": [
+              "states/1a82d8e0/animations/animation-4105fc51/east/frame_000.png",
+              "states/1a82d8e0/animations/animation-4105fc51/east/frame_001.png",
+              "states/1a82d8e0/animations/animation-4105fc51/east/frame_002.png",
+              "states/1a82d8e0/animations/animation-4105fc51/east/frame_003.png",
+              "states/1a82d8e0/animations/animation-4105fc51/east/frame_004.png",
+              "states/1a82d8e0/animations/animation-4105fc51/east/frame_005.png"
+            ]
+          },
+          "Push_Object-a918a249": {
+            "south": [
+              "states/1a82d8e0/animations/Push_Object-a918a249/south/frame_000.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/south/frame_001.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/south/frame_002.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/south/frame_003.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/south/frame_004.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/south/frame_005.png"
+            ],
+            "west": [
+              "states/1a82d8e0/animations/Push_Object-a918a249/west/frame_000.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/west/frame_001.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/west/frame_002.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/west/frame_003.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/west/frame_004.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/west/frame_005.png"
+            ],
+            "east": [
+              "states/1a82d8e0/animations/Push_Object-a918a249/east/frame_000.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/east/frame_001.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/east/frame_002.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/east/frame_003.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/east/frame_004.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/east/frame_005.png"
+            ],
+            "north": [
+              "states/1a82d8e0/animations/Push_Object-a918a249/north/frame_000.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/north/frame_001.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/north/frame_002.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/north/frame_003.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/north/frame_004.png",
+              "states/1a82d8e0/animations/Push_Object-a918a249/north/frame_005.png"
+            ]
+          },
+          "Jumping-3ee4560a": {
+            "west": [
+              "states/1a82d8e0/animations/Jumping-3ee4560a/west/frame_000.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/west/frame_001.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/west/frame_002.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/west/frame_003.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/west/frame_004.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/west/frame_005.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/west/frame_006.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/west/frame_007.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/west/frame_008.png"
+            ],
+            "east": [
+              "states/1a82d8e0/animations/Jumping-3ee4560a/east/frame_000.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/east/frame_001.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/east/frame_002.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/east/frame_003.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/east/frame_004.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/east/frame_005.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/east/frame_006.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/east/frame_007.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/east/frame_008.png"
+            ],
+            "north": [
+              "states/1a82d8e0/animations/Jumping-3ee4560a/north/frame_000.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/north/frame_001.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/north/frame_002.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/north/frame_003.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/north/frame_004.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/north/frame_005.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/north/frame_006.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/north/frame_007.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/north/frame_008.png"
+            ],
+            "south": [
+              "states/1a82d8e0/animations/Jumping-3ee4560a/south/frame_000.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/south/frame_001.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/south/frame_002.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/south/frame_003.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/south/frame_004.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/south/frame_005.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/south/frame_006.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/south/frame_007.png",
+              "states/1a82d8e0/animations/Jumping-3ee4560a/south/frame_008.png"
+            ]
+          },
+          "Pull_Object-e217c136": {
+            "south": [
+              "states/1a82d8e0/animations/Pull_Object-e217c136/south/frame_000.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/south/frame_001.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/south/frame_002.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/south/frame_003.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/south/frame_004.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/south/frame_005.png"
+            ],
+            "east": [
+              "states/1a82d8e0/animations/Pull_Object-e217c136/east/frame_000.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/east/frame_001.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/east/frame_002.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/east/frame_003.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/east/frame_004.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/east/frame_005.png"
+            ],
+            "north": [
+              "states/1a82d8e0/animations/Pull_Object-e217c136/north/frame_000.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/north/frame_001.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/north/frame_002.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/north/frame_003.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/north/frame_004.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/north/frame_005.png"
+            ],
+            "west": [
+              "states/1a82d8e0/animations/Pull_Object-e217c136/west/frame_000.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/west/frame_001.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/west/frame_002.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/west/frame_003.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/west/frame_004.png",
+              "states/1a82d8e0/animations/Pull_Object-e217c136/west/frame_005.png"
+            ]
+          },
+          "Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd": {
+            "south": [
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_000.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_001.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_002.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_003.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_004.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_005.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_006.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_007.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_008.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_009.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_010.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_011.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_012.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_013.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_014.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/south/frame_015.png"
+            ],
+            "north": [
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_000.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_001.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_002.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_003.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_004.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_005.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_006.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_007.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_008.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_009.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_010.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_011.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_012.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_013.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_014.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north/frame_015.png"
+            ],
+            "east": [
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_000.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_001.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_002.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_003.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_004.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_005.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_006.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_007.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_008.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_009.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_010.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_011.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_012.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_013.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_014.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/east/frame_015.png"
+            ],
+            "north-west": [
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_000.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_001.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_002.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_003.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_004.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_005.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_006.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_007.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_008.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_009.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_010.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_011.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_012.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_013.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_014.png",
+              "states/1a82d8e0/animations/Using_a_wood_handled_axe_to_chop_at_a_standing_obj-5ca3a9bd/north-west/frame_015.png"
+            ]
+          },
+          "Holding_a_bucket_of_water-1f650d97": {
+            "east": [
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_000.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_001.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_002.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_003.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_004.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_005.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_006.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_007.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_008.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_009.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_010.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_011.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_012.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_013.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_014.png",
+              "states/1a82d8e0/animations/Holding_a_bucket_of_water-1f650d97/east/frame_015.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-05-16T16:08:12.950425"
+}

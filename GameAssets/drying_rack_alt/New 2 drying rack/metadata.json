@@ -1,0 +1,67 @@
+{
+  "group_id": "42d06255-2690-48e7-b4ed-18918e29a9d0",
+  "objects": [
+    {
+      "id": "0f8c8d66-4478-48a4-a8c5-341848c23707",
+      "name": null,
+      "prompt": "with three plants",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "fc1be90d-72bb-4af9-9a35-0e40c9e74391",
+      "name": null,
+      "prompt": "with three plants",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "55b89217-276c-4197-8e55-7c7c768c8fb3",
+      "name": null,
+      "prompt": "with three plants",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "9a83597e-e16d-4a21-910e-4a4fab06753b",
+      "name": null,
+      "prompt": "with three plants",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-08T14:10:37.369860"
+}

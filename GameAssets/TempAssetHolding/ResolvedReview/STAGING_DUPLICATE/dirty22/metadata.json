@@ -1,0 +1,22 @@
+{
+  "group_id": null,
+  "objects": [
+    {
+      "id": "503b36fb-70b4-4b6a-bcaf-1121e491fb78",
+      "name": null,
+      "prompt": "Dirt\n",
+      "size": {
+        "width": 154,
+        "height": 154
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-18T16:58:08.878230"
+}

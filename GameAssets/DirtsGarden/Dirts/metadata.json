@@ -1,0 +1,404 @@
+{
+  "objects": [
+    {
+      "id": "1c96d227-36b7-4033-9f12-60dc754ba41a",
+      "name": null,
+      "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "93743ede-f3dc-4812-8f34-c8513bf72c3c",
+      "name": null,
+      "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "f2c1d53e-1423-4ce2-ab8f-c6826a68a715",
+      "name": null,
+      "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "7ed40247-4cee-4075-b119-3944613b802c",
+      "name": null,
+      "prompt": "with rows",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "80072ff3-65a9-4035-997f-971f5fbcded1",
+      "name": null,
+      "prompt": "clear",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "015938aa-f03c-4962-a2ab-a32eb22af7ac",
+      "name": null,
+      "prompt": "with one weed plant",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "71d0dfe1-e866-4161-8bcd-272da77a34b1",
+      "name": null,
+      "prompt": "garden area with bare dirt ready to plant",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "8477fcce-061a-4f5d-8c50-9171a5b0bb53",
+      "name": null,
+      "prompt": "With one dead weed plant by itself",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "463adc2f-50a2-4742-87b7-a7dffdc94aee",
+      "name": null,
+      "prompt": "tilled",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "7ef467ce-57b7-4e87-a4ba-88b3a29d657b",
+      "name": null,
+      "prompt": "garden area with bare dirt ready to plant",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "5d8723cd-11a3-4877-b18b-4f85ecc8b1f5",
+      "name": null,
+      "prompt": "Blank",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "groups": [
+    {
+      "group_id": null,
+      "folder": "objects/Grass_meets_stone_tile_grass",
+      "objects": [
+        {
+          "id": "1c96d227-36b7-4033-9f12-60dc754ba41a",
+          "name": null,
+          "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Grass_meets_stone_tile_grass_2",
+      "objects": [
+        {
+          "id": "93743ede-f3dc-4812-8f34-c8513bf72c3c",
+          "name": null,
+          "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Grass_meets_stone_tile_grass_3",
+      "objects": [
+        {
+          "id": "f2c1d53e-1423-4ce2-ab8f-c6826a68a715",
+          "name": null,
+          "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/with_rows",
+      "objects": [
+        {
+          "id": "7ed40247-4cee-4075-b119-3944613b802c",
+          "name": null,
+          "prompt": "with rows",
+          "size": {
+            "width": 64,
+            "height": 64
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/80072ff3",
+      "objects": [
+        {
+          "id": "80072ff3-65a9-4035-997f-971f5fbcded1",
+          "name": null,
+          "prompt": "clear",
+          "size": {
+            "width": 64,
+            "height": 64
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/with_one_weed_plant",
+      "objects": [
+        {
+          "id": "015938aa-f03c-4962-a2ab-a32eb22af7ac",
+          "name": null,
+          "prompt": "with one weed plant",
+          "size": {
+            "width": 64,
+            "height": 64
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/garden_area_with_bare_dirt_rea",
+      "objects": [
+        {
+          "id": "71d0dfe1-e866-4161-8bcd-272da77a34b1",
+          "name": null,
+          "prompt": "garden area with bare dirt ready to plant",
+          "size": {
+            "width": 64,
+            "height": 64
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/With_one_dead_weed_plant_by_it",
+      "objects": [
+        {
+          "id": "8477fcce-061a-4f5d-8c50-9171a5b0bb53",
+          "name": null,
+          "prompt": "With one dead weed plant by itself",
+          "size": {
+            "width": 64,
+            "height": 64
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/tilled",
+      "objects": [
+        {
+          "id": "463adc2f-50a2-4742-87b7-a7dffdc94aee",
+          "name": null,
+          "prompt": "tilled",
+          "size": {
+            "width": 64,
+            "height": 64
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/garden_area_with_bare_dirt_rea_2",
+      "objects": [
+        {
+          "id": "7ef467ce-57b7-4e87-a4ba-88b3a29d657b",
+          "name": null,
+          "prompt": "garden area with bare dirt ready to plant",
+          "size": {
+            "width": 64,
+            "height": 64
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/5d8723cd",
+      "objects": [
+        {
+          "id": "5d8723cd-11a3-4877-b18b-4f85ecc8b1f5",
+          "name": null,
+          "prompt": "Blank",
+          "size": {
+            "width": 64,
+            "height": 64
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-17T14:25:10.106701"
+}

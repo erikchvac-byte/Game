@@ -63,7 +63,6 @@ radius = 38.0
 radius = 13.55
 
 [node name="WillowTree" type="Node2D" unique_id=1994930003]
-y_sort_offset = 53
 scale = Vector2(2.975, 2.5)
 script = ExtResource("1_script")
 
@@ -75,6 +74,7 @@ animation = &"idle"
 autoplay = "idle"
 
 [node name="ProximityArea" type="Area2D" parent="." unique_id=2111111002]
+scale = Vector2(0.755, 0.755)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="ProximityArea" unique_id=2111111003]
 shape = SubResource("ProxShape")
@@ -89,7 +89,7 @@ shadow_size = Vector2(20, 7)
 cast_length = 14.0
 
 [node name="TreeCollider" type="StaticBody2D" parent="." unique_id=1696154961]
-position = Vector2(2.6503067, -24.875912)
+position = Vector2(4.59, -23.156)
 scale = Vector2(0.64718115, 1.7118204)
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="TreeCollider" unique_id=1025713762]

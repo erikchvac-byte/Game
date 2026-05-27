@@ -1,0 +1,131 @@
+{
+  "group_id": "71ded8fb-811e-4fc2-8920-30f5bf8eaa0f",
+  "objects": [
+    {
+      "id": "c7932c0b-3ccb-47e2-9b34-735cf6c42983",
+      "name": null,
+      "prompt": "Seamless dirt tile, Seamless dirt tile, Soil tile without edges, No edge dirt terrain tile, outdoor garden tile, garden dirt, dirt, fresh soil, fresh dirt fresh, garden, Farmers dirt, Plowed earth tile seamless",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {
+        "Flat_dirt_without_the_starting_weed_plant._The_so": {
+          "directions": {
+            "unknown": {
+              "frames": [
+                "animations/Flat_dirt_without_the_starting_weed_plant._The_so/unknown/frame_000.png",
+                "animations/Flat_dirt_without_the_starting_weed_plant._The_so/unknown/frame_001.png",
+                "animations/Flat_dirt_without_the_starting_weed_plant._The_so/unknown/frame_002.png",
+                "animations/Flat_dirt_without_the_starting_weed_plant._The_so/unknown/frame_003.png",
+                "animations/Flat_dirt_without_the_starting_weed_plant._The_so/unknown/frame_004.png",
+                "animations/Flat_dirt_without_the_starting_weed_plant._The_so/unknown/frame_005.png",
+                "animations/Flat_dirt_without_the_starting_weed_plant._The_so/unknown/frame_006.png",
+                "animations/Flat_dirt_without_the_starting_weed_plant._The_so/unknown/frame_007.png",
+                "animations/Flat_dirt_without_the_starting_weed_plant._The_so/unknown/frame_008.png"
+              ],
+              "frame_count": 9
+            }
+          }
+        }
+      }
+    },
+    {
+      "id": "1476a257-5939-43df-bba5-d2c09da404aa",
+      "name": null,
+      "prompt": "Seamless dirt tile, Seamless dirt tile, Soil tile without edges, No edge dirt terrain tile, outdoor garden tile, garden dirt, dirt, fresh soil, fresh dirt fresh, garden, Farmers dirt, Plowed earth tile seamless",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "88bf657f-7649-40ea-b8d9-4690d0b31cf8",
+      "name": null,
+      "prompt": "Seamless dirt tile, Seamless dirt tile, Soil tile without edges, No edge dirt terrain tile, outdoor garden tile, garden dirt, dirt, fresh soil, fresh dirt fresh, garden, Farmers dirt, Plowed earth tile seamless",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "f8865167-463d-480f-9bfd-939f9bb5de60",
+      "name": null,
+      "prompt": "Seamless dirt tile, Seamless dirt tile, Soil tile without edges, No edge dirt terrain tile, outdoor garden tile, garden dirt, dirt, fresh soil, fresh dirt fresh, garden, Farmers dirt, Plowed earth tile seamless",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "26ae20dc-18ec-4ba3-b1e9-28f05e4ec35d",
+      "name": null,
+      "prompt": "Seamless dirt tile, Seamless dirt tile, Soil tile without edges, No edge dirt terrain tile, outdoor garden tile, garden dirt, dirt, fresh soil, fresh dirt fresh, garden, Farmers dirt, Plowed earth tile seamless",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "7335c6b5-d97b-4d3b-a866-9b4491d5dcac",
+      "name": null,
+      "prompt": "Seamless dirt tile, Seamless dirt tile, Soil tile without edges, No edge dirt terrain tile, outdoor garden tile, garden dirt, dirt, fresh soil, fresh dirt fresh, garden, Farmers dirt, Plowed earth tile seamless",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "2d954172-3f86-4568-b22d-7bb89e9c96b2",
+      "name": null,
+      "prompt": "Seamless dirt tile, Seamless dirt tile, Soil tile without edges, No edge dirt terrain tile, outdoor garden tile, garden dirt, dirt, fresh soil, fresh dirt fresh, garden, Farmers dirt, Plowed earth tile seamless",
+      "size": {
+        "width": 64,
+        "height": 64
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-19T00:19:03.444593"
+}

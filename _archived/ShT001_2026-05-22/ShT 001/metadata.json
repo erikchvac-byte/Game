@@ -1,0 +1,71 @@
+{
+  "group_id": null,
+  "states": [
+    {
+      "character": {
+        "id": "37e5baea-1aca-45b9-a3ac-57ee898c1fe7",
+        "name": "Happy little hobo man in",
+        "prompt": "Happy little hobo man in a simple villagers clothing with John lennon glasses and a baller hat ",
+        "size": {
+          "width": 124,
+          "height": 124
+        },
+        "template_id": "mannequin",
+        "directions": 8,
+        "view": "low top-down",
+        "created_at": "2026-05-22T16:19:42.865066+00:00"
+      },
+      "folder": "Happy_little_hobo_man_in",
+      "frames": {
+        "rotations": {
+          "south": "Happy_little_hobo_man_in/rotations/south.png",
+          "south-east": "Happy_little_hobo_man_in/rotations/south-east.png",
+          "east": "Happy_little_hobo_man_in/rotations/east.png",
+          "north-east": "Happy_little_hobo_man_in/rotations/north-east.png",
+          "north": "Happy_little_hobo_man_in/rotations/north.png",
+          "north-west": "Happy_little_hobo_man_in/rotations/north-west.png",
+          "west": "Happy_little_hobo_man_in/rotations/west.png",
+          "south-west": "Happy_little_hobo_man_in/rotations/south-west.png"
+        },
+        "animations": {
+          "Walking-fabdd78d": {
+            "south": [
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/south/frame_000.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/south/frame_001.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/south/frame_002.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/south/frame_003.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/south/frame_004.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/south/frame_005.png"
+            ],
+            "north": [
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/north/frame_000.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/north/frame_001.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/north/frame_002.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/north/frame_003.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/north/frame_004.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/north/frame_005.png"
+            ],
+            "west": [
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/west/frame_000.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/west/frame_001.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/west/frame_002.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/west/frame_003.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/west/frame_004.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/west/frame_005.png"
+            ],
+            "east": [
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/east/frame_000.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/east/frame_001.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/east/frame_002.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/east/frame_003.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/east/frame_004.png",
+              "Happy_little_hobo_man_in/animations/Walking-fabdd78d/east/frame_005.png"
+            ]
+          }
+        }
+      }
+    }
+  ],
+  "export_version": "3.0",
+  "export_date": "2026-05-22T19:09:12.297094"
+}

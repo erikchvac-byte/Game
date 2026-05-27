@@ -1,0 +1,80 @@
+{
+  "objects": [
+    {
+      "id": "a7060b5c-5eda-468f-af20-e1d26ddbd57a",
+      "name": null,
+      "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "7851b9df-8330-43d6-803e-97c656f1ffbc",
+      "name": null,
+      "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "groups": [
+    {
+      "group_id": null,
+      "folder": "objects/Grass_meets_stone_tile_grass",
+      "objects": [
+        {
+          "id": "a7060b5c-5eda-468f-af20-e1d26ddbd57a",
+          "name": null,
+          "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Grass_meets_stone_tile_grass_2",
+      "objects": [
+        {
+          "id": "7851b9df-8330-43d6-803e-97c656f1ffbc",
+          "name": null,
+          "prompt": "Grass meets stone tile, grass meets dirt trail, Grass meets  brick, Grass meets grass, Grass meets dark grass, grass and water tile. Grass spotted, grass with dark grass, path tile, path with grass tile, ground tile, floor, floor tile, dirt and path tile, gravel road tile",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-17T14:20:35.675842"
+}

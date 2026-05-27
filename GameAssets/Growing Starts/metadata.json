@@ -1,0 +1,800 @@
+{
+  "objects": [
+    {
+      "id": "308ae160-98ed-46b4-bf9b-ad2c0080596a",
+      "name": null,
+      "prompt": "Nice looking marijuana plant",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "43d859c5-a62f-4fac-b0e8-1a6dc914d5eb",
+      "name": null,
+      "prompt": "Nice looking marijuana plant",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "815eca0c-67e2-42ad-b7c1-081bd093ce11",
+      "name": null,
+      "prompt": "Nice looking marijuana plant",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ef7259b3-a73a-4809-bd83-42d1eb9b6fc0",
+      "name": null,
+      "prompt": "Nice looking marijuana plant",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "f12c6597-1b1f-46eb-9f83-2780bd7c604e",
+      "name": null,
+      "prompt": "Marijuana plants",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "644982ac-c68b-4747-bef4-a8bfc825ce87",
+      "name": null,
+      "prompt": "Marijuana plants",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "581d5c18-99c6-41ec-b747-7d3b701c6645",
+      "name": null,
+      "prompt": "Marijuana plants",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "8c1a9ef8-5d58-4d91-a8bc-0f9d995da4a9",
+      "name": null,
+      "prompt": "Marijuana plants",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "58fee49c-e31d-47f5-ad0c-a96c81706645",
+      "name": null,
+      "prompt": "Weed plant",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ca54d5ef-a262-48a0-9aed-a42e35cc07c6",
+      "name": null,
+      "prompt": "Weed plant",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "ae4be618-b3b8-46f2-8eb4-e303979b0064",
+      "name": null,
+      "prompt": "Weed plant",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "8111377e-80ea-4950-be1e-6381ca068a71",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "fad96e61-d632-4dbf-a440-a993f34062c7",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "796a2b2c-db39-4ac4-bb55-04029652224b",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "d9e0c3fe-c1d2-4017-ad44-af4fae857464",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "994af450-cc08-4ad0-b7c3-48ae3981cb1f",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "fb709e29-1750-4e2f-968e-dd2c7f4928c8",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "6c642a3f-4bd4-4fbb-b061-fab4c86ed68a",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "45c76fd0-0504-45db-99e6-7e0d3592d5e8",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "bc56359c-d616-4f11-91a8-d4b51829b6fb",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "a1fcaaaf-67bd-4d69-8bb1-77ed0000feec",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "5fbe8df0-930e-4f47-b585-f2fc094d7178",
+      "name": null,
+      "prompt": "Bong weed pipe",
+      "size": {
+        "width": 48,
+        "height": 48
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "groups": [
+    {
+      "group_id": null,
+      "folder": "objects/Nice_looking_marijuana_plant",
+      "objects": [
+        {
+          "id": "308ae160-98ed-46b4-bf9b-ad2c0080596a",
+          "name": null,
+          "prompt": "Nice looking marijuana plant",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Nice_looking_marijuana_plant_2",
+      "objects": [
+        {
+          "id": "43d859c5-a62f-4fac-b0e8-1a6dc914d5eb",
+          "name": null,
+          "prompt": "Nice looking marijuana plant",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Nice_looking_marijuana_plant_3",
+      "objects": [
+        {
+          "id": "815eca0c-67e2-42ad-b7c1-081bd093ce11",
+          "name": null,
+          "prompt": "Nice looking marijuana plant",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Nice_looking_marijuana_plant_4",
+      "objects": [
+        {
+          "id": "ef7259b3-a73a-4809-bd83-42d1eb9b6fc0",
+          "name": null,
+          "prompt": "Nice looking marijuana plant",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Marijuana_plants",
+      "objects": [
+        {
+          "id": "f12c6597-1b1f-46eb-9f83-2780bd7c604e",
+          "name": null,
+          "prompt": "Marijuana plants",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Marijuana_plants_2",
+      "objects": [
+        {
+          "id": "644982ac-c68b-4747-bef4-a8bfc825ce87",
+          "name": null,
+          "prompt": "Marijuana plants",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Marijuana_plants_3",
+      "objects": [
+        {
+          "id": "581d5c18-99c6-41ec-b747-7d3b701c6645",
+          "name": null,
+          "prompt": "Marijuana plants",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Marijuana_plants_4",
+      "objects": [
+        {
+          "id": "8c1a9ef8-5d58-4d91-a8bc-0f9d995da4a9",
+          "name": null,
+          "prompt": "Marijuana plants",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Weed_plant",
+      "objects": [
+        {
+          "id": "58fee49c-e31d-47f5-ad0c-a96c81706645",
+          "name": null,
+          "prompt": "Weed plant",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Weed_plant_2",
+      "objects": [
+        {
+          "id": "ca54d5ef-a262-48a0-9aed-a42e35cc07c6",
+          "name": null,
+          "prompt": "Weed plant",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Weed_plant_3",
+      "objects": [
+        {
+          "id": "ae4be618-b3b8-46f2-8eb4-e303979b0064",
+          "name": null,
+          "prompt": "Weed plant",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe",
+      "objects": [
+        {
+          "id": "8111377e-80ea-4950-be1e-6381ca068a71",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_2",
+      "objects": [
+        {
+          "id": "fad96e61-d632-4dbf-a440-a993f34062c7",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_3",
+      "objects": [
+        {
+          "id": "796a2b2c-db39-4ac4-bb55-04029652224b",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_4",
+      "objects": [
+        {
+          "id": "d9e0c3fe-c1d2-4017-ad44-af4fae857464",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_5",
+      "objects": [
+        {
+          "id": "994af450-cc08-4ad0-b7c3-48ae3981cb1f",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_6",
+      "objects": [
+        {
+          "id": "fb709e29-1750-4e2f-968e-dd2c7f4928c8",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_7",
+      "objects": [
+        {
+          "id": "6c642a3f-4bd4-4fbb-b061-fab4c86ed68a",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_8",
+      "objects": [
+        {
+          "id": "45c76fd0-0504-45db-99e6-7e0d3592d5e8",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_9",
+      "objects": [
+        {
+          "id": "bc56359c-d616-4f11-91a8-d4b51829b6fb",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_10",
+      "objects": [
+        {
+          "id": "a1fcaaaf-67bd-4d69-8bb1-77ed0000feec",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Bong_weed_pipe_11",
+      "objects": [
+        {
+          "id": "5fbe8df0-930e-4f47-b585-f2fc094d7178",
+          "name": null,
+          "prompt": "Bong weed pipe",
+          "size": {
+            "width": 48,
+            "height": 48
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-14T15:46:20.304050"
+}
