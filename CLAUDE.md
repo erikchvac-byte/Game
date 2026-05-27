@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-27):** Runnable, pre-flight ✅, output log clean (4 lines). Fay Grove exchange working — drop item, step away, return to collect reward. ShT stays above brick wall (MAP_MAX_Y=445). Door entry works. Nav mesh rebaked after tree repositioning — player routes around trees correctly. NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working. **BMad v6.8.0 installed** (`_bmad/`). **Project docs generated** (`docs/index.md` — exhaustive scan of all 25 authored scripts). **Furniture wired into interior.tscn** — grandfather clock (NW), bed (NE), plant shelf (W-mid); y_sort_enabled on Interior root; collision confirmed.
+- **Current state (2026-05-27):** Runnable, pre-flight ✅, output log clean (4 lines). Fay Grove exchange working — drop item, step away, return to collect reward. ShT stays above brick wall (MAP_MAX_Y=445). Door entry works. Nav mesh rebaked after tree repositioning — player routes around trees correctly. NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working. **BMad v6.8.0 installed** (`_bmad/`). **Project docs generated** (`docs/index.md` — exhaustive scan of all 25 authored scripts). **Furniture wired into interior.tscn** — grandfather clock (NW), bed (NE), plant shelf (W-mid); y_sort_enabled on Interior root; collision confirmed. **HouseTwostoryTeal collision fixed** (ADR-101) — MainBody + FrontLeft + FrontRight shapes with door gap; y_sort_offset=43.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -193,13 +193,11 @@
 
 ### Active priorities (in order)
 
-1. **Teal house collision** — `HouseTwostoryTeal` needs proper collision: door gap + side walls. Node: `HouseTealCollider` StaticBody2D in `world.tscn` (currently has 2 shapes with suspicious rotations from ADR-089 — verify in-game). `y_sort_offset=42` estimated — walk around and tune via Inspector.
+1. **Rock SpriteFrames + placement** — 3 rock sets now in `res://assets/nature/rocks/`: `rounded_poky_rock/` (2 anims × 9 frames), `tower_rock/` (2 anims × 9 frames), `square_rock/` (1 anim × 16 frames). Each needs a `.tres` SpriteFrames before use in AnimatedSprite2D. Then wire into world.tscn.
 
 2. **Grove expansion** — Fay Grove exchange table currently supports bud/stone_pile/wood. More items to add as player gets them. `stump_home_001` door_open animation could trigger on item capture (currently unused). Visual feedback when ShT is "processing" (e.g. faint light at stump window).
 
-3. **Rock SpriteFrames + placement** — 3 rock sets now in `res://assets/nature/rocks/`: `rounded_poky_rock/` (2 anims × 9 frames), `tower_rock/` (2 anims × 9 frames), `square_rock/` (1 anim × 16 frames). Each needs a `.tres` SpriteFrames before use in AnimatedSprite2D. Then wire into world.tscn.
-
-4. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. 39 new items in `props/items/` (ingots, wood piles, currency) available for InventoryManager.
+3. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. 39 new items in `props/items/` (ingots, wood piles, currency) available for InventoryManager.
 
 ### Blocked / waiting on user
 - **`herb_bundle_dried.png`** — no source art exists. Currently using `herb_plant_type_a.png` as placeholder in drying rack PRODUCTS. User to supply replacement before this slot is usable.

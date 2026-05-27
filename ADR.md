@@ -1639,6 +1639,19 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-101: HouseTwostoryTeal Collision Geometry Replaced
+**Status:** Accepted
+**Date:** 2026-05-27
+**Context:** HouseTealCollider (StaticBody2D child of HouseTwostoryTeal) had 2 CollisionShape2D nodes (WallCenter, WallFront) both sharing the same RectangleShape2D resource and both having garbage rotation values (-3.679 and -3.041 rad ≈ -211° and -174°) from ADR-089 MCP operations. No effective collision existed. y_sort_offset was unset (sort key = house.position.y = 75).
+**Decision:** Replaced both broken shapes with 3 correct RectangleShape2D shapes inside HouseTealCollider (net world scale = 1.0 due to parent 0.6 × child 1.666 cancel): (1) WallCenter "MainBody" — size (132,75), pos (0,-15): covers full building body from back wall to top of front wall. (2) WallFront "FrontLeft" — size (50,21), pos (-41,32): left of door. (3) FrontRight — size (50,21), pos (41,32): right of door. Door gap = ~32px at house center x=534. Set y_sort_offset=43 on HouseTwostoryTeal (sort key = 75+43 = 118, at door base).
+**Rationale:** 3-shape approach (body + two front flanks) is the minimal correct geometry for a building with a centered door gap. HouseTealCollider's inverse-scale trick (0.6 × 1.6666 = 1.0) means shape positions are 1:1 world pixels regardless of sprite scale. y_sort_offset=43 aligns sort boundary with the door threshold so the player transitions front/behind at the correct visual line.
+**Consequences:** Player blocked at world y≈122 (front wall bottom y≈118.5 + capsule radius). Door trigger (NPCHomeDoor) at world y=125 is reached before the collision stop point — door activates correctly on northward approach. y_sort_offset is a .tscn-only serialization field (not accessible via GDScript get()); engine reads it for sorting at load time. Note: y_sort_offset is not verifiable at runtime in this Godot version.
+**Testing:** Player blocked at world y≈122 via execute_game_script push test. Player renders in front of house at y=140 ✓. Output log clean. Playtested ✅.
+
+**Files changed:** `game/World/world.tscn`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1646,6 +1659,7 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 | 2026-05-26 | Asset prep: Inventoried + imported all assets from temp/. Deleted StusyRockAnimation (byte-identical duplicate of RoundedPokyRock). Created res://assets/props/furniture/ (3 files), res://assets/nature/rocks/rounded_poky_rock/ (20), tower_rock/ (20), square_rock/ (21). Added 39 items to props/items/ (14 wood piles, 12 ingots, 7 copper, 5 currency/chest, 1 pallet). No ADR — pure asset organization. |
 | 2026-05-27 | Fix: Rebake NavigationPolygon in NavRegion (world.tscn) after trees were repositioned by MCP editor operations last session. Stale nav mesh caused player to walk through tree trunks instead of routing around them. Baked via bake_navigation_mesh MCP tool. Playtested ✅. |
 | 2026-05-27 | Docs: Initial project documentation generated via bmad-document-project (exhaustive scan). Installed BMad v6.8.0 into _bmad/. Generated docs/index.md, architecture.md, source-tree-analysis.md, component-inventory.md, state-management.md, asset-inventory.md, development-guide.md, project-overview.md from full read of all 25 authored GDScript files. No game architectural decisions — pure documentation. |
+| 2026-05-27 | ADR-101: HouseTwostoryTeal collision fixed. Replaced 2 garbage-rotation shapes with MainBody (132×75) + FrontLeft + FrontRight (50×21 each) + 32px door gap at center. y_sort_offset=43 (sort key=118, door base). Player blocked at y≈122, door trigger at y=125 reached correctly. Playtested ✅. |
 | 2026-05-27 | Feat: Wire furniture into PlayerHome interior.tscn. Added 3 StaticBody2D furniture nodes (grandfather clock NW, bed NE, plant shelf W-mid) each with Sprite2D (48×48, position.y=-24, origin at base) and RectangleShape2D collision footprint. Added y_sort_enabled=true to Interior root node so player depth-sorts correctly against furniture. Collision and y_sort verified in-game via MCP playtesting. |
 | 2026-05-26 | Fix: Fay Grove exchange mechanic + ShT wall boundary. (1) stump_shrine.gd: removed REWARD_READY deadlock — PROCESSING now spawns reward immediately (no player-away gate); auto-collect when player re-enters grove radius (60px). "Something stirs in the grove..." toast added. (2) forest_creature.gd: MAP_MAX_Y 564→445 — ShT now teleports at y=435 (visual brick wall top) instead of camera bottom (y=564). (3) world.tscn: restored DoorArea RectangleShape2D size=(20,20) and GreyHoodie y_sort_offset=19, both stripped by MCP editor operations. Playtested ✅. |
 | 2026-05-25 | Fix: Right-click tree nav no longer shows "Equip axe first" toast. `_do_nav_interact()` in world.gd silently returns when `can_interact()` is false; toast is shown only on spacebar (`_input` path). Two-line change, no ADR needed. Playtested ✅. |
