@@ -1,12 +1,11 @@
 extends Node2D
 
 # Fay Grove — the ShT quietly exchanges items left at the stump.
-# Drop an item in the grove radius (Q key), walk away, return after ~10s.
+# Drop an item in the grove radius (Q key), step away, return after ~10s.
 # 40% chance: processed version. 60% chance: double raw. Never nothing.
-# One trade at a time. ShT only acts when the player is out of sight.
+# One trade at a time.
 
 const GROVE_RADIUS  := 60.0   # detection area around stump
-const PICKUP_RADIUS := 20.0   # how close player must be to collect reward
 const PROCESS_TIME  := 10.0   # seconds for ShT to process the offering
 
 # item_key → {processed: [key, tex_path], raw: [key, tex_path, count]}
@@ -65,20 +64,18 @@ func _process(delta: float) -> void:
 				_state = State.IDLE
 				return
 			if not _player_in_grove:
-				# Player left — item vanishes, ShT takes it
+				# Player stepped away — ShT takes the offering
 				_pending_item.queue_free()
 				_pending_item = null
 				_calculate_reward()
 				_process_timer = PROCESS_TIME
 				_state = State.PROCESSING
+				_show_toast("Something stirs in the grove...", 2.5)
 
 		State.PROCESSING:
 			_process_timer -= delta
 			if _process_timer <= 0.0:
-				_state = State.REWARD_READY
-
-		State.REWARD_READY:
-			if not _player_in_grove:
+				# Spawn reward immediately regardless of player position
 				_spawn_reward()
 				_state = State.REWARD_SPAWNED
 
@@ -87,9 +84,8 @@ func _process(delta: float) -> void:
 				_state = State.IDLE
 				return
 			if _player_in_grove:
-				var d := _player.global_position.distance_to((_reward_item as Node2D).global_position)
-				if d < PICKUP_RADIUS:
-					_grant_reward()
+				# Auto-collect when player re-enters the grove
+				_grant_reward()
 
 
 func _scan_for_drop() -> void:
@@ -145,10 +141,14 @@ func _grant_reward() -> void:
 	if is_instance_valid(_reward_item):
 		_reward_item.queue_free()
 	_reward_item    = null
-	var hud := get_node_or_null("/root/HUD")
-	if hud and hud.has_method("show_toast"):
-		hud.show_toast("The grove returned your offering...", 3.0)
+	_show_toast("The grove returned your offering...", 3.0)
 	_state         = State.IDLE
 	_captured_key  = ""
 	_reward_key    = ""
 	_reward_count  = 1
+
+
+func _show_toast(msg: String, duration: float) -> void:
+	var hud := get_node_or_null("/root/HUD")
+	if hud and hud.has_method("show_toast"):
+		hud.show_toast(msg, duration)

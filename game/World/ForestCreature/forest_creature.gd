@@ -13,7 +13,7 @@ const HOP_NEAR_RADIUS        := 150.0
 const MAP_MIN_X              := 215.0
 const MAP_MIN_Y              := 108.0
 const MAP_MAX_X              := 815.0
-const MAP_MAX_Y              := 564.0
+const MAP_MAX_Y              := 445.0   # brick wall top (~global y=435); keep ShT in grass
 
 # Panic burst
 const PANIC_DIST             := 28.0   # distance threshold that triggers panic speed
