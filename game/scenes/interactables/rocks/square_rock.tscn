@@ -1,0 +1,30 @@
+[gd_scene format=3 uid="uid://c8b062qpcmo7c"]
+
+[ext_resource type="Script" uid="uid://cwihmpou8c4ee" path="res://scenes/interactables/rocks/choppable_rock.gd" id="1_script"]
+[ext_resource type="SpriteFrames" uid="uid://dl1ktaiqmaqdn" path="res://resources/rocks/square_rock_frames.tres" id="2_frames"]
+
+[sub_resource type="CircleShape2D" id="RockShape"]
+radius = 12.0
+
+[sub_resource type="CircleShape2D" id="InteractShape"]
+radius = 24.0
+
+[node name="SquareRock" type="StaticBody2D" unique_id=300000001]
+script = ExtResource("1_script")
+hits_required = 5
+
+[node name="RockSprite" type="AnimatedSprite2D" parent="." unique_id=300000002]
+position = Vector2(0, -24)
+scale = Vector2(0.75, 0.75)
+sprite_frames = ExtResource("2_frames")
+animation = &"idle"
+autoplay = "idle"
+
+[node name="RockCollider" type="CollisionShape2D" parent="." unique_id=300000003]
+position = Vector2(0, -10)
+shape = SubResource("RockShape")
+
+[node name="InteractArea" type="Area2D" parent="." unique_id=300000004]
+
+[node name="InteractCol" type="CollisionShape2D" parent="InteractArea" unique_id=300000005]
+shape = SubResource("InteractShape")

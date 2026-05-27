@@ -1652,6 +1652,32 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-102: Choppable Rock System
+**Status:** Accepted
+**Date:** 2026-05-27
+**Context:** 3 rock asset sets (rounded_poky_rock, tower_rock, square_rock) were imported with full animation strips but had no SpriteFrames resources, no scene, no script, and were not placed in the world. Needed to wire them as interactive collectibles like choppable trees.
+**Decision:** Created `game/resources/rocks/` with 3 SpriteFrames .tres files (one per rock type). Created `game/scenes/interactables/rocks/choppable_rock.gd` — single script shared across all rock types, analogous to choppable_tree.gd. Animations: "idle" (loop), "hit" (per-hit feedback, rounded/tower only), "break" (final destruction), "pile" (post-break static state). hits_required export var (default 3, tower uses 4, square uses 5). Requires "axe" equipped tool. Emits `rock_broken` signal → world.gd adds `stone_pile` to inventory. Rock instances in world.tscn: TowerRock1 at (450, 290), SquareRock1 at (75, 420). RoundedPokyRock1 was placed then removed per user request; ext_resource and scene file retained for future placement.
+**Rationale:** Mirrors the choppable_tree architecture exactly — one script, multiple scenes with different SpriteFrames export, group-based world.gd connection at _ready(). Reuses existing `stone_pile` inventory item (already seeded) so no new inventory infrastructure needed. Axe as the required tool avoids a new pickaxe item that has no asset yet.
+**Consequences:** No pickaxe tool differentiation — axe works for both wood and rock. Square_rock has no "hit" animation (only break); script handles this via `_has_hit_anim` flag. pile animation on square_rock cycles through 4 variants (pile_a–d) randomly on each break since "pile" is a 4-frame animation with speed 1. Nav mesh does not auto-update when rocks break — static nav mesh remains valid since rock pile has disabled collision (not a new obstacle).
+**Testing:** rounded_poky_rock: 3 hits → break animation → pile state → collision disabled → stone_pile x2 in inventory (started x1, got +1 from break signal). Playtested ✅.
+
+**Files changed:** `game/resources/rocks/` (3 .tres), `game/scenes/interactables/rocks/` (3 .tscn + choppable_rock.gd), `game/World/world.gd`, `game/World/world.tscn`
+
+---
+
+## ADR-103: Grove Exchange Expansion + Processing Feedback
+**Status:** Accepted
+**Date:** 2026-05-27
+**Context:** Fay Grove EXCHANGE_TABLE only handled "bud", "stone_pile", "wood". As player accumulates processed outputs (hang_dry, lumber) there was no path to re-offer them. No visual feedback existed during ShT's 10-second processing phase. StumpHome001 door_open animation (16 frames) was unused.
+**Decision:** Added 2 new entries to EXCHANGE_TABLE: (1) `hang_dry` → processed: gem_ruby (40%), raw: hang_dry×2 (60%). (2) `lumber` → processed: ingot_copper_01 (40%), raw: lumber×2 (60%). Added processing feedback: when PROCESSING state begins, plays StumpHome001 `door_open` animation. During PROCESSING tick, pulses StumpHome001 modulate with a warm amber sin-wave (Color(1.0, 0.85–1.0, 0.6–0.8)) at 2.5 Hz. Modulate resets to WHITE when timer expires.
+**Rationale:** hang_dry and lumber are outputs of the existing grove table — closing the loop so players can continue exchanging accumulated items. gem_ruby and ingot_copper_01 are premium outputs that reward continued engagement. Modulate pulse requires no new assets; door_open animation was already in stump_home_001_frames.tres but unreferenced. Uses `_stump_home` reference cached in `_cache_player()`.
+**Consequences:** door_open animation plays once on item capture and stays at last frame — no "door_close" animation exists. StumpHome001 modulate is mutated by stump_shrine.gd; no other system touches it currently. If another system modulates StumpHome001, conflicts could arise.
+**Testing:** Drop bud → step away → door_open animation plays, warm pulse on stump home visible. 10s later reward spawned. Player re-enters grove → reward collected, shrine returns to IDLE. Inventory confirms bud count increased. Playtested ✅.
+
+**Files changed:** `game/World/StumpShrine/stump_shrine.gd`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1659,6 +1685,8 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 | 2026-05-26 | Asset prep: Inventoried + imported all assets from temp/. Deleted StusyRockAnimation (byte-identical duplicate of RoundedPokyRock). Created res://assets/props/furniture/ (3 files), res://assets/nature/rocks/rounded_poky_rock/ (20), tower_rock/ (20), square_rock/ (21). Added 39 items to props/items/ (14 wood piles, 12 ingots, 7 copper, 5 currency/chest, 1 pallet). No ADR — pure asset organization. |
 | 2026-05-27 | Fix: Rebake NavigationPolygon in NavRegion (world.tscn) after trees were repositioned by MCP editor operations last session. Stale nav mesh caused player to walk through tree trunks instead of routing around them. Baked via bake_navigation_mesh MCP tool. Playtested ✅. |
 | 2026-05-27 | Docs: Initial project documentation generated via bmad-document-project (exhaustive scan). Installed BMad v6.8.0 into _bmad/. Generated docs/index.md, architecture.md, source-tree-analysis.md, component-inventory.md, state-management.md, asset-inventory.md, development-guide.md, project-overview.md from full read of all 25 authored GDScript files. No game architectural decisions — pure documentation. |
+| 2026-05-27 | ADR-102: Choppable rock system. 3 SpriteFrames .tres + choppable_rock.gd + 3 .tscn scenes. Rocks require axe, emit rock_broken → stone_pile added. TowerRock1 at (450,290) and SquareRock1 at (75,420) placed in world.tscn. Playtested ✅. |
+| 2026-05-27 | ADR-103: Grove exchange expanded — hang_dry→gem_ruby, lumber→ingot_copper_01. Processing feedback: door_open animation + warm amber modulate pulse on StumpHome001 during 10s processing window. Playtested ✅. |
 | 2026-05-27 | ADR-101: HouseTwostoryTeal collision fixed. Replaced 2 garbage-rotation shapes with MainBody (132×75) + FrontLeft + FrontRight (50×21 each) + 32px door gap at center. y_sort_offset=43 (sort key=118, door base). Player blocked at y≈122, door trigger at y=125 reached correctly. Playtested ✅. |
 | 2026-05-27 | Feat: Wire furniture into PlayerHome interior.tscn. Added 3 StaticBody2D furniture nodes (grandfather clock NW, bed NE, plant shelf W-mid) each with Sprite2D (48×48, position.y=-24, origin at base) and RectangleShape2D collision footprint. Added y_sort_enabled=true to Interior root node so player depth-sorts correctly against furniture. Collision and y_sort verified in-game via MCP playtesting. |
 | 2026-05-26 | Fix: Fay Grove exchange mechanic + ShT wall boundary. (1) stump_shrine.gd: removed REWARD_READY deadlock — PROCESSING now spawns reward immediately (no player-away gate); auto-collect when player re-enters grove radius (60px). "Something stirs in the grove..." toast added. (2) forest_creature.gd: MAP_MAX_Y 564→445 — ShT now teleports at y=435 (visual brick wall top) instead of camera bottom (y=564). (3) world.tscn: restored DoorArea RectangleShape2D size=(20,20) and GreyHoodie y_sort_offset=19, both stripped by MCP editor operations. Playtested ✅. |

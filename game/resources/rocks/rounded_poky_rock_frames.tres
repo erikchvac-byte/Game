@@ -1,0 +1,105 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://5v8nhtcioma8"]
+
+[ext_resource type="Texture2D" uid="uid://ci7mrh73jfhr8" path="res://assets/nature/rocks/rounded_poky_rock/break_f000.png" id="1_brk0"]
+[ext_resource type="Texture2D" uid="uid://5dgq0hv5w78k" path="res://assets/nature/rocks/rounded_poky_rock/break_f001.png" id="2_brk1"]
+[ext_resource type="Texture2D" uid="uid://dfpthcxpa7iae" path="res://assets/nature/rocks/rounded_poky_rock/break_f002.png" id="3_brk2"]
+[ext_resource type="Texture2D" uid="uid://c6xvkcfmdetup" path="res://assets/nature/rocks/rounded_poky_rock/break_f003.png" id="4_brk3"]
+[ext_resource type="Texture2D" uid="uid://ckpi2x4f86sv0" path="res://assets/nature/rocks/rounded_poky_rock/break_f004.png" id="5_brk4"]
+[ext_resource type="Texture2D" uid="uid://cjtyt3maexbon" path="res://assets/nature/rocks/rounded_poky_rock/break_f005.png" id="6_brk5"]
+[ext_resource type="Texture2D" uid="uid://c0p16hjq7pyfg" path="res://assets/nature/rocks/rounded_poky_rock/break_f006.png" id="7_brk6"]
+[ext_resource type="Texture2D" uid="uid://qgel5o65weqj" path="res://assets/nature/rocks/rounded_poky_rock/break_f007.png" id="8_brk7"]
+[ext_resource type="Texture2D" uid="uid://cwd86s081dwe0" path="res://assets/nature/rocks/rounded_poky_rock/break_f008.png" id="9_brk8"]
+[ext_resource type="Texture2D" uid="uid://cbu805jqfuefy" path="res://assets/nature/rocks/rounded_poky_rock/hit_f000.png" id="10_hit0"]
+[ext_resource type="Texture2D" uid="uid://ddvm1334xhlr4" path="res://assets/nature/rocks/rounded_poky_rock/hit_f001.png" id="11_hit1"]
+[ext_resource type="Texture2D" uid="uid://c4xk2qgoimpuq" path="res://assets/nature/rocks/rounded_poky_rock/hit_f002.png" id="12_hit2"]
+[ext_resource type="Texture2D" uid="uid://q0jh1r1rp1vf" path="res://assets/nature/rocks/rounded_poky_rock/hit_f003.png" id="13_hit3"]
+[ext_resource type="Texture2D" uid="uid://b63gfcqfl8fds" path="res://assets/nature/rocks/rounded_poky_rock/hit_f004.png" id="14_hit4"]
+[ext_resource type="Texture2D" uid="uid://eiao6gjllcio" path="res://assets/nature/rocks/rounded_poky_rock/hit_f005.png" id="15_hit5"]
+[ext_resource type="Texture2D" uid="uid://dovkclitdenel" path="res://assets/nature/rocks/rounded_poky_rock/hit_f006.png" id="16_hit6"]
+[ext_resource type="Texture2D" uid="uid://dlfu30lxx41hf" path="res://assets/nature/rocks/rounded_poky_rock/hit_f007.png" id="17_hit7"]
+[ext_resource type="Texture2D" uid="uid://03huk3swxk8m" path="res://assets/nature/rocks/rounded_poky_rock/hit_f008.png" id="18_hit8"]
+[ext_resource type="Texture2D" uid="uid://brimtqnqomvpq" path="res://assets/nature/rocks/rounded_poky_rock/pile_broken.png" id="19_pile"]
+[ext_resource type="Texture2D" uid="uid://dpc88bw6qrr25" path="res://assets/nature/rocks/rounded_poky_rock/rock_idle.png" id="20_idle"]
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_brk0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_brk1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_brk2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_brk3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_brk4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_brk5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_brk6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_brk7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_brk8")
+}],
+"loop": false,
+"name": &"break",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("10_hit0")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_hit1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_hit2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_hit3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_hit4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_hit5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_hit6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("17_hit7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_hit8")
+}],
+"loop": false,
+"name": &"hit",
+"speed": 9.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("20_idle")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 1.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("19_pile")
+}],
+"loop": true,
+"name": &"pile",
+"speed": 1.0
+}]

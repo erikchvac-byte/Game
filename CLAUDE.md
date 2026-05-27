@@ -18,13 +18,14 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-27):** Runnable, pre-flight ✅, output log clean (4 lines). Fay Grove exchange working — drop item, step away, return to collect reward. ShT stays above brick wall (MAP_MAX_Y=445). Door entry works. Nav mesh rebaked after tree repositioning — player routes around trees correctly. NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working. **BMad v6.8.0 installed** (`_bmad/`). **Project docs generated** (`docs/index.md` — exhaustive scan of all 25 authored scripts). **Furniture wired into interior.tscn** — grandfather clock (NW), bed (NE), plant shelf (W-mid); y_sort_enabled on Interior root; collision confirmed. **HouseTwostoryTeal collision fixed** (ADR-101) — MainBody + FrontLeft + FrontRight shapes with door gap; y_sort_offset=43.
+- **Current state (2026-05-27):** Runnable, pre-flight ✅, output log clean (4 lines). Fay Grove exchange working — drop item, step away, return to collect reward. ShT stays above brick wall (MAP_MAX_Y=445). Door entry works. Nav mesh rebaked after tree repositioning — player routes around trees correctly. NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working. **BMad v6.8.0 installed** (`_bmad/`). **Project docs generated** (`docs/index.md` — exhaustive scan of all 25 authored scripts). **Furniture wired into interior.tscn** — grandfather clock (NW), bed (NE), plant shelf (W-mid); y_sort_enabled on Interior root; collision confirmed. **HouseTwostoryTeal collision fixed** (ADR-101) — MainBody + FrontLeft + FrontRight shapes with door gap; y_sort_offset=43. **Choppable rock system live** (ADR-102) — TowerRock1 at (450,290), SquareRock1 at (75,420); axe required; drops stone_pile. **Grove expanded** (ADR-103) — hang_dry→gem_ruby, lumber→ingot_copper_01; door_open animation + amber pulse during processing.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
 - **Inventory:** `InventoryManager.ItemEntry` (key, tex, count). Stacking by key. `_inv_mgr` uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart.
 - **Tool pattern:** `player.equipped_tool: String`. `EQUIPPABLE_TOOLS` dict in world.gd maps `item_key → InputMap_action`. Adding a tool = 1 dict entry + 1 InputMap action.
 - **Tree scene pattern:** `choppable_tree.tscn` self-registers to `"choppable_trees"` group. New tree = duplicate scene + drop in world, no world.gd changes needed.
+- **Rock scene pattern:** `choppable_rock.gd` shared script, self-registers to `"choppable_rocks"` group. 3 rock type scenes in `scenes/interactables/rocks/`. SpriteFrames in `resources/rocks/`. Requires axe. Drops stone_pile on break. New rock instance = drop scene into world, no world.gd changes needed.
 - **NPC right-click trade:** Priority `_on_right_click`: NPC > tree > terrain. `NPC_TRADE_RADIUS=36px`. `is_interactable()` guard prevents double-trigger.
 - **player.facing:** `enum Facing { DOWN, UP, SIDE }`. Use `player.facing_name()` for animation string.
 - **PowerShell encoding:** Never use `Out-File`/`Set-Content` for Godot files — PS 5.1 adds BOM. Use `[System.IO.File]::WriteAllText(path, content, [Text.Encoding]::UTF8)`.
@@ -193,11 +194,11 @@
 
 ### Active priorities (in order)
 
-1. **Rock SpriteFrames + placement** — 3 rock sets now in `res://assets/nature/rocks/`: `rounded_poky_rock/` (2 anims × 9 frames), `tower_rock/` (2 anims × 9 frames), `square_rock/` (1 anim × 16 frames). Each needs a `.tres` SpriteFrames before use in AnimatedSprite2D. Then wire into world.tscn.
+1. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. 39 new items in `props/items/` (ingots, wood piles, currency) available for InventoryManager.
 
-2. **Grove expansion** — Fay Grove exchange table currently supports bud/stone_pile/wood. More items to add as player gets them. `stump_home_001` door_open animation could trigger on item capture (currently unused). Visual feedback when ShT is "processing" (e.g. faint light at stump window).
+2. **Rock placement fine-tuning** — `RoundedPokyRock` scene exists (`rounded_poky_rock.tscn`, ext_resource `71_rock_r` in world.tscn) but was removed from the world per user request. Re-add when placement position is decided. TowerRock1 at (450,290) and SquareRock1 at (75,420) are live. Consider adding more rock instances in varied locations (near cave entrance, NE corner) once base positions feel right.
 
-3. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. 39 new items in `props/items/` (ingots, wood piles, currency) available for InventoryManager.
+3. **Grove expansion — continued** — door_open animation stays at last frame after playing (no door_close). StumpHome001 modulate pulse working. Consider: add a "door_close" or return-to-idle callback after door_open animation finishes.
 
 ### Blocked / waiting on user
 - **`herb_bundle_dried.png`** — no source art exists. Currently using `herb_plant_type_a.png` as placeholder in drying rack PRODUCTS. User to supply replacement before this slot is usable.
@@ -209,32 +210,27 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-27 (furniture + BMad docs)
-- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines).
+### Session end — 2026-05-27 (rocks + grove expansion)
+- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines, no errors). Only known warning: `world_drop_item.gd` unused `_area` linter (pre-approved).
 - **What changed this session:**
-  - **BMad v6.8.0 installed + project docs generated:** `bmad-document-project` exhaustive scan read all 25 authored scripts. Generated `docs/index.md`, `architecture.md`, `source-tree-analysis.md`, `component-inventory.md`, `state-management.md`, `asset-inventory.md`, `development-guide.md`, `project-overview.md`.
-  - **Furniture wired into interior.tscn:** Added 3 StaticBody2D furniture nodes (grandfather clock NW, bed NE, plant shelf W-mid) each with Sprite2D (48×48, origin at base) + RectangleShape2D collision footprint. Added `y_sort_enabled = true` to Interior root. Collision and y_sort depth ordering confirmed in-game via MCP.
-  - **Interior furniture positions:** Editor adjusted positions after scene reload — final positions in .tscn are authoritative.
-- **Interior furniture architecture:**
-  - `interior.tscn`: `y_sort_enabled = true` on Interior root (new this session).
-  - GrandfatherClock `StaticBody2D` + `Sprite2D` (position.y=-24) + `CollisionShape2D` (RectangleShape2D 20×16 at y=-8).
-  - Bed `StaticBody2D` + `Sprite2D` + `CollisionShape2D` (RectangleShape2D 40×16 at y=-8).
-  - PlantShelf `StaticBody2D` + `Sprite2D` + `CollisionShape2D` (RectangleShape2D 32×12).
-  - Pattern: furniture Sprite2D origin = base center; sprite draws upward (position.y = negative half-height).
+  - **Choppable rock system (ADR-102):** 3 SpriteFrames .tres created (`resources/rocks/`). `choppable_rock.gd` script (hit/break/pile states, requires axe, emits `rock_broken` → stone_pile). 3 .tscn scenes (`scenes/interactables/rocks/`). TowerRock1 at (450,290) and SquareRock1 at (75,420) placed in world.tscn. RoundedPokyRock removed per user request but scene + ext_resource retained. world.gd wired: group connection in `_ready()`, `_on_rock_broken()` handler, click-nav support.
+  - **Grove expansion (ADR-103):** EXCHANGE_TABLE now supports `hang_dry` (→gem_ruby / ×2 hang_dry) and `lumber` (→ingot_copper_01 / ×2 lumber). On item capture: StumpHome001 plays `door_open` animation. During 10s processing: StumpHome001 modulate pulses warm amber (sin wave at 2.5Hz). Resets to Color.WHITE when processing completes.
+- **Rock system architecture:**
+  - One shared script `choppable_rock.gd`: exports `hits_required` (3/4/5 per type). `_has_hit_anim` flag handles square_rock (no hit anim). Group `"choppable_rocks"` for world.gd auto-connection.
+  - SpriteFrames: "idle" (loop), "hit" (loop:false), "break" (loop:false), "pile" (loop:true). Square rock pile has 4 variant frames.
+  - All rock sprites 64×64 source, scale=0.75 → 48px world size, sprite position.y=-24 (origin at ground base).
 - **Open issues:**
-  - `HouseTwostoryTeal` collision has 2 shapes with suspicious rotations — verify/tune in-game (roadmap #1)
+  - `RoundedPokyRock` removed from world — scene at `scenes/interactables/rocks/rounded_poky_rock.tscn`, ext_resource `71_rock_r` still in world.tscn header, ready to re-instance
+  - StumpHome001 `door_open` stays at last frame after playing — no door_close animation exists
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates — ~34 editor warnings (pre-approved, non-blocking)
-  - 2 editor theme font warnings (main_button_font, main_button_font_size) — cosmetic editor UI only, non-blocking
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
   - `herb_bundle_dried.png` no source art — placeholder in use
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
   - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
-  - Linter warning in `world_drop_item.gd` (unused `_area`) — non-blocking
   - ShrineManager.gd autoload is now unused — harmless, can be removed later
-  - Nav mesh is static — rebake (`NavRegion` in world.tscn) if new StaticBody2D obstacle nodes are added or moved
-  - `ingot_copper_05.png` (green/verdigris) and `ingot_copper_06.png` (ore-like) — imported but may not match intended copper ingot look
-- **Next priorities:** (1) Teal house collision tuning. (2) Rock SpriteFrames + placement. (3) Grove expansion.
-- **Available but unwired:** Rock sets ×3 (need SpriteFrames .tres), ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
+  - Nav mesh is static — rebake if new StaticBody2D obstacle nodes are added or moved
+- **Next priorities:** (1) Wire remaining grove/bush/stone assets. (2) Rock placement fine-tuning (RoundedPokyRock position). (3) Grove door_close/idle return.
+- **Available but unwired:** ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
 
 ### Permissions Allowlist
 All Godot MCP, filesystem MCP, and PixelLab MCP tools are pre-approved in `.claude/settings.json` — no prompts expected for any of them.

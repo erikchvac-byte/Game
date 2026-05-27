@@ -22,17 +22,27 @@ const EXCHANGE_TABLE := {
 		"processed": ["lumber", "res://assets/props/items/lumber.png"],
 		"raw":       ["wood",   "res://assets/props/items/wood_pile.png", 2],
 	},
+	"hang_dry": {
+		"processed": ["gem_ruby",  "res://assets/props/items/gem_ruby.png"],
+		"raw":       ["hang_dry",  "res://assets/props/bud/hang_dry.png", 2],
+	},
+	"lumber": {
+		"processed": ["ingot_copper_01", "res://assets/props/items/ingot_copper_01.png"],
+		"raw":       ["lumber",          "res://assets/props/items/lumber.png", 2],
+	},
 }
 
 enum State { IDLE, ITEM_PRESENT, PROCESSING, REWARD_READY, REWARD_SPAWNED }
 
 var _state           := State.IDLE
 var _player          : Node2D
+var _stump_home      : AnimatedSprite2D
 var _player_in_grove := false
 var _pending_item    : Node    = null
 var _captured_key    := ""
 var _captured_pos    := Vector2.ZERO
 var _process_timer   := 0.0
+var _pulse_t         := 0.0
 var _reward_key      := ""
 var _reward_tex_path := ""
 var _reward_count    := 1
@@ -46,6 +56,7 @@ func _ready() -> void:
 
 func _cache_player() -> void:
 	_player = get_parent().get_node_or_null("Player") as Node2D
+	_stump_home = get_parent().get_node_or_null("StumpHome001") as AnimatedSprite2D
 
 
 func _process(delta: float) -> void:
@@ -69,12 +80,21 @@ func _process(delta: float) -> void:
 				_pending_item = null
 				_calculate_reward()
 				_process_timer = PROCESS_TIME
+				_pulse_t = 0.0
 				_state = State.PROCESSING
 				_show_toast("Something stirs in the grove...", 2.5)
+				if _stump_home and _stump_home.sprite_frames.has_animation(&"door_open"):
+					_stump_home.play(&"door_open")
 
 		State.PROCESSING:
 			_process_timer -= delta
+			_pulse_t += delta
+			var pulse := (sin(_pulse_t * 2.5) + 1.0) * 0.5
+			if _stump_home:
+				_stump_home.modulate = Color(1.0, 0.85 + 0.15 * pulse, 0.6 + 0.2 * pulse, 1.0)
 			if _process_timer <= 0.0:
+				if _stump_home:
+					_stump_home.modulate = Color.WHITE
 				# Spawn reward immediately regardless of player position
 				_spawn_reward()
 				_state = State.REWARD_SPAWNED

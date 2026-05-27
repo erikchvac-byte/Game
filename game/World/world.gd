@@ -46,6 +46,10 @@ func _ready() -> void:
 		tree.connect("interactable_entered", _on_interactable_entered)
 		tree.connect("interactable_exited", _on_interactable_exited)
 		tree.connect("tree_chopped", _on_tree_chopped)
+	for rock in get_tree().get_nodes_in_group("choppable_rocks"):
+		rock.connect("interactable_entered", _on_interactable_entered)
+		rock.connect("interactable_exited", _on_interactable_exited)
+		rock.connect("rock_broken", _on_rock_broken)
 	_grant_starting_items()
 
 
@@ -210,6 +214,18 @@ func _on_right_click(world_pos: Vector2) -> void:
 			_nav_pending_interact = true
 			_player.nav_agent.set_target_position(_nav_target_pos)
 			return
+	# Rocks
+	for rock in get_tree().get_nodes_in_group("choppable_rocks"):
+		var rock_node := rock as Node2D
+		if rock_node == null:
+			continue
+		if rock_node.global_position.distance_to(world_pos) < 28.0:
+			_nav_active = true
+			_nav_target_pos = rock_node.global_position
+			_nav_target_node = rock
+			_nav_pending_interact = true
+			_player.nav_agent.set_target_position(_nav_target_pos)
+			return
 	# Trees — click anywhere on sprite navigates and interacts
 	for tree in get_tree().get_nodes_in_group("choppable_trees"):
 		var tree_node := tree as Node2D
@@ -336,3 +352,8 @@ func _on_door_entered(body: Node2D) -> void:
 func _on_tree_chopped() -> void:
 	if _inv_mgr:
 		_inv_mgr.add_item("wood", preload("res://assets/props/items/wood_pile.png"))
+
+
+func _on_rock_broken() -> void:
+	if _inv_mgr:
+		_inv_mgr.add_item("stone_pile", preload("res://assets/props/items/stone_pile.png"))
