@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-26):** Runnable, pre-flight ✅, output log clean (4 lines). Fay Grove exchange working — drop item, step away, return to collect reward. ShT stays above brick wall (MAP_MAX_Y=445). Door entry works. Nav mesh rebaked after tree repositioning — player routes around trees correctly. NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working.
+- **Current state (2026-05-27):** Runnable, pre-flight ✅, output log clean (4 lines). Fay Grove exchange working — drop item, step away, return to collect reward. ShT stays above brick wall (MAP_MAX_Y=445). Door entry works. Nav mesh rebaked after tree repositioning — player routes around trees correctly. NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -213,11 +213,13 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-26 (door entry fix)
+### Session end — 2026-05-27 (grove/ShT fixes + nav rebake)
 - **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines).
 - **What changed this session:**
-  - **Door entry fix:** `DoorEntrance` Area2D was 14×6 px centered at world-local (108, 117) — partially embedded in wall collision (wall bottom y=117.5). Right-click nav stopped player at y≈126, capsule top at 122, trigger bottom at 120 → no overlap → never fired. Fixed: enlarged to 20×20, moved center to (108, 130). Now overlaps player capsule reliably from both keyboard and nav. Playtested ✅.
-  - **player.gd null fix:** `$NavAgent` → `get_node_or_null("NavAgent")` — suppresses runtime error when Player runs in interior.tscn (no NavAgent child there). Null-guard on line 34 already prevented crashes; this eliminates the logged error.
+  - **Fay Grove exchange fixed:** stump_shrine.gd had a REWARD_READY state that deadlocked if player re-entered grove before reward spawned. Removed the state — PROCESSING now spawns reward immediately; player auto-collects on re-entering grove radius (60px). "Something stirs in the grove..." toast added on item capture.
+  - **ShT wall boundary:** MAP_MAX_Y 564→445 in forest_creature.gd. ShT now teleports at y=435 (visual brick wall top) instead of camera bottom. Plays well with EDGE_MARGIN=10.
+  - **Nav mesh rebaked:** Trees were repositioned by MCP editor operations in the previous session, making the baked NavPolygon stale. Player could no longer route around trees. Rebaked via MCP `bake_navigation_mesh` on `NavRegion`. Playtested ✅.
+  - **world.tscn regressions restored:** DoorArea RectangleShape2D `size=(20,20)` and GreyHoodie `y_sort_offset=19` both stripped by editor during MCP tree-move operations — restored via targeted Edit.
 - **Flagged items (user decision needed):** `ingot_copper_05.png` = green/verdigris (unusual), `ingot_copper_06.png` = looks like ore chunks rather than refined ingot — both imported, usability is user's call.
 - **NPC nav architecture (ADR-100):**
   - `world.tscn`: `GreyHoodie` type `CharacterBody2D` (`motion_mode=1`, `collision_layer=2`, `collision_mask=0`, `y_sort_offset=19`). Children: `NpcCollider` (CapsuleShape2D r=4 h=12) + `NavAgent` (NavigationAgent2D, `path_desired_distance=4.0`, `target_desired_distance=5.0`).
@@ -242,10 +244,10 @@
   - `STUCK_CHECK_SEC=0.35`, `STUCK_DIST_THRESH=5.0`, `STUCK_COUNT_TRIGGER=3` — ~1.05s to fire
   - `PANIC_DIST=28`, `PANIC_SPEED_MULT=1.75`, `WARY_IDLE_SPEED_FRAC=0.4`
   - `CAM_HALF_W=184`, `CAM_HALF_H=104`, `OFF_SCREEN_PAD=35` — respawn geometry
-- **Fay Grove architecture (ADR-092):**
-  - stump_shrine.gd passive drop-watcher: IDLE→ITEM_PRESENT→PROCESSING(10s)→REWARD_READY→REWARD_SPAWNED→IDLE
+- **Fay Grove architecture (ADR-092) — UPDATED:**
+  - stump_shrine.gd passive drop-watcher: IDLE→ITEM_PRESENT→PROCESSING(10s)→REWARD_SPAWNED→IDLE (REWARD_READY removed)
   - Detects WorldDropItems in `world_drop_items` group within 60px. `grove_reward` meta prevents re-detection.
-  - Exchange table: bud/stone_pile/wood → processed(40%) or double-raw(60%). Auto-grant within 20px.
+  - Exchange table: bud/stone_pile/wood → processed(40%) or double-raw(60%). Auto-grant when player re-enters grove radius (60px).
 - **y_sort_offset — TREES (authoritative, ADR-091):** Trees do NOT use `y_sort_offset`. Node origin = trunk base. TreeSprite `position=(0,-22)`. Depth-sort transition = node Y.
 - **y_sort_offset — other nodes (AUTHORITATIVE):**
   - Player/creatures: baked into .tscn (player=14, ForestCreature=11). Buildings/props: see ADR-089 table. GreyHoodie=19.
@@ -260,7 +262,7 @@
   - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
   - Linter warning in `world_drop_item.gd` (unused `_area`) — non-blocking
   - ShrineManager.gd autoload is now unused — harmless, can be removed later
-  - Nav mesh is static — rebake (`NavRegion` in world.tscn) if new StaticBody2D obstacle nodes are added
+  - Nav mesh is static — rebake (`NavRegion` in world.tscn) if new StaticBody2D obstacle nodes are added or moved
   - `ingot_copper_05.png` (green/verdigris) and `ingot_copper_06.png` (ore-like) — imported but may not match intended copper ingot look
 - **Next priorities:** (1) Teal house collision tuning. (2) Wire furniture into interior.tscn. (3) Rock SpriteFrames + placement.
 - **Available but unwired:** Furniture (clock, bed, plant shelf in props/furniture/), rock sets ×3 (need SpriteFrames .tres), ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
