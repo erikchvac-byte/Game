@@ -338,7 +338,10 @@ radius = 38.0
 radius = 7.4067616
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_o2cvn"]
-size = Vector2(48.514343, 33.42591)
+size = Vector2(132, 75)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_teal_front"]
+size = Vector2(50, 21)
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_8iv6r"]
 size = Vector2(20, 10)
@@ -584,16 +587,16 @@ position = Vector2(0, 1.6666641)
 scale = Vector2(1.6666666, 1.6666666)
 
 [node name="WallCenter" type="CollisionShape2D" parent="HouseTwostoryTeal/HouseTealCollider" unique_id=143245583]
-position = Vector2(3, 25)
-rotation = -3.679051
-scale = Vector2(0.9999996, 0.9999996)
+position = Vector2(0, -15)
 shape = SubResource("RectangleShape2D_o2cvn")
 
 [node name="WallFront" type="CollisionShape2D" parent="HouseTwostoryTeal/HouseTealCollider" unique_id=210750579]
-position = Vector2(2.6865234, 18.781845)
-rotation = -3.0409276
-scale = Vector2(0.99999976, 0.99999976)
-shape = SubResource("RectangleShape2D_o2cvn")
+position = Vector2(-41, 32)
+shape = SubResource("RectangleShape2D_teal_front")
+
+[node name="FrontRight" type="CollisionShape2D" parent="HouseTwostoryTeal/HouseTealCollider" unique_id=210750581]
+position = Vector2(41, 32)
+shape = SubResource("RectangleShape2D_teal_front")
 
 [node name="Shadow" type="Node2D" parent="HouseTwostoryTeal" unique_id=1962183339]
 script = ExtResource("obj_shadow_script")
