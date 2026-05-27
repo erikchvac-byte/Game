@@ -1678,6 +1678,19 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-104: KnG_ShT Sprite Replaces hobo_man as ForestCreature (ShT)
+**Status:** Accepted
+**Date:** 2026-05-27
+**Context:** ShT (ForestCreature) was using `hobo_man_sprites.tres` — a 124×124px character at scale 0.177 (~22px world size). The KnG_ShT asset pack (witch hat + dark outfit) was chosen as the replacement.
+**Decision:** KnG_ShT frames (60×60px) imported to `res://assets/characters/kng_sht/`. New `kng_sht_sprites.tres` created with 12 animations: `idle_*` (8 frames, 6fps) × 4 cardinals, `walk_*` (6 frames, 8fps) × 4 cardinals, `run_*` (6 frames, 10fps) × 4 cardinals. `forest_creature.tscn` SpriteFrames swapped; scale set to 0.366 to preserve original world size (60 × 0.366 ≈ 22px = 124 × 0.177).
+**Rationale:** Animation names (`idle_south`, `walk_east` etc.) already matched the existing `forest_creature.gd` `_update_animation()` logic — zero script changes needed. Run animation included for future use. Diagonal run dirs (north_east, south_east) deferred — frames exist in project but not in SpriteFrames yet.
+**Consequences:** `hobo_man_sprites.tres` is now unused. Run animations are wired in SpriteFrames but never called by `forest_creature.gd` (walk is used during flee). Adding run state to ShT in future = 1 script change.
+**Testing:** Game launched. ForestCreature visible with witch hat + dark outfit, correct size relative to player and GreyHoodie. walk_south/walk_north animations play during tree-hop and flee states. Log clean. Playtested ✅.
+
+**Files changed:** `game/World/ForestCreature/forest_creature.tscn`, `game/resources/characters/kng_sht_sprites.tres`, `game/assets/characters/kng_sht/` (new)
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1686,6 +1699,7 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 | 2026-05-27 | Fix: Rebake NavigationPolygon in NavRegion (world.tscn) after trees were repositioned by MCP editor operations last session. Stale nav mesh caused player to walk through tree trunks instead of routing around them. Baked via bake_navigation_mesh MCP tool. Playtested ✅. |
 | 2026-05-27 | Docs: Initial project documentation generated via bmad-document-project (exhaustive scan). Installed BMad v6.8.0 into _bmad/. Generated docs/index.md, architecture.md, source-tree-analysis.md, component-inventory.md, state-management.md, asset-inventory.md, development-guide.md, project-overview.md from full read of all 25 authored GDScript files. No game architectural decisions — pure documentation. |
 | 2026-05-27 | ADR-102: Choppable rock system. 3 SpriteFrames .tres + choppable_rock.gd + 3 .tscn scenes. Rocks require axe, emit rock_broken → stone_pile added. TowerRock1 at (450,290) and SquareRock1 at (75,420) placed in world.tscn. Playtested ✅. |
+| 2026-05-27 | ADR-104: KnG_ShT replaces hobo_man as ForestCreature (ShT) sprite. 60×60px frames, scale 0.366, 12 animations (idle/walk/run × 4 cardinals). Script unchanged. Playtested ✅. |
 | 2026-05-27 | ADR-103: Grove exchange expanded — hang_dry→gem_ruby, lumber→ingot_copper_01. Processing feedback: door_open animation + warm amber modulate pulse on StumpHome001 during 10s processing window. Playtested ✅. |
 | 2026-05-27 | ADR-101: HouseTwostoryTeal collision fixed. Replaced 2 garbage-rotation shapes with MainBody (132×75) + FrontLeft + FrontRight (50×21 each) + 32px door gap at center. y_sort_offset=43 (sort key=118, door base). Player blocked at y≈122, door trigger at y=125 reached correctly. Playtested ✅. |
 | 2026-05-27 | Feat: Wire furniture into PlayerHome interior.tscn. Added 3 StaticBody2D furniture nodes (grandfather clock NW, bed NE, plant shelf W-mid) each with Sprite2D (48×48, position.y=-24, origin at base) and RectangleShape2D collision footprint. Added y_sort_enabled=true to Interior root node so player depth-sorts correctly against furniture. Collision and y_sort verified in-game via MCP playtesting. |

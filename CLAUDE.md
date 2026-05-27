@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-27):** Runnable, pre-flight ✅, output log clean (4 lines). Fay Grove exchange working — drop item, step away, return to collect reward. ShT stays above brick wall (MAP_MAX_Y=445). Door entry works. Nav mesh rebaked after tree repositioning — player routes around trees correctly. NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working. **BMad v6.8.0 installed** (`_bmad/`). **Project docs generated** (`docs/index.md` — exhaustive scan of all 25 authored scripts). **Furniture wired into interior.tscn** — grandfather clock (NW), bed (NE), plant shelf (W-mid); y_sort_enabled on Interior root; collision confirmed. **HouseTwostoryTeal collision fixed** (ADR-101) — MainBody + FrontLeft + FrontRight shapes with door gap; y_sort_offset=43. **Choppable rock system live** (ADR-102) — TowerRock1 at (450,290), SquareRock1 at (75,420); axe required; drops stone_pile. **Grove expanded** (ADR-103) — hang_dry→gem_ruby, lumber→ingot_copper_01; door_open animation + amber pulse during processing.
+- **Current state (2026-05-27):** Runnable, pre-flight ✅, output log clean (4 lines). Fay Grove exchange working — drop item, step away, return to collect reward. ShT stays above brick wall (MAP_MAX_Y=445). Door entry works. Nav mesh rebaked after tree repositioning — player routes around trees correctly. NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working. **BMad v6.8.0 installed** (`_bmad/`). **Project docs generated** (`docs/index.md` — exhaustive scan of all 25 authored scripts). **Furniture wired into interior.tscn** — grandfather clock (NW), bed (NE), plant shelf (W-mid); y_sort_enabled on Interior root; collision confirmed. **HouseTwostoryTeal collision fixed** (ADR-101) — MainBody + FrontLeft + FrontRight shapes with door gap; y_sort_offset=43. **Choppable rock system live** (ADR-102) — TowerRock1 at (450,290), SquareRock1 at (75,420); axe required; drops stone_pile. **Grove expanded** (ADR-103) — hang_dry→gem_ruby, lumber→ingot_copper_01; door_open animation + amber pulse during processing. **ShT (ForestCreature) sprite replaced** (ADR-104) — KnG_ShT witch-hat character replaces hobo_man; 60×60px frames at scale 0.366; kng_sht_sprites.tres with idle/walk/run × 4 cardinals.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -210,15 +210,16 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-27 (rocks + grove expansion)
+### Session end — 2026-05-27 (ShT sprite replacement)
 - **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines, no errors). Only known warning: `world_drop_item.gd` unused `_area` linter (pre-approved).
 - **What changed this session:**
-  - **Choppable rock system (ADR-102):** 3 SpriteFrames .tres created (`resources/rocks/`). `choppable_rock.gd` script (hit/break/pile states, requires axe, emits `rock_broken` → stone_pile). 3 .tscn scenes (`scenes/interactables/rocks/`). TowerRock1 at (450,290) and SquareRock1 at (75,420) placed in world.tscn. RoundedPokyRock removed per user request but scene + ext_resource retained. world.gd wired: group connection in `_ready()`, `_on_rock_broken()` handler, click-nav support.
-  - **Grove expansion (ADR-103):** EXCHANGE_TABLE now supports `hang_dry` (→gem_ruby / ×2 hang_dry) and `lumber` (→ingot_copper_01 / ×2 lumber). On item capture: StumpHome001 plays `door_open` animation. During 10s processing: StumpHome001 modulate pulses warm amber (sin wave at 2.5Hz). Resets to Color.WHITE when processing completes.
-- **Rock system architecture:**
-  - One shared script `choppable_rock.gd`: exports `hits_required` (3/4/5 per type). `_has_hit_anim` flag handles square_rock (no hit anim). Group `"choppable_rocks"` for world.gd auto-connection.
-  - SpriteFrames: "idle" (loop), "hit" (loop:false), "break" (loop:false), "pile" (loop:true). Square rock pile has 4 variant frames.
-  - All rock sprites 64×64 source, scale=0.75 → 48px world size, sprite position.y=-24 (origin at ground base).
+  - **KnG_ShT asset prep:** Inspected all files in `temp/KnG_ShT/`. Renamed animation folders to Godot-compatible names: `Walking-f0bd4964/` → `walk/`, `Running-446e0a2c/` → `run/`, `Shaky_Idle_8_frames-1b31be66/` → `idle/`. Diagonal run dirs renamed `north_east`/`south_east`. Hat-jump emote and rotation stills left untouched (not walk/run/idle).
+  - **ShT sprite replaced (ADR-104):** ForestCreature (ShT) sprite swapped from `hobo_man_sprites.tres` (124×124, scale 0.177) to `kng_sht_sprites.tres` (60×60, scale 0.366 — same ~22px world size). 12 animations: idle/walk/run × east/north/south/west. Zero script changes — animation names already matched `forest_creature.gd`. GreyHoodie NPC untouched.
+- **KnG_ShT sprite architecture:**
+  - Source frames: `res://assets/characters/kng_sht/idle/`, `walk/`, `run/` — 4 cardinals each
+  - SpriteFrames: `res://resources/characters/kng_sht_sprites.tres` — idle (8fr, 6fps), walk (6fr, 8fps), run (6fr, 10fps)
+  - Run animation wired in .tres but unused by `forest_creature.gd` — available when ShT gets a run state
+  - Diagonal run frames (`run/north_east/`, `run/south_east/`) exist in project but not in SpriteFrames yet (deferred)
 - **Open issues:**
   - `RoundedPokyRock` removed from world — scene at `scenes/interactables/rocks/rounded_poky_rock.tscn`, ext_resource `71_rock_r` still in world.tscn header, ready to re-instance
   - StumpHome001 `door_open` stays at last frame after playing — no door_close animation exists
@@ -226,11 +227,10 @@
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
   - `herb_bundle_dried.png` no source art — placeholder in use
   - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
-  - BigRock LogCollider poorly fits 58×63 rock cluster (low priority, known)
-  - ShrineManager.gd autoload is now unused — harmless, can be removed later
+  - `hobo_man_sprites.tres` now unused — can be deleted later
   - Nav mesh is static — rebake if new StaticBody2D obstacle nodes are added or moved
 - **Next priorities:** (1) Wire remaining grove/bush/stone assets. (2) Rock placement fine-tuning (RoundedPokyRock position). (3) Grove door_close/idle return.
-- **Available but unwired:** ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
+- **Available but unwired:** ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png. KnG_ShT diagonal run frames ready for future ShT run state.
 
 ### Permissions Allowlist
 All Godot MCP, filesystem MCP, and PixelLab MCP tools are pre-approved in `.claude/settings.json` — no prompts expected for any of them.
