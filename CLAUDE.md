@@ -197,11 +197,9 @@
 
 2. **Grove expansion** — Fay Grove exchange table currently supports bud/stone_pile/wood. More items to add as player gets them. `stump_home_001` door_open animation could trigger on item capture (currently unused). Visual feedback when ShT is "processing" (e.g. faint light at stump window).
 
-3. **Wire furniture into interior.tscn** — `res://assets/props/furniture/` now has 3 Sprite2D-ready PNGs: `furniture_grandfather_clock.png`, `furniture_bed.png`, `furniture_plant_shelf.png`. Add as Sprite2D nodes to `interior.tscn`, position in room.
+3. **Rock SpriteFrames + placement** — 3 rock sets now in `res://assets/nature/rocks/`: `rounded_poky_rock/` (2 anims × 9 frames), `tower_rock/` (2 anims × 9 frames), `square_rock/` (1 anim × 16 frames). Each needs a `.tres` SpriteFrames before use in AnimatedSprite2D. Then wire into world.tscn.
 
-4. **Rock SpriteFrames + placement** — 3 rock sets now in `res://assets/nature/rocks/`: `rounded_poky_rock/` (2 anims × 9 frames), `tower_rock/` (2 anims × 9 frames), `square_rock/` (1 anim × 16 frames). Each needs a `.tres` SpriteFrames before use in AnimatedSprite2D. Then wire into world.tscn.
-
-5. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. 39 new items in `props/items/` (ingots, wood piles, currency) available for InventoryManager.
+4. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. 39 new items in `props/items/` (ingots, wood piles, currency) available for InventoryManager.
 
 ### Blocked / waiting on user
 - **`herb_bundle_dried.png`** — no source art exists. Currently using `herb_plant_type_a.png` as placeholder in drying rack PRODUCTS. User to supply replacement before this slot is usable.
@@ -213,45 +211,18 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-27 (grove/ShT fixes + nav rebake)
+### Session end — 2026-05-27 (furniture + BMad docs)
 - **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines).
 - **What changed this session:**
-  - **Fay Grove exchange fixed:** stump_shrine.gd had a REWARD_READY state that deadlocked if player re-entered grove before reward spawned. Removed the state — PROCESSING now spawns reward immediately; player auto-collects on re-entering grove radius (60px). "Something stirs in the grove..." toast added on item capture.
-  - **ShT wall boundary:** MAP_MAX_Y 564→445 in forest_creature.gd. ShT now teleports at y=435 (visual brick wall top) instead of camera bottom. Plays well with EDGE_MARGIN=10.
-  - **Nav mesh rebaked:** Trees were repositioned by MCP editor operations in the previous session, making the baked NavPolygon stale. Player could no longer route around trees. Rebaked via MCP `bake_navigation_mesh` on `NavRegion`. Playtested ✅.
-  - **world.tscn regressions restored:** DoorArea RectangleShape2D `size=(20,20)` and GreyHoodie `y_sort_offset=19` both stripped by editor during MCP tree-move operations — restored via targeted Edit.
-- **Flagged items (user decision needed):** `ingot_copper_05.png` = green/verdigris (unusual), `ingot_copper_06.png` = looks like ore chunks rather than refined ingot — both imported, usability is user's call.
-- **NPC nav architecture (ADR-100):**
-  - `world.tscn`: `GreyHoodie` type `CharacterBody2D` (`motion_mode=1`, `collision_layer=2`, `collision_mask=0`, `y_sort_offset=19`). Children: `NpcCollider` (CapsuleShape2D r=4 h=12) + `NavAgent` (NavigationAgent2D, `path_desired_distance=4.0`, `target_desired_distance=5.0`).
-  - `npc_grey_hoodie.gd`: `extends CharacterBody2D`. `nav_agent` cached in `_ready()`. `_physics_process()` handles movement (`_walking` guard → `is_navigation_finished()` → `get_next_path_position()` → velocity → `move_and_slide()`). `_process()` unchanged for state/timers.
-  - Waypoints stored in World-local coords — converted to global in `_start_walk()` via `get_parent().to_global(waypoint)`.
-  - `_walking` flag critical: prevents `is_navigation_finished()` (returns true before any target set) from triggering false arrival on startup.
-- **Player nav architecture (ADR-098 + ADR-099):**
-  - `player.gd` `_physics_process()` priority: `auto_walk` (door transitions) → `nav_agent` path → keyboard input.
-  - `world.gd` all 3 right-click branches → `nav_agent.set_target_position()`. NPC branch updates target each frame (NPC wanders).
-  - Stuck detection unchanged. `auto_walk` door-transition assignments untouched.
-- **WillowTree architecture (ADR-096):**
-  - Scene: `res://World/WillowTree/willow_tree.tscn` (uid://c3wlwtree001x)
-  - Root Node2D "WillowTree": scale=(2.975,2.5), y_sort_offset=53, script=willow_tree.gd
-  - `ProximityArea`: centered at origin, CollisionShape2D ProxShape r=38.0 (→ 113px world reach)
-  - **CRITICAL:** Never drag CollisionShape2D in viewport — editor silently flips scale.y negative, breaks body_entered.
-- **StumpHome001 architecture (ADR-095):**
-  - Scene: `res://World/StumpShrine/stump_home_001.tscn` (uid://c2stmph001x3s)
-  - Root Node2D: y_sort_offset=12, stump_shrine.gd
-  - `StumpCollider` StaticBody2D → `StumpShape` CircleShape2D r=46 at (0,18), world.tscn instance at (13,311)
-- **ShT elusiveness (ADR-094) — key constants:**
-  - `FLEE_RADIUS=64` / `FLEE_EXIT_RADIUS=90` — hysteresis band
-  - `STUCK_CHECK_SEC=0.35`, `STUCK_DIST_THRESH=5.0`, `STUCK_COUNT_TRIGGER=3` — ~1.05s to fire
-  - `PANIC_DIST=28`, `PANIC_SPEED_MULT=1.75`, `WARY_IDLE_SPEED_FRAC=0.4`
-  - `CAM_HALF_W=184`, `CAM_HALF_H=104`, `OFF_SCREEN_PAD=35` — respawn geometry
-- **Fay Grove architecture (ADR-092) — UPDATED:**
-  - stump_shrine.gd passive drop-watcher: IDLE→ITEM_PRESENT→PROCESSING(10s)→REWARD_SPAWNED→IDLE (REWARD_READY removed)
-  - Detects WorldDropItems in `world_drop_items` group within 60px. `grove_reward` meta prevents re-detection.
-  - Exchange table: bud/stone_pile/wood → processed(40%) or double-raw(60%). Auto-grant when player re-enters grove radius (60px).
-- **y_sort_offset — TREES (authoritative, ADR-091):** Trees do NOT use `y_sort_offset`. Node origin = trunk base. TreeSprite `position=(0,-22)`. Depth-sort transition = node Y.
-- **y_sort_offset — other nodes (AUTHORITATIVE):**
-  - Player/creatures: baked into .tscn (player=14, ForestCreature=11). Buildings/props: see ADR-089 table. GreyHoodie=19.
-  - CRITICAL: NOT a runtime GDScript property. Never read/set via execute_game_script.
+  - **BMad v6.8.0 installed + project docs generated:** `bmad-document-project` exhaustive scan read all 25 authored scripts. Generated `docs/index.md`, `architecture.md`, `source-tree-analysis.md`, `component-inventory.md`, `state-management.md`, `asset-inventory.md`, `development-guide.md`, `project-overview.md`.
+  - **Furniture wired into interior.tscn:** Added 3 StaticBody2D furniture nodes (grandfather clock NW, bed NE, plant shelf W-mid) each with Sprite2D (48×48, origin at base) + RectangleShape2D collision footprint. Added `y_sort_enabled = true` to Interior root. Collision and y_sort depth ordering confirmed in-game via MCP.
+  - **Interior furniture positions:** Editor adjusted positions after scene reload — final positions in .tscn are authoritative.
+- **Interior furniture architecture:**
+  - `interior.tscn`: `y_sort_enabled = true` on Interior root (new this session).
+  - GrandfatherClock `StaticBody2D` + `Sprite2D` (position.y=-24) + `CollisionShape2D` (RectangleShape2D 20×16 at y=-8).
+  - Bed `StaticBody2D` + `Sprite2D` + `CollisionShape2D` (RectangleShape2D 40×16 at y=-8).
+  - PlantShelf `StaticBody2D` + `Sprite2D` + `CollisionShape2D` (RectangleShape2D 32×12).
+  - Pattern: furniture Sprite2D origin = base center; sprite draws upward (position.y = negative half-height).
 - **Open issues:**
   - `HouseTwostoryTeal` collision has 2 shapes with suspicious rotations — verify/tune in-game (roadmap #1)
   - `tile_bit_tools/tile_bit_tools/` nested UID duplicates — ~34 editor warnings (pre-approved, non-blocking)
@@ -264,8 +235,8 @@
   - ShrineManager.gd autoload is now unused — harmless, can be removed later
   - Nav mesh is static — rebake (`NavRegion` in world.tscn) if new StaticBody2D obstacle nodes are added or moved
   - `ingot_copper_05.png` (green/verdigris) and `ingot_copper_06.png` (ore-like) — imported but may not match intended copper ingot look
-- **Next priorities:** (1) Teal house collision tuning. (2) Wire furniture into interior.tscn. (3) Rock SpriteFrames + placement.
-- **Available but unwired:** Furniture (clock, bed, plant shelf in props/furniture/), rock sets ×3 (need SpriteFrames .tres), ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
+- **Next priorities:** (1) Teal house collision tuning. (2) Rock SpriteFrames + placement. (3) Grove expansion.
+- **Available but unwired:** Rock sets ×3 (need SpriteFrames .tres), ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png.
 
 ### Permissions Allowlist
 All Godot MCP, filesystem MCP, and PixelLab MCP tools are pre-approved in `.claude/settings.json` — no prompts expected for any of them.

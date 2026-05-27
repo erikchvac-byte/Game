@@ -78,7 +78,7 @@ position = Vector2(80, 124)
 shape = SubResource("ExitShape")
 
 [node name="GrandfatherClock" type="StaticBody2D" parent="." unique_id=500000001]
-position = Vector2(28, 52)
+position = Vector2(27, 31)
 
 [node name="ClockSprite" type="Sprite2D" parent="GrandfatherClock" unique_id=500000002]
 position = Vector2(0, -24)
@@ -89,7 +89,7 @@ position = Vector2(0, -8)
 shape = SubResource("ClockCollision")
 
 [node name="Bed" type="StaticBody2D" parent="." unique_id=500000004]
-position = Vector2(120, 52)
+position = Vector2(125.875, 52)
 
 [node name="BedSprite" type="Sprite2D" parent="Bed" unique_id=500000005]
 position = Vector2(0, -24)
@@ -100,14 +100,14 @@ position = Vector2(0, -8)
 shape = SubResource("BedCollision")
 
 [node name="PlantShelf" type="StaticBody2D" parent="." unique_id=500000007]
-position = Vector2(28, 88)
+position = Vector2(50, 70)
 
 [node name="ShelfSprite" type="Sprite2D" parent="PlantShelf" unique_id=500000008]
-position = Vector2(0, -24)
+position = Vector2(6.895, -66.415)
 texture = ExtResource("6_shelf")
 
 [node name="ShelfCollider" type="CollisionShape2D" parent="PlantShelf" unique_id=500000009]
-position = Vector2(0, -6)
+position = Vector2(7, -56)
 shape = SubResource("ShelfCollision")
 
 [node name="Player" parent="." unique_id=422071633 instance=ExtResource("1_player")]
