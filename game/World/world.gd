@@ -50,7 +50,6 @@ func _ready() -> void:
 	for rock in get_tree().get_nodes_in_group("choppable_rocks"):
 		rock.connect("interactable_entered", _on_interactable_entered)
 		rock.connect("interactable_exited", _on_interactable_exited)
-		rock.connect("rock_broken", _on_rock_broken)
 	_grant_starting_items()
 
 
@@ -356,6 +355,3 @@ func _on_tree_chopped() -> void:
 		_inv_mgr.add_item("wood", preload("res://assets/props/items/wood_pile.png"))
 
 
-func _on_rock_broken() -> void:
-	if _inv_mgr:
-		_inv_mgr.add_item("stone_pile", preload("res://assets/props/items/stone_pile.png"))

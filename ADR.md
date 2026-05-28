@@ -1737,6 +1737,19 @@ cam.limit_bottom = int(origin.y) + 128
 
 ---
 
+## ADR-108: Rock Gathering — Pickaxe Tool + Manual Gather Flow
+**Status:** Accepted
+**Date:** 2026-05-28
+**Context:** Rocks incorrectly required the axe. Stone auto-added to inventory on break with no player interaction required. No cleanup of the rock node after gathering.
+**Decision:** `choppable_rock.gd` overhauled: (1) `can_interact`/`interact` check `"pickaxe"` instead of `"axe"`; (2) `interact()` sets `player.is_chopping = true` to trigger the chop animation on strike; (3) PILE state: `can_interact` returns true with no tool, `interact` calls `_gather()` which emits `interactable_exited`, adds `stone_pile` to inventory, and calls `queue_free()`; (4) `blocked_message()` returns "Equip pickaxe (X)". `world.gd`: removed `rock_broken` signal connection and `_on_rock_broken()` handler — stone is now granted by the rock itself at gather time.
+**Rationale:** Self-contained gather pattern matches choppable_tree's approach. Emitting `interactable_exited` before `queue_free()` keeps world.gd's `_interactables` array clean. Pickaxe animation (player_alt frames) deferred — reuses existing `chop_*` animation on the Erik sprite until player_alt is wired.
+**Consequences:** Rocks are one-shot per session (no respawn). `rock_broken` signal is still emitted but no longer consumed. Axe/wood/tree logic is entirely untouched.
+**Testing:** Equipped pickaxe → hit TowerRock1 ×4 → PILE state confirmed → Space gather → stone_pile 1→2, rock node removed. Playtested ✅.
+
+**Files changed:** `game/scenes/interactables/rocks/choppable_rock.gd`, `game/World/world.gd`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1746,6 +1759,7 @@ cam.limit_bottom = int(origin.y) + 128
 | 2026-05-27 | Docs: Initial project documentation generated via bmad-document-project (exhaustive scan). Installed BMad v6.8.0 into _bmad/. Generated docs/index.md, architecture.md, source-tree-analysis.md, component-inventory.md, state-management.md, asset-inventory.md, development-guide.md, project-overview.md from full read of all 25 authored GDScript files. No game architectural decisions — pure documentation. |
 | 2026-05-27 | ADR-102: Choppable rock system. 3 SpriteFrames .tres + choppable_rock.gd + 3 .tscn scenes. Rocks require axe, emit rock_broken → stone_pile added. TowerRock1 at (450,290) and SquareRock1 at (75,420) placed in world.tscn. Playtested ✅. |
 | 2026-05-27 | ADR-104: KnG_ShT replaces hobo_man as ForestCreature (ShT) sprite. 60×60px frames, scale 0.366, 12 animations (idle/walk/run × 4 cardinals). Script unchanged. Playtested ✅. |
+| 2026-05-28 | ADR-108: Rock gathering overhauled. choppable_rock.gd: axe→pickaxe, PILE state gathers on Space (adds stone + queue_free), is_chopping=true on strike, blocked_message added. world.gd: rock_broken auto-add removed. Playtested ✅. |
 | 2026-05-28 | Pickaxe wired as equippable: "pickaxe": "equip_pickaxe" added to EQUIPPABLE_TOOLS in world.gd; equip_pickaxe InputMap action added to project.godot (X key, keycode 88). Playtested ✅. |
 | 2026-05-28 | Grove door_close fix: stump_shrine.gd connects animation_finished CONNECT_ONE_SHOT after door_open plays; _on_door_anim_finished() calls play("idle"). Verified door returns to closed frame. Playtested ✅. |
 | 2026-05-28 | ADR-106: Pickaxe added to starting inventory. tool_pickaxe.png copied from Tool_Set. One add_item line in _grant_starting_items(). Hotbar slot 3. No EQUIPPABLE_TOOLS wiring yet. Playtested ✅. |

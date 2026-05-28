@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-28):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working. **Minimal crafting system live** (ADR-105). **Pickaxe fully wired** (ADR-106) — hotbar slot 3, equippable via X key. **Interior camera fixed** (ADR-107) — both PlayerHome and NPCHome show full room. **Grove door_close fixed** — StumpHome001 returns to idle after door_open via `animation_finished` one-shot. **Scythe PNG imported** — `res://assets/props/items/tool_scythe.png`, not wired.
+- **Current state (2026-05-28):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working. **Minimal crafting system live** (ADR-105). **Pickaxe fully wired** (ADR-106) — hotbar slot 3, equippable via X key. **Interior camera fixed** (ADR-107). **Grove door_close fixed.** **Rock gathering overhauled (ADR-108)** — rocks require pickaxe, break → PILE state, Space to gather adds stone + removes node. Axe/wood untouched.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -196,7 +196,7 @@
 
 1. **Crafting system expansion** — Minimal test proven (ADR-105). Next: design the full crafting/economy loop — what does the hoe do (tillable soil?), what other recipes belong at the workbench, how do ingots/currency wire in. Workbench scene at `scenes/interactables/workbench/`. UI font scaling needs a theme/font-size pass (CanvasLayer at window res, not logical res). No world-accessible door to NPCHome yet — player can't enter naturally.
 
-2. **Wire pickaxe gameplay** — Pickaxe is equippable (X key, EQUIPPABLE_TOOLS wired). Next: add gameplay that uses it — e.g. rocks requiring pickaxe instead of/in addition to axe, or new breakable terrain type.
+2. **Crafting system expansion** — Workbench proven, hoe in inventory. Next: design the full crafting/economy loop — what does the hoe do (tillable soil?), more recipes, ingot/currency wiring, UI font size pass, and no natural door into NPCHome yet.
 
 ### Blocked / waiting on user
 *(none)*
@@ -213,8 +213,7 @@
   - **Interior camera fixed (ADR-107):** Both `PlayerHome/interior.gd` and `NPCHome/interior.gd` now compute camera limits from `global_position` instead of hardcoded `(0,0,160,128)`. Fixes PlayerHome north-wall clip (root node at y=−39). Both interiors playtested, full room visible ✅.
   - **Scythe asset imported:** `tool_scythe.png` at `res://assets/props/items/` — available only, not wired.
 - **Open issues:**
-  - **Pickaxe has no gameplay target** — equippable via X key but no content uses it yet.
-  - **Craft UI font oversized** — CanvasLayer renders at 1280×720 (window res), not 320×180 (logical res). Needs theme/font-size pass before production.
+    - **Craft UI font oversized** — CanvasLayer renders at 1280×720 (window res), not 320×180 (logical res). Needs theme/font-size pass before production.
   - **No world door to NPCHome** — player can't enter GreyHoodie's house naturally. Interior only reachable via scene-change during dev.
   - **Hoe has no gameplay effect** — sits in inventory, no tillable soil system.
   - `RoundedPokyRock` removed from world — scene exists, ready to re-instance when position decided.

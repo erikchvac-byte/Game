@@ -24,11 +24,20 @@ func _ready() -> void:
 	_interact_area.body_exited.connect(_on_body_exited)
 
 func can_interact(player: Node) -> bool:
-	return _state == State.IDLE and player.equipped_tool == "axe"
+	if _state == State.PILE:
+		return true
+	return _state == State.IDLE and player.equipped_tool == "pickaxe"
+
+func blocked_message(_player: Node) -> String:
+	return "Equip pickaxe (X)"
 
 func interact(_player: Node) -> void:
-	if _state != State.IDLE or _player.equipped_tool != "axe":
+	if _state == State.PILE:
+		_gather()
 		return
+	if _state != State.IDLE or _player.equipped_tool != "pickaxe":
+		return
+	_player.is_chopping = true
 	_state = State.HIT
 	_hits_done += 1
 	get_tree().create_timer(0.3).timeout.connect(_begin_rock_reaction)
@@ -54,6 +63,13 @@ func _on_anim_finished() -> void:
 			_rock_sprite.play(&"pile")
 			_state = State.PILE
 			rock_broken.emit()
+
+func _gather() -> void:
+	interactable_exited.emit(self)
+	var inv := get_node_or_null("/root/InventoryManager")
+	if inv:
+		inv.add_item("stone_pile", preload("res://assets/props/items/stone_pile.png"))
+	queue_free()
 
 func _on_body_entered(body: Node2D) -> void:
 	if body.name == "Player":
