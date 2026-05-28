@@ -59,6 +59,7 @@ func _grant_starting_items() -> void:
 	if not _inv_mgr:
 		return
 	_inv_mgr.add_item("axe", preload("res://assets/props/items/tool_axe.png"))
+	_inv_mgr.add_item("pickaxe", preload("res://assets/props/items/tool_pickaxe.png"))
 	_inv_mgr.add_item("stone_pile", preload("res://assets/props/items/stone_pile.png"))
 	_inv_mgr.add_item("bud", preload("res://assets/props/bud/dry_bud.png"))
 	_inv_mgr.add_item("wood", preload("res://assets/props/items/wood_pile.png"))

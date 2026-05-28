@@ -1704,6 +1704,39 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-106: Pickaxe Added to Starting Inventory
+**Status:** Accepted
+**Date:** 2026-05-28
+**Context:** Player started with only an axe. A pickaxe icon existed in Tool_Set but was not yet in the project or inventory.
+**Decision:** Copied `Tool_Set/objects/Pick Axe/Pick Axe/rotations/unknown.png` → `res://assets/props/items/tool_pickaxe.png`. Added one line to `_grant_starting_items()` in `world.gd` mirroring the axe: `_inv_mgr.add_item("pickaxe", preload("res://assets/props/items/tool_pickaxe.png"))`. Not wired to EQUIPPABLE_TOOLS — inventory only for now.
+**Rationale:** Exact mirror of axe pattern. No new systems. EQUIPPABLE_TOOLS wiring deferred until pickaxe has gameplay (rock breaking or similar) attached.
+**Consequences:** Pickaxe appears in hotbar at game start. Cannot be equipped via C key yet — that requires an InputMap action and EQUIPPABLE_TOOLS entry added later.
+**Testing:** Launched game, confirmed axe (slot 2) and pickaxe (slot 3) both visible in hotbar. Log clean. Playtested ✅.
+
+**Files changed:** `game/assets/props/items/tool_pickaxe.png` (new), `game/World/world.gd` (one line added to `_grant_starting_items`)
+
+---
+
+## ADR-107: Interior Camera — Limits Computed from Global Position
+**Status:** Accepted
+**Date:** 2026-05-28
+**Context:** Both interior scenes (PlayerHome, NPCHome) used hardcoded camera limits `(0, 0, 160, 128)`. PlayerHome's root `Interior` node has `position = Vector2(0, -39)`, shifting the entire room 39px upward in world space. With `limit_top = 0`, the camera could not scroll above y=0 globally, clipping the north wall (room top is at global y=−39). NPCHome had no offset so was unaffected, but shared the same brittle hardcoded values.
+**Decision:** In both `interior.gd` files, replaced the four hardcoded limit lines with dynamic computation from `global_position`:
+```gdscript
+var origin := global_position
+cam.limit_left = int(origin.x)
+cam.limit_top = int(origin.y)
+cam.limit_right = int(origin.x) + 160
+cam.limit_bottom = int(origin.y) + 128
+```
+**Rationale:** Single fix handles both scenes correctly regardless of root node offset. Exterior camera settings (in `player.tscn`) are untouched — limits are only overridden inside `_ready()` of each interior.
+**Consequences:** Any new interior scene needs the same `global_position`-relative limit pattern. Room dimensions (160×128) remain hardcoded — if a larger interior is built, those constants need updating.
+**Testing:** Entered PlayerHome interior — full north wall visible, no clipping. Entered NPCHome interior — full room with workbench visible. Log clean. Playtested ✅.
+
+**Files changed:** `game/World/PlayerHome/interior.gd`, `game/World/NPCHome/interior.gd`
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1713,6 +1746,9 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 | 2026-05-27 | Docs: Initial project documentation generated via bmad-document-project (exhaustive scan). Installed BMad v6.8.0 into _bmad/. Generated docs/index.md, architecture.md, source-tree-analysis.md, component-inventory.md, state-management.md, asset-inventory.md, development-guide.md, project-overview.md from full read of all 25 authored GDScript files. No game architectural decisions — pure documentation. |
 | 2026-05-27 | ADR-102: Choppable rock system. 3 SpriteFrames .tres + choppable_rock.gd + 3 .tscn scenes. Rocks require axe, emit rock_broken → stone_pile added. TowerRock1 at (450,290) and SquareRock1 at (75,420) placed in world.tscn. Playtested ✅. |
 | 2026-05-27 | ADR-104: KnG_ShT replaces hobo_man as ForestCreature (ShT) sprite. 60×60px frames, scale 0.366, 12 animations (idle/walk/run × 4 cardinals). Script unchanged. Playtested ✅. |
+| 2026-05-28 | ADR-106: Pickaxe added to starting inventory. tool_pickaxe.png copied from Tool_Set. One add_item line in _grant_starting_items(). Hotbar slot 3. No EQUIPPABLE_TOOLS wiring yet. Playtested ✅. |
+| 2026-05-28 | ADR-107: Interior camera limits fixed. Both interior.gd files now compute limits from global_position instead of hardcoded (0,0,160,128). Fixes PlayerHome north-wall clip (root node at y=−39). Both interiors show full room. Playtested ✅. |
+| 2026-05-28 | Assets: tool_scythe.png copied from Tool_Set/objects/Sythe to res://assets/props/items/. Imported only — not wired into any game code. |
 | 2026-05-28 | ADR-105: Minimal crafting system. Workbench scene in NPCHome interior. Recipe: 2 stone_pile + 2 wood → hoe. CanvasLayer craft UI. Self-contained, zero changes to existing systems. Hoe + workbench PNGs imported from temp/. Playtested ✅. |
 | 2026-05-27 | ADR-103: Grove exchange expanded — hang_dry→gem_ruby, lumber→ingot_copper_01. Processing feedback: door_open animation + warm amber modulate pulse on StumpHome001 during 10s processing window. Playtested ✅. |
 | 2026-05-27 | ADR-101: HouseTwostoryTeal collision fixed. Replaced 2 garbage-rotation shapes with MainBody (132×75) + FrontLeft + FrontRight (50×21 each) + 32px door gap at center. y_sort_offset=43 (sort key=118, door base). Player blocked at y≈122, door trigger at y=125 reached correctly. Playtested ✅. |

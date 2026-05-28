@@ -13,10 +13,11 @@ var _player: CharacterBody2D
 func _ready() -> void:
 	_player = $Player as CharacterBody2D
 	var cam := _player.get_node("Camera2D") as Camera2D
-	cam.limit_left = 0
-	cam.limit_top = 0
-	cam.limit_right = 160
-	cam.limit_bottom = 128
+	var origin := global_position
+	cam.limit_left = int(origin.x)
+	cam.limit_top = int(origin.y)
+	cam.limit_right = int(origin.x) + 160
+	cam.limit_bottom = int(origin.y) + 128
 	_player.facing = _player.Facing.UP
 	TransitionManager.fade_from_black(0.4)
 	await get_tree().create_timer(0.5).timeout
