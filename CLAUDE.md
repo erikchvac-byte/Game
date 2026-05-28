@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-28):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working. **Minimal crafting system live** (ADR-105). **Pickaxe in starting inventory** (ADR-106) — hotbar slot 3, inventory only, not yet equippable. **Interior camera fixed** (ADR-107) — both PlayerHome and NPCHome show full room; limits now computed from `global_position`. **Scythe PNG imported** — `res://assets/props/items/tool_scythe.png`, not wired.
+- **Current state (2026-05-28):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working. **Minimal crafting system live** (ADR-105). **Pickaxe fully wired** (ADR-106) — hotbar slot 3, equippable via X key. **Interior camera fixed** (ADR-107) — both PlayerHome and NPCHome show full room. **Grove door_close fixed** — StumpHome001 returns to idle after door_open via `animation_finished` one-shot. **Scythe PNG imported** — `res://assets/props/items/tool_scythe.png`, not wired.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -196,9 +196,7 @@
 
 1. **Crafting system expansion** — Minimal test proven (ADR-105). Next: design the full crafting/economy loop — what does the hoe do (tillable soil?), what other recipes belong at the workbench, how do ingots/currency wire in. Workbench scene at `scenes/interactables/workbench/`. UI font scaling needs a theme/font-size pass (CanvasLayer at window res, not logical res). No world-accessible door to NPCHome yet — player can't enter naturally.
 
-2. **Wire pickaxe as equippable tool** — `tool_pickaxe.png` imported, in starting inventory (ADR-106). Next: add `"pickaxe": "equip_pickaxe"` to `EQUIPPABLE_TOOLS` in `world.gd`, add `equip_pickaxe` InputMap action (new key, e.g. V), wire rock/terrain gameplay that requires pickaxe.
-
-3. **Grove door_close** — StumpHome001 `door_open` stays at last frame after playing. Add idle-return callback or `door_close` animation trigger. Small polish task.
+2. **Wire pickaxe gameplay** — Pickaxe is equippable (X key, EQUIPPABLE_TOOLS wired). Next: add gameplay that uses it — e.g. rocks requiring pickaxe instead of/in addition to axe, or new breakable terrain type.
 
 ### Blocked / waiting on user
 *(none)*
@@ -215,17 +213,16 @@
   - **Interior camera fixed (ADR-107):** Both `PlayerHome/interior.gd` and `NPCHome/interior.gd` now compute camera limits from `global_position` instead of hardcoded `(0,0,160,128)`. Fixes PlayerHome north-wall clip (root node at y=−39). Both interiors playtested, full room visible ✅.
   - **Scythe asset imported:** `tool_scythe.png` at `res://assets/props/items/` — available only, not wired.
 - **Open issues:**
-  - **Pickaxe not equippable** — no EQUIPPABLE_TOOLS entry or InputMap action yet. Roadmap item 2.
+  - **Pickaxe has no gameplay target** — equippable via X key but no content uses it yet.
   - **Craft UI font oversized** — CanvasLayer renders at 1280×720 (window res), not 320×180 (logical res). Needs theme/font-size pass before production.
   - **No world door to NPCHome** — player can't enter GreyHoodie's house naturally. Interior only reachable via scene-change during dev.
   - **Hoe has no gameplay effect** — sits in inventory, no tillable soil system.
   - `RoundedPokyRock` removed from world — scene exists, ready to re-instance when position decided.
-  - StumpHome001 `door_open` stays at last frame — no door_close.
   - `tile_bit_tools` nested UID duplicates — ~34 editor warnings (pre-approved).
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart.
   - `hobo_man_sprites.tres` unused — can be deleted later.
   - Nav mesh is static — rebake if new StaticBody2D obstacle nodes added or moved.
-- **Available but unwired:** `tool_pickaxe.png` (in hotbar, not equippable), `tool_scythe.png` (asset only), ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004, grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png, KnG_ShT diagonal run frames, Shovel sprite (in Tool_Set).
+- **Available but unwired:** `tool_scythe.png` (asset only), ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004, grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png, KnG_ShT diagonal run frames, Shovel sprite (in Tool_Set).
 
 ### Permissions Allowlist
 All Godot MCP, filesystem MCP, and PixelLab MCP tools are pre-approved in `.claude/settings.json` — no prompts expected for any of them.
