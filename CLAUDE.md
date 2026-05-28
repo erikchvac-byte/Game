@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-28):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working. **Minimal crafting system live** (ADR-105). **Pickaxe fully wired** (ADR-106) — hotbar slot 3, equippable via X key. **Interior camera fixed** (ADR-107). **Grove door_close fixed.** **Rock gathering overhauled (ADR-108)** — rocks require pickaxe, break → PILE state, Space to gather adds stone + removes node. Axe/wood untouched.
+- **Current state (2026-05-28):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working. **Minimal crafting system live** (ADR-105). **Pickaxe fully wired** (ADR-106) — hotbar slot 3, equippable via X key. **Interior camera fixed** (ADR-107). **Grove door_close fixed.** **Rock gathering overhauled (ADR-108)** — rocks require pickaxe, break → PILE state, Space to gather adds stone + removes node. Axe/wood untouched. **OPEN:** Pickaxe strike animation not yet wired — player plays chop_* (axe animation) on rock hit. Pickaxe sheets are 354×49 (6 frames × 59×49) at `res://assets/characters/player_alt/pickaxe/`. Need to add `pickaxe_side/down/up` animations to `erik_sprites.tres` and update `player_animation.gd` to branch on `player.equipped_tool == "pickaxe"`.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -196,7 +196,9 @@
 
 1. **Crafting system expansion** — Minimal test proven (ADR-105). Next: design the full crafting/economy loop — what does the hoe do (tillable soil?), what other recipes belong at the workbench, how do ingots/currency wire in. Workbench scene at `scenes/interactables/workbench/`. UI font scaling needs a theme/font-size pass (CanvasLayer at window res, not logical res). No world-accessible door to NPCHome yet — player can't enter naturally.
 
-2. **Crafting system expansion** — Workbench proven, hoe in inventory. Next: design the full crafting/economy loop — what does the hoe do (tillable soil?), more recipes, ingot/currency wiring, UI font size pass, and no natural door into NPCHome yet.
+2. **Pickaxe strike animation** — Sheets at `res://assets/characters/player_alt/pickaxe/Side|Down|Up.png` (354×49, 6 frames × 59×49). Add `pickaxe_side/down/up` animations to `erik_sprites.tres` (use AtlasTexture regions or split frames). Update `player_animation.gd`: when `player.is_chopping` and `player.equipped_tool == "pickaxe"`, play `"pickaxe_" + dir` instead of `"chop_" + dir`.
+
+3. **Crafting system expansion** — Workbench proven, hoe in inventory. Next: design the full crafting/economy loop — what does the hoe do (tillable soil?), more recipes, ingot/currency wiring, UI font size pass, and no natural door into NPCHome yet.
 
 ### Blocked / waiting on user
 *(none)*
@@ -206,7 +208,27 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-28 (Pickaxe inventory + interior camera fix)
+### Session end — 2026-05-28 (Rock gathering, pickaxe, camera, door fixes)
+- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). Known warning: `world_drop_item.gd` unused `_area` (pre-approved).
+- **What changed this session:**
+  - ADR-106: Pickaxe added to starting inventory (hotbar slot 3, equippable via X key)
+  - ADR-107: Interior camera limits computed from `global_position` — PlayerHome north-wall clip fixed
+  - Grove door_close fixed — `animation_finished` one-shot returns StumpHome001 to idle
+  - ADR-108: Rock gathering overhauled — pickaxe required, PILE state, Space-to-gather, node removed on collect
+  - `tool_scythe.png` imported to `res://assets/props/items/` (not wired)
+- **Open issues:**
+  - **Pickaxe strike animation not wired** — player plays `chop_*` on rock hit. Sheets at `player_alt/pickaxe/` are 354×49 (6 frames × 59×49). Need `pickaxe_side/down/up` added to `erik_sprites.tres` + `player_animation.gd` branch on `equipped_tool == "pickaxe"`. Roadmap #2.
+  - **Craft UI font oversized** — CanvasLayer at window res, needs theme/font-size pass
+  - **No world door to NPCHome** — interior only reachable via scene-change
+  - **Hoe has no gameplay effect** — no tillable soil system
+  - `RoundedPokyRock` scene exists but not placed in world
+  - `tile_bit_tools` nested UID duplicates — ~34 editor warnings (pre-approved)
+  - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — swap to bare `InventoryManager` after editor restart
+  - Nav mesh needs rebake if obstacles move
+- **Available but unwired:** `tool_scythe.png`, ingots ×19, wood piles ×14, currency ×5, stump_home_002–004, grove dwellings ×7, bushes ×14, player_alt, purple_jack, grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png, KnG_ShT diagonal run frames, Shovel sprite (Tool_Set)
+
+### OLD SESSION NOTES (superseded)
+
 - **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines, no errors). Known warnings: `world_drop_item.gd` unused `_area` + MCP `_mcp_error` vars (all pre-approved).
 - **What changed this session:**
   - **Pickaxe in starting inventory (ADR-106):** `tool_pickaxe.png` copied from Tool_Set, imported. One `add_item` line added after axe in `_grant_starting_items()`. Hotbar slot 3. Not yet equippable (no EQUIPPABLE_TOOLS entry).
