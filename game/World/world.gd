@@ -8,6 +8,7 @@ const NAV_STUCK_MAX := 1.0
 # no other code changes required.
 const EQUIPPABLE_TOOLS := {
 	"axe": "equip_toggle",
+	"pickaxe": "equip_pickaxe",
 }
 
 # Hotbar slot count must match InventoryManager.HOTBAR_SLOTS.

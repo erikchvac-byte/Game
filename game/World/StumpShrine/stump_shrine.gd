@@ -85,6 +85,7 @@ func _process(delta: float) -> void:
 				_show_toast("Something stirs in the grove...", 2.5)
 				if _stump_home and _stump_home.sprite_frames.has_animation(&"door_open"):
 					_stump_home.play(&"door_open")
+					_stump_home.animation_finished.connect(_on_door_anim_finished, CONNECT_ONE_SHOT)
 
 		State.PROCESSING:
 			_process_timer -= delta
@@ -166,6 +167,11 @@ func _grant_reward() -> void:
 	_captured_key  = ""
 	_reward_key    = ""
 	_reward_count  = 1
+
+
+func _on_door_anim_finished() -> void:
+	if _stump_home and _stump_home.sprite_frames.has_animation(&"idle"):
+		_stump_home.play(&"idle")
 
 
 func _show_toast(msg: String, duration: float) -> void:
