@@ -1,0 +1,66 @@
+[gd_scene format=4 uid="uid://dm0rsurdfg3we"]
+
+[ext_resource type="Texture2D" uid="uid://cd0vupyce3yb7" path="res://assets/props/items/workbench.png" id="1_wb_tex"]
+[ext_resource type="Script" uid="uid://e4r7pl2pi0bf" path="res://scenes/interactables/workbench/workbench.gd" id="2_script"]
+
+[sub_resource type="RectangleShape2D" id="BodyShape"]
+size = Vector2(36, 8)
+
+[sub_resource type="RectangleShape2D" id="ProximityShape"]
+size = Vector2(46, 32)
+
+[node name="Workbench" type="StaticBody2D"]
+script = ExtResource("2_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, -15)
+scale = Vector2(0.25, 0.25)
+texture = ExtResource("1_wb_tex")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -3)
+shape = SubResource("BodyShape")
+
+[node name="ProximityArea" type="Area2D" parent="."]
+position = Vector2(0, 6)
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="ProximityArea"]
+shape = SubResource("ProximityShape")
+
+[node name="PromptLabel" type="Label" parent="."]
+position = Vector2(-18, -37)
+visible = false
+text = "[Space] Craft"
+
+[node name="CraftPanel" type="CanvasLayer" parent="."]
+layer = 5
+visible = false
+
+[node name="Panel" type="Panel" parent="CraftPanel"]
+offset_left = 80.0
+offset_top = 90.0
+offset_right = 240.0
+offset_bottom = 148.0
+
+[node name="RecipeLabel" type="Label" parent="CraftPanel/Panel"]
+offset_left = 4.0
+offset_top = 4.0
+offset_right = 156.0
+offset_bottom = 18.0
+text = "2 Wood + 2 Stone = Hoe"
+
+[node name="CraftButton" type="Button" parent="CraftPanel/Panel"]
+offset_left = 4.0
+offset_top = 20.0
+offset_right = 156.0
+offset_bottom = 38.0
+text = "Craft Hoe"
+
+[node name="StatusLabel" type="Label" parent="CraftPanel/Panel"]
+offset_left = 4.0
+offset_top = 40.0
+offset_right = 156.0
+offset_bottom = 54.0
+text = ""
+
+[connection signal="pressed" from="CraftPanel/Panel/CraftButton" to="." method="attempt_craft"]

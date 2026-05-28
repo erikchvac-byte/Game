@@ -1691,6 +1691,19 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 
 ---
 
+## ADR-105: Minimal Crafting System — Workbench + Hoe Recipe
+**Status:** Accepted
+**Date:** 2026-05-28
+**Context:** No crafting mechanic existed. Available gathered resources (stone_pile, wood) had no use beyond grove exchange. First crafting test needed before building a broader system.
+**Decision:** Self-contained `Workbench` StaticBody2D scene (`workbench.gd` + `workbench.tscn`) placed in NPCHome interior. Single recipe: 2 `stone_pile` + 2 `wood` → `hoe`. Interaction: Space key when player in `ProximityArea` → CanvasLayer craft panel (recipe label + Craft button + status label). Ingredient count uses `get_slot()` loop (no `get_count()` on InventoryManager). Consumption: two `remove_item()` calls per ingredient. Output: `add_item("hoe", HOE_TEX)`.
+**Rationale:** Self-contained design — no changes to world.gd, ShrineManager, StumpShrine, choppable_rock, or interior.gd. New file pattern matches existing interactables. CanvasLayer chosen for UI so it renders at fixed screen position independent of camera/world transform.
+**Consequences:** CanvasLayer renders at window resolution (1280×720), not logical game resolution (320×180) — UI font appears large relative to pixel art. Needs theme/font-size polish before production use. Craft-once-per-visit (button stays disabled until player leaves/re-enters proximity). No door from world.tscn into NPCHome yet — interior accessible via scene-change only during development.
+**Testing:** Entered interior via scene-change script. Added 3 stone + 3 wood via execute_game_script. Opened craft panel, called attempt_craft(). Confirmed: stone 3→1, wood 3→1, hoe 1 added to hotbar. "Crafted: Hoe!" shown, button greyed out. Log clean. Playtested ✅.
+
+**Files changed:** `game/assets/props/items/hoe.png` (new), `game/assets/props/items/workbench.png` (new), `game/scenes/interactables/workbench/workbench.gd` (new), `game/scenes/interactables/workbench/workbench.tscn` (new), `game/World/NPCHome/interior.tscn` (workbench instance added)
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
@@ -1700,6 +1713,7 @@ Trees are already well-componentized via base scenes (pine/maple/fir_tree.tscn) 
 | 2026-05-27 | Docs: Initial project documentation generated via bmad-document-project (exhaustive scan). Installed BMad v6.8.0 into _bmad/. Generated docs/index.md, architecture.md, source-tree-analysis.md, component-inventory.md, state-management.md, asset-inventory.md, development-guide.md, project-overview.md from full read of all 25 authored GDScript files. No game architectural decisions — pure documentation. |
 | 2026-05-27 | ADR-102: Choppable rock system. 3 SpriteFrames .tres + choppable_rock.gd + 3 .tscn scenes. Rocks require axe, emit rock_broken → stone_pile added. TowerRock1 at (450,290) and SquareRock1 at (75,420) placed in world.tscn. Playtested ✅. |
 | 2026-05-27 | ADR-104: KnG_ShT replaces hobo_man as ForestCreature (ShT) sprite. 60×60px frames, scale 0.366, 12 animations (idle/walk/run × 4 cardinals). Script unchanged. Playtested ✅. |
+| 2026-05-28 | ADR-105: Minimal crafting system. Workbench scene in NPCHome interior. Recipe: 2 stone_pile + 2 wood → hoe. CanvasLayer craft UI. Self-contained, zero changes to existing systems. Hoe + workbench PNGs imported from temp/. Playtested ✅. |
 | 2026-05-27 | ADR-103: Grove exchange expanded — hang_dry→gem_ruby, lumber→ingot_copper_01. Processing feedback: door_open animation + warm amber modulate pulse on StumpHome001 during 10s processing window. Playtested ✅. |
 | 2026-05-27 | ADR-101: HouseTwostoryTeal collision fixed. Replaced 2 garbage-rotation shapes with MainBody (132×75) + FrontLeft + FrontRight (50×21 each) + 32px door gap at center. y_sort_offset=43 (sort key=118, door base). Player blocked at y≈122, door trigger at y=125 reached correctly. Playtested ✅. |
 | 2026-05-27 | Feat: Wire furniture into PlayerHome interior.tscn. Added 3 StaticBody2D furniture nodes (grandfather clock NW, bed NE, plant shelf W-mid) each with Sprite2D (48×48, position.y=-24, origin at base) and RectangleShape2D collision footprint. Added y_sort_enabled=true to Interior root node so player depth-sorts correctly against furniture. Collision and y_sort verified in-game via MCP playtesting. |

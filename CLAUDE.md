@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-27):** Runnable, pre-flight ✅, output log clean (4 lines). Fay Grove exchange working — drop item, step away, return to collect reward. ShT stays above brick wall (MAP_MAX_Y=445). Door entry works. Nav mesh rebaked after tree repositioning — player routes around trees correctly. NPC GreyHoodie patrol uses NavigationAgent2D (ADR-100). Player click-nav wired to nav mesh (ADR-098/099). NavRegion baked in world.tscn (ADR-097). All systems working. **BMad v6.8.0 installed** (`_bmad/`). **Project docs generated** (`docs/index.md` — exhaustive scan of all 25 authored scripts). **Furniture wired into interior.tscn** — grandfather clock (NW), bed (NE), plant shelf (W-mid); y_sort_enabled on Interior root; collision confirmed. **HouseTwostoryTeal collision fixed** (ADR-101) — MainBody + FrontLeft + FrontRight shapes with door gap; y_sort_offset=43. **Choppable rock system live** (ADR-102) — TowerRock1 at (450,290), SquareRock1 at (75,420); axe required; drops stone_pile. **Grove expanded** (ADR-103) — hang_dry→gem_ruby, lumber→ingot_copper_01; door_open animation + amber pulse during processing. **ShT (ForestCreature) sprite replaced** (ADR-104) — KnG_ShT witch-hat character replaces hobo_man; 60×60px frames at scale 0.366; kng_sht_sprites.tres with idle/walk/run × 4 cardinals.
+- **Current state (2026-05-28):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working. **Minimal crafting system live** (ADR-105) — Workbench in NPCHome interior; recipe: 2 stone_pile + 2 wood → hoe; CanvasLayer craft UI; hoe.png + workbench.png imported from temp/. Crafting mechanic verified end-to-end. UI font oversized (CanvasLayer renders at window res, not logical res) — polish needed before production use.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -194,43 +194,39 @@
 
 ### Active priorities (in order)
 
-1. **Wire remaining grove/bush/stone assets** — `stump_home_002–004.png` imported but not placed. 14 bushes at `game/assets/nature/bushes/` are decorative Sprite2D-ready. 39 new items in `props/items/` (ingots, wood piles, currency) available for InventoryManager.
+1. **Crafting system expansion** — Minimal test proven (ADR-105). Next: design the full crafting/economy loop — what does the hoe do (tillable soil?), what other recipes belong at the workbench, how do ingots/currency wire in. Brainstorming started but not finished. Workbench scene at `scenes/interactables/workbench/`. UI font scaling needs a theme/font-size pass (CanvasLayer at window res, not logical res). No world-accessible door to NPCHome yet — player can't enter naturally.
 
-2. **Rock placement fine-tuning** — `RoundedPokyRock` scene exists (`rounded_poky_rock.tscn`, ext_resource `71_rock_r` in world.tscn) but was removed from the world per user request. Re-add when placement position is decided. TowerRock1 at (450,290) and SquareRock1 at (75,420) are live. Consider adding more rock instances in varied locations (near cave entrance, NE corner) once base positions feel right.
-
-3. **Grove expansion — continued** — door_open animation stays at last frame after playing (no door_close). StumpHome001 modulate pulse working. Consider: add a "door_close" or return-to-idle callback after door_open animation finishes.
+2. **Grove door_close** — StumpHome001 `door_open` stays at last frame after playing. Add idle-return callback or `door_close` animation trigger. Small polish task.
 
 ### Blocked / waiting on user
-- **`herb_bundle_dried.png`** — no source art exists. Currently using `herb_plant_type_a.png` as placeholder in drying rack PRODUCTS. User to supply replacement before this slot is usable.
-- **`tree_oak_green.png`** — orphaned static PNG at `res://assets/nature/trees/`. No animation strips. User to decide: wire as a non-choppable decorative tree, or delete.
-- **`shop_apothecary_alt.png`** — confirmed byte-identical duplicate of `shop_apothecary_main.png`. Pending dedup (user decision on which name to keep).
+*(none)*
 
 ---
 
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-27 (ShT sprite replacement)
-- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines, no errors). Only known warning: `world_drop_item.gd` unused `_area` linter (pre-approved).
+### Session end — 2026-05-28 (Minimal crafting system)
+- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines, no errors). Only known warning: `world_drop_item.gd` unused `_area` (pre-approved).
 - **What changed this session:**
-  - **KnG_ShT asset prep:** Inspected all files in `temp/KnG_ShT/`. Renamed animation folders to Godot-compatible names: `Walking-f0bd4964/` → `walk/`, `Running-446e0a2c/` → `run/`, `Shaky_Idle_8_frames-1b31be66/` → `idle/`. Diagonal run dirs renamed `north_east`/`south_east`. Hat-jump emote and rotation stills left untouched (not walk/run/idle).
-  - **ShT sprite replaced (ADR-104):** ForestCreature (ShT) sprite swapped from `hobo_man_sprites.tres` (124×124, scale 0.177) to `kng_sht_sprites.tres` (60×60, scale 0.366 — same ~22px world size). 12 animations: idle/walk/run × east/north/south/west. Zero script changes — animation names already matched `forest_creature.gd`. GreyHoodie NPC untouched.
-- **KnG_ShT sprite architecture:**
-  - Source frames: `res://assets/characters/kng_sht/idle/`, `walk/`, `run/` — 4 cardinals each
-  - SpriteFrames: `res://resources/characters/kng_sht_sprites.tres` — idle (8fr, 6fps), walk (6fr, 8fps), run (6fr, 10fps)
-  - Run animation wired in .tres but unused by `forest_creature.gd` — available when ShT gets a run state
-  - Diagonal run frames (`run/north_east/`, `run/south_east/`) exist in project but not in SpriteFrames yet (deferred)
+  - **Roadmap restructured:** Dropped "wire grove/bush/stone assets" and "rock placement fine-tuning" per user decision. New top priority: crafting/economy system. Brainstorming started (BMad session) but design not finalized before implementation of minimal test.
+  - **Minimal crafting test implemented (ADR-105):** Workbench placed in NPCHome interior (position 55, 36). `workbench.gd` + `workbench.tscn` created. CanvasLayer craft UI shows recipe + Craft button. Recipe: 2 stone_pile + 2 wood → hoe. All 5 tasks completed and playtested ✅.
+  - **Assets imported:** `hoe.png` (32×32, from Tool_Set), `workbench.png` (168×168 at scale 0.25, from Long_work_table_crafting_table) both at `res://assets/props/items/`.
+- **Workbench architecture:**
+  - Scene: `scenes/interactables/workbench/workbench.tscn` — `StaticBody2D` + `Sprite2D` + `CollisionShape2D` + `ProximityArea` (Area2D) + `PromptLabel` + `CraftPanel` (CanvasLayer)
+  - Script: `scenes/interactables/workbench/workbench.gd` — `_count_item()` loops `InventoryManager.get_slot(i)` (no get_count method exists); `attempt_craft()` called by CraftButton signal
+  - Interior placement: `World/NPCHome/interior.tscn` — targeted edit, ext_resource + instance node only
 - **Open issues:**
-  - `RoundedPokyRock` removed from world — scene at `scenes/interactables/rocks/rounded_poky_rock.tscn`, ext_resource `71_rock_r` still in world.tscn header, ready to re-instance
-  - StumpHome001 `door_open` stays at last frame after playing — no door_close animation exists
-  - `tile_bit_tools/tile_bit_tools/` nested UID duplicates — ~34 editor warnings (pre-approved, non-blocking)
+  - **Craft UI font oversized** — CanvasLayer renders at 1280×720 (window res), not 320×180 (logical res). Needs theme/font-size pass before production.
+  - **No world door to NPCHome** — player can't enter GreyHoodie's house naturally. Interior only reachable via scene-change script during dev.
+  - **Hoe has no gameplay effect yet** — sits in inventory but no tillable soil system exists.
+  - `RoundedPokyRock` removed from world — scene exists, ready to re-instance when position decided
+  - StumpHome001 `door_open` stays at last frame — no door_close
+  - `tile_bit_tools` nested UID duplicates — ~34 editor warnings (pre-approved)
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart
-  - `herb_bundle_dried.png` no source art — placeholder in use
-  - `tree_oak_green.png` orphaned at `res://assets/nature/trees/` — user's call
-  - `hobo_man_sprites.tres` now unused — can be deleted later
-  - Nav mesh is static — rebake if new StaticBody2D obstacle nodes are added or moved
-- **Next priorities:** (1) Wire remaining grove/bush/stone assets. (2) Rock placement fine-tuning (RoundedPokyRock position). (3) Grove door_close/idle return.
-- **Available but unwired:** ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004 (stills, no scripts), grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png. KnG_ShT diagonal run frames ready for future ShT run state.
+  - `hobo_man_sprites.tres` unused — can be deleted later
+  - Nav mesh is static — rebake if new StaticBody2D obstacle nodes added or moved
+- **Available but unwired:** ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004, grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png, KnG_ShT diagonal run frames, Pick Axe/Shovel/Scythe sprites (in Tool_Set alongside Hoe).
 
 ### Permissions Allowlist
 All Godot MCP, filesystem MCP, and PixelLab MCP tools are pre-approved in `.claude/settings.json` — no prompts expected for any of them.
