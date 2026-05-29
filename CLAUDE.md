@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-29):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working (ADR-105–108 all live). **Large asset batch imported this session** — 31 new Erik animation dirs, 5 UI assets, crop growth system assets, seed packets. All in `res://` with `.import` files. **No gameplay changes.** `TODO.md` at project root tracks 20 wiring tasks. **OPEN:** Pickaxe strike animation not yet wired — player still plays chop_* on rock hit. New `pickaxe_strike_*` dirs now in `res://assets/characters/erik/` (4 dirs × 9f individual frames) but NOT yet added to `erik_sprites.tres` or `player_animation.gd`. Orange-fruited mature bush has static sprites but no valid animation (misgenerated — needs PixelLab regen).
+- **Current state (2026-05-29):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working (ADR-105–108 all live). **ADR-109:** `erik_sprites.tres` expanded from ~21 to 45 animations — all new Erik animation sets wired. `player_animation.gd` updated: pickaxe_strike replaces old pickaxe_ prefix; idle_animated plays during non-bucket idle. seed_packets in starting inventory. `TODO.md` updated — 10/14 TODO items done, 4 blocked pending user decisions (hotbar 7-slot, fill bar, 3 panels — need design call; crop system needs dedicated session). **OPEN:** Orange-fruited mature bush animation misgenerated — needs PixelLab regen. Digging north dir missing. New animations (crafting, digging, eating, jumping, push, trade_item, chop_axe) are in .tres but have no gameplay mechanic yet.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -195,55 +195,60 @@
 
 ### Active priorities (in order)
 
-1. **Pickaxe strike animation** — Individual frames now at `res://assets/characters/erik/pickaxe_strike_{south,east,north,west}/` (4 dirs × 9f). Add `pickaxe_strike_*` animations to `erik_sprites.tres`. Update `player_animation.gd`: when `player.is_chopping` and `player.equipped_tool == "pickaxe"`, play `"pickaxe_strike_" + dir` instead of `"chop_" + dir`. See `TODO.md` for full wiring task list.
+1. **Crafting system expansion** — Minimal workbench proven (ADR-105). Next: hoe → tillable soil, more recipes, ingot/currency wiring, UI font size pass (CanvasLayer at window res), NPCHome world-accessible door.
 
-2. **Erik new animation wiring** — 31 animation dirs now in `res://assets/characters/erik/`. Most are new capabilities not yet in `erik_sprites.tres`: idle_animated (4-dir sway), crafting, digging, eating, jumping, push, trade_item, chop_axe. Full list in `TODO.md`. Tackle by priority/need.
+2. **Crop / farming system** — All animation assets imported (`res://assets/nature/crops/`): corn growth (Group 1: 17f, Group 2: 16f), berry bush growth (Group 3: 17f), static stage sprites, garden plots. Need: PlantableSoil scene, CropGrowth state machine, harvest mechanic. Orange bush blocked (PixelLab regen needed). Full session to implement.
 
-3. **Crafting system expansion** — Minimal workbench proven (ADR-105). Next: hoe → tillable soil, more recipes, ingot/currency wiring, UI font size pass (CanvasLayer at window res), NPCHome world-accessible door.
+3. **UI design decisions** — 3 assets imported but blocked on user decisions. See `TODO.md` for exact questions:
+   - `hotbar_7slot.png` — replace 12-slot with 7-slot OR use as decoration?
+   - `fill_bar_new.png` — replace `WaterMeterBar.png` OR new stamina bar?
+   - `panel_grey_metal/dark_wood/light_wood` — which scene/element should each back?
 
-4. **Crop / farming system** — Growth stage sprites + animations now imported (`res://assets/nature/crops/`): corn sprout→full stalk, berry bush growth, weed variants, garden plots. Need: scene design for plantable soil patches, crop growth state machine, harvest mechanic. Orange bush needs PixelLab animation regen before placing.
+4. **chop_axe animation wiring** — `chop_axe_down/side/up` (16f) are in `erik_sprites.tres`. Currently `player_animation.gd` still plays `chop_*` for axe hits. To use new animation: add `elif player.equipped_tool == "axe": anim = "chop_axe_" + dir` before the else `anim = "chop_" + dir` branch.
 
-5. **New UI assets wiring** — `hotbar_7slot.png`, `fill_bar_new.png`, 3 panel variants all in `res://assets/ui/`. Decide: replace existing hotbar? Wire fill bar to water/stamina? Assign panels to crafting/inventory UI.
+5. **Mechanic hooks for new animations** — crafting, digging, eating, jumping, push, trade_item all have animation frames ready. Need: player.gd flags + player_animation.gd branches + triggering systems.
 
 ### Blocked / waiting on user
 - **Orange-fruited mature bush animation** — static sprites ready, animation needs PixelLab regeneration (prompt: fruit-laden bush, idle sway or pick animation)
+- **Digging north animation** — no north-facing dir in source assets; ask user if PixelLab regen needed
+- **UI wiring** — hotbar 7-slot, fill bar, 3 panels all need design decision before wiring
 
 ---
 
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-29 (Full temp/ asset inspection + import)
-- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). Known warning: `world_drop_item.gd` unused `_area` (pre-approved). No gameplay changes this session.
-- **What changed this session:**
-  - Full visual inspection of all temp/ assets (every PNG opened individually per ASSET INSPECTION RULE)
-  - Renames in temp/: `animation-4105fc51` → `idle`, `unknown.png` → `hotbar_7slot.png` / `seed_packets.png` / `orange_fruited_mature_bush.png`
-  - Deleted 11 files: 9 misgenerated Fully_grown_bush frames (showed sprouts not bush) + 2 duplicate static PNGs
-  - Imported 31 Erik animation dirs to `res://assets/characters/erik/` — idle_animated, crafting, digging, eating, jumping, push, trade_item, pickaxe_strike, chop_axe (all directions)
-  - Imported 5 UI assets to `res://assets/ui/` — hotbar_7slot, fill_bar_new, panel_grey_metal, panel_dark_wood, panel_light_wood
-  - Imported crop growth assets to `res://assets/nature/crops/` — corn + berry bush growth anims, static stage sprites, garden plots
-  - Imported `seed_packets.png` to `res://assets/props/items/`
-  - Created `TODO.md` at project root — 20 wiring tasks (one per asset category)
+### Session end — 2026-05-29 (ADR-109: SpriteFrames 21→45 animations wired)
+- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). Known warnings: `world_drop_item.gd` unused `_area` (pre-approved), `_mcp_error` in MCP-generated ephemeral scripts (pre-approved). All prior gameplay systems intact.
+- **What changed this session (ADR-109):**
+  - `erik_sprites.tres` expanded from ~21 to 45 animations (batch PowerShell UID extraction + direct file write)
+  - `pickaxe_strike_down/side/up` (9f) added; `player_animation.gd` updated: `"pickaxe_" + dir` → `"pickaxe_strike_" + dir`
+  - `idle_animated_down/side/up` (6f) added; `player_animation.gd` updated: non-bucket idle now plays animated version
+  - All 8 remaining animation sets added to .tres: crafting_up (9f), digging_down/side (16f), eating_down/side/up (16f), jumping_down/side/up (9f), push_down/side/up (6f), trade_item_down/side/up (6f), chop_axe_down/side/up (16f)
+  - `seed_packets` added to `_grant_starting_items()` in `world.gd` — visible in hotbar slot 7
+  - `TODO.md` updated: 10/14 items done (✅), 4 blocked (UI decisions + crop system)
+  - BOM pitfall hit during .tres rewrite — fixed via `[System.IO.File]::WriteAllBytes` (see ADR-109)
 - **Open issues:**
-  - **Pickaxe strike animation not wired** — `pickaxe_strike_*` frames are in project but NOT in `erik_sprites.tres` or `player_animation.gd`. Player still plays `chop_*` on rock hit.
-  - **Orange-fruited mature bush has no animation** — misgenerated in PixelLab; needs regeneration. Static sprites ready at `res://assets/nature/crops/berry_bush/`.
+  - **Orange-fruited mature bush** — no valid animation (misgenerated). Static sprites at `res://assets/nature/crops/berry_bush/`. Needs PixelLab regen.
+  - **Digging north** — no north-facing source dir. Regen or accept 2-dir only.
+  - **UI decisions pending** — hotbar 7-slot, fill bar, 3 panels. See `TODO.md` for questions.
   - **Craft UI font oversized** — CanvasLayer at window res, needs theme/font-size pass
   - **No world door to NPCHome** — interior only reachable via scene-change
   - **Hoe has no gameplay effect** — no tillable soil system
   - `RoundedPokyRock` scene exists but not placed in world
   - `tile_bit_tools` nested UID duplicates — ~34 editor warnings (pre-approved)
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — swap to bare `InventoryManager` after editor restart
-- **New animation dirs (all need wiring to erik_sprites.tres):**
-  - `idle_animated_{south,east,north,west}/` — 6f animated idle (replaces single-frame idle_south etc.)
-  - `crafting_north/` — 9f back-facing crafting motion (north only)
-  - `digging_{east,south,west}/` — 16f shovel dig (no north dir)
-  - `eating_{south,east,north,west}/` — 16f red mushroom eat + sparks
-  - `jumping_{south,east,north,west}/` — 9f jump cycle
-  - `push_{south,east,north,west}/` — 6f push lean
-  - `trade_item_{south,east,north,west}/` — 6f new trading (different from existing trade_south/side/north)
-  - `pickaxe_strike_{south,east,north,west}/` — 9f pickaxe swing **← priority**
-  - `chop_axe_{south,north,east}/` — 16f axe chop (no west dir; mirror east)
-- **Available but unwired:** `tool_scythe.png`, ingots ×19, wood piles ×14, currency ×5, stump_home_002–004, grove dwellings ×7, bushes ×14, player_alt, purple_jack, grey_hoodie/rotations, cannabis/herb plants, tree_oak_green.png, KnG_ShT diagonal run frames, Shovel sprite (Tool_Set), all new crop/UI assets above
+- **Animation status (all in erik_sprites.tres — ADR-109):**
+  - ✅ `pickaxe_strike_down/side/up` — wired and playtested
+  - ✅ `idle_animated_down/side/up` — wired and playtested
+  - ⏳ `crafting_up` — in .tres, no mechanic (no crafting state on player)
+  - ⏳ `digging_down/side` — in .tres, no mechanic, north dir missing
+  - ⏳ `eating_down/side/up` — in .tres, no consume system
+  - ⏳ `jumping_down/side/up` — in .tres, no jump mechanic
+  - ⏳ `push_down/side/up` — in .tres, no push mechanic
+  - ⏳ `trade_item_down/side/up` — in .tres, supplements existing trade_* (no new trigger yet)
+  - ⏳ `chop_axe_down/side/up` — in .tres, player_animation.gd still uses chop_* for axe
+- **Available but unwired:** `tool_scythe.png`, ingots ×19, wood piles ×14, currency ×5, stump_home_002–004, grove dwellings ×7, bushes ×14, player_alt, purple_jack, grey_hoodie/rotations, cannabis/herb plants, tree_oak_green.png, KnG_ShT diagonal run frames, Shovel sprite (Tool_Set)
 
 ### Permissions Allowlist
 All Godot MCP, filesystem MCP, and PixelLab MCP tools are pre-approved in `.claude/settings.json` — no prompts expected for any of them.

@@ -1750,9 +1750,29 @@ cam.limit_bottom = int(origin.y) + 128
 
 ---
 
+## ADR-109: SpriteFrames Expansion — 45 Erik Animations + Animation Naming Convention
+**Status:** Accepted
+**Date:** 2026-05-29
+**Context:** 31 new Erik animation directories were imported last session (idle_animated, crafting, digging, eating, jumping, push, trade_item, pickaxe_strike, chop_axe — all source dirs named with south/east/north/west suffixes). `erik_sprites.tres` had ~21 animations. `player_animation.gd` used `"pickaxe_" + dir` for pickaxe and single-frame static idles.
+**Decision:**
+1. **Naming convention**: south→down, east→side, north→up, west=skip (east+flip_h covers left-facing). Matches existing player.gd `facing_name()` return values ("down"/"side"/"up").
+2. **SpriteFrames expansion**: All new animations added to `erik_sprites.tres` via PowerShell batch UID extraction + direct file write. Total: 45 animations (was ~21). New: `pickaxe_strike_down/side/up` (9f), `idle_animated_down/side/up` (6f), `crafting_up` (9f, north-only), `digging_down/side` (16f, no north dir), `eating_down/side/up` (16f), `jumping_down/side/up` (9f), `push_down/side/up` (6f), `trade_item_down/side/up` (6f, supplements existing `trade_*`), `chop_axe_down/side/up` (16f).
+3. **player_animation.gd**: `"pickaxe_" + dir` → `"pickaxe_strike_" + dir`. Idle branch: non-bucket idle now plays `"idle_animated_" + dir` (animated sway) instead of static `"idle_" + dir`. Bucket idle retains static `"idle_" + dir + "_bucket"`.
+4. **Seed packets**: `"seed_packets"` added to `_grant_starting_items()` in world.gd.
+**Rationale:** Batch PowerShell UID extraction avoids opening 218 import files individually. Writing the .tres directly (not via Godot editor) is safe for SpriteFrames since it's a pure resource with no scene-instance complications. UTF-8 without BOM required — `[System.Text.Encoding]::UTF8` adds BOM; use `[System.IO.File]::WriteAllBytes` with BOM-stripped content.
+**Consequences:**
+- Old `pickaxe_down/side/up` animations (from old `pickaxe_down/` dirs) remain in .tres but are now unreferenced. Safe to remove in future cleanup.
+- `digging_up` does not exist (no north-facing source dir) — flag for PixelLab regen if needed.
+- `chop_axe_*` animations are in .tres but `player_animation.gd` still plays existing `chop_*` for axe hits — to use chop_axe, player_animation.gd needs a new branch (`equipped_tool == "axe"` → `chop_axe_`).
+- Mechanics (digging, eating, jumping, push, trade_item, chop_axe) have no game system yet — animations are ready to trigger.
+**Testing:** 45 animations confirmed at runtime via `execute_game_script`. `idle_animated_down` confirmed playing during idle. `pickaxe_strike_down` played and completed (animation_finished fired, is_chopping reset). seed_packets visible in hotbar slot 7. Log clean (4 lines). Playtested ✅.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-29 | ADR-109: SpriteFrames expanded 21→45 animations. pickaxe_strike_* wired + player_animation.gd updated. idle_animated_* wired as default idle. 8 new animation sets in .tres (crafting, digging, eating, jumping, push, trade_item, chop_axe). seed_packets added to starting inventory. BOM pitfall hit + fixed (WriteAllBytes required). Playtested ✅. |
 | 2026-05-29 | Assets: Full visual inspection of entire temp/ batch (all PNGs opened individually per ASSET INSPECTION RULE). Renamed: animation-4105fc51→idle (confirmed Erik idle, not orange bush), HotBar unknown→hotbar_7slot.png, Weed_plant unknown→seed_packets.png, Grows_a_new_single_l unknown→orange_fruited_mature_bush.png. Deleted 11 files: 9 misgenerated Fully_grown_bush frames (showed sprouts not fruit bush) + 2 duplicate This_plant_has_a_bun static PNGs. Imported to project: 31 new Erik animation dirs (idle_animated, crafting, digging, eating, jumping, push, trade_item, pickaxe_strike, chop_axe — all 4 dirs each where applicable), 5 UI assets (hotbar_7slot, fill_bar_new, 3 panel variants), crop growth assets (corn + berry bush growth anims + static stages), garden plot sprites, seed_packets. Created TODO.md at project root — 20 wiring tasks, one per asset category. No ADR — pure asset organization. No gameplay changes. Godot scan + .import verified ✅. |
 | 2026-05-26 | Fix: Player house door entry. DoorEntrance Area2D was 14×6 px centered at y=117 — partially embedded in wall collision (wall bottom y=117.5). Right-click nav stopped player at y≈126, capsule top at y=122, door trigger bottom at y=120 → no overlap → body_entered never fired. Fixed: enlarged trigger to 20×20, moved center to y=130 (fully below wall, overlaps player capsule reliably from both keyboard and nav). Also fixed player.gd `$NavAgent` → `get_node_or_null("NavAgent")` to silence runtime error when Player is in interior (no NavAgent child there). Playtested ✅. |
 | 2026-05-26 | Asset prep: Inventoried + imported all assets from temp/. Deleted StusyRockAnimation (byte-identical duplicate of RoundedPokyRock). Created res://assets/props/furniture/ (3 files), res://assets/nature/rocks/rounded_poky_rock/ (20), tower_rock/ (20), square_rock/ (21). Added 39 items to props/items/ (14 wood piles, 12 ingots, 7 copper, 5 currency/chest, 1 pallet). No ADR — pure asset organization. |
