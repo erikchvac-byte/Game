@@ -6,7 +6,7 @@
 - **ASSET INSPECTION RULE:** When instructed to check, review, or analyze PNG files or other discrete asset files, EVERY file in the specified set must be individually inspected before responding or taking action. Do not sample, skip, or assume similarity between assets. Confirm each file has been individually opened and viewed before proceeding. Never claim to have reviewed files that were not explicitly opened.
 - **PLAYTEST RULE:** If you make it, you play test it. Always. Run the game via MCP, exercise the feature, take a screenshot to confirm correct behavior before reporting done.
 - **TASK TRACKING RULE:** For any task with 3+ distinct steps, use `TaskCreate` to create subtasks before starting, mark each `in_progress` when begun, and `completed` when done. Check `TaskList` at the start of each session to resume any open tasks.
-- **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, stop and ask — do not pick a "close enough" alternative. Choosing replacement art is the user's job.
+- **ASSET REPLACEMENT RULE:** Never substitute one PNG for a different PNG without explicit user approval first. If an asset is missing and no exact match exists, **check `C:\Users\erikc\Dev\Game\temp` first** before asking — this is the user's staging folder for new/incoming assets. If not found there either, stop and ask. Choosing replacement art is the user's job.
 - **SESSION-END PRE-FLIGHT RULE:** Before executing SESSION-END, run these checks. If ANY fail, stop immediately, print `⚠ SESSION-END BLOCKED`, list every issue found, and wait for the user to either resolve the issue or type `override session-end` to bypass. Do NOT proceed with doc updates or commit until the user responds.
   1. **`script = null` override check** — grep all `.tscn` files for lines matching `^script = null`. Each hit means a Godot editor operation silently nulled a scene script, breaking all logic on that node (root cause of the 2026-05-24 hotbar/input regression). Alert: "script = null found in [file:line] — this overrides [scene]'s script at runtime. Fix: remove the `script = null` line."
   2. **Editor error check** — call `get_editor_errors` via MCP. If any errors are returned that are not pre-existing/known warnings (e.g. tile_bit_tools UID duplicates), list them and block.
@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-28):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working. **Minimal crafting system live** (ADR-105). **Pickaxe fully wired** (ADR-106) — hotbar slot 3, equippable via X key. **Interior camera fixed** (ADR-107). **Grove door_close fixed.** **Rock gathering overhauled (ADR-108)** — rocks require pickaxe, break → PILE state, Space to gather adds stone + removes node. Axe/wood untouched. **OPEN:** Pickaxe strike animation not yet wired — player plays chop_* (axe animation) on rock hit. Pickaxe sheets are 354×49 (6 frames × 59×49) at `res://assets/characters/player_alt/pickaxe/`. Need to add `pickaxe_side/down/up` animations to `erik_sprites.tres` and update `player_animation.gd` to branch on `player.equipped_tool == "pickaxe"`.
+- **Current state (2026-05-29):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working (ADR-105–108 all live). **Large asset batch imported this session** — 31 new Erik animation dirs, 5 UI assets, crop growth system assets, seed packets. All in `res://` with `.import` files. **No gameplay changes.** `TODO.md` at project root tracks 20 wiring tasks. **OPEN:** Pickaxe strike animation not yet wired — player still plays chop_* on rock hit. New `pickaxe_strike_*` dirs now in `res://assets/characters/erik/` (4 dirs × 9f individual frames) but NOT yet added to `erik_sprites.tres` or `player_animation.gd`. Orange-fruited mature bush has static sprites but no valid animation (misgenerated — needs PixelLab regen).
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -64,6 +64,7 @@
 - `y_sort_offset` does NOT exist as a runtime GDScript property in Godot 4.6.2 — it is only a `.tscn` serialization field. Setting it via `execute_editor_script` (even via `set()`) will error. Sorting is purely by `position.y`; use `position.y` placement to control sort order.
 
 ## Asset Layout
+- **Staging / incoming assets**: `C:\Users\erikc\Dev\Game\temp\` — user drops new animation sets and sprites here. Always check this folder before reporting a missing asset. Subfolders are PixelLab export bundles (hash-named dirs with `animations/` containing direction subdirs of frame_NNN.png).
 - Source assets: `C:/Users/erikc/Dev/Game/GameAssets/` (~800 PNGs + newly organized subdirs: bushes/, crafting_tools/, trees/, drying_rack_alt/, weed_plants/, objects_misc/)
 - In-project assets (VERIFIED_USED): `res://assets/` + `res://resources/` (reorganized 2026-05-17, ADR-062)
 - In-project legacy DELETED: `res://GameAssets/` — removed 2026-05-19 (985 files, zero active refs, ADR-071)
@@ -194,56 +195,55 @@
 
 ### Active priorities (in order)
 
-1. **Crafting system expansion** — Minimal test proven (ADR-105). Next: design the full crafting/economy loop — what does the hoe do (tillable soil?), what other recipes belong at the workbench, how do ingots/currency wire in. Workbench scene at `scenes/interactables/workbench/`. UI font scaling needs a theme/font-size pass (CanvasLayer at window res, not logical res). No world-accessible door to NPCHome yet — player can't enter naturally.
+1. **Pickaxe strike animation** — Individual frames now at `res://assets/characters/erik/pickaxe_strike_{south,east,north,west}/` (4 dirs × 9f). Add `pickaxe_strike_*` animations to `erik_sprites.tres`. Update `player_animation.gd`: when `player.is_chopping` and `player.equipped_tool == "pickaxe"`, play `"pickaxe_strike_" + dir` instead of `"chop_" + dir`. See `TODO.md` for full wiring task list.
 
-2. **Pickaxe strike animation** — Sheets at `res://assets/characters/player_alt/pickaxe/Side|Down|Up.png` (354×49, 6 frames × 59×49). Add `pickaxe_side/down/up` animations to `erik_sprites.tres` (use AtlasTexture regions or split frames). Update `player_animation.gd`: when `player.is_chopping` and `player.equipped_tool == "pickaxe"`, play `"pickaxe_" + dir` instead of `"chop_" + dir`.
+2. **Erik new animation wiring** — 31 animation dirs now in `res://assets/characters/erik/`. Most are new capabilities not yet in `erik_sprites.tres`: idle_animated (4-dir sway), crafting, digging, eating, jumping, push, trade_item, chop_axe. Full list in `TODO.md`. Tackle by priority/need.
 
-3. **Crafting system expansion** — Workbench proven, hoe in inventory. Next: design the full crafting/economy loop — what does the hoe do (tillable soil?), more recipes, ingot/currency wiring, UI font size pass, and no natural door into NPCHome yet.
+3. **Crafting system expansion** — Minimal workbench proven (ADR-105). Next: hoe → tillable soil, more recipes, ingot/currency wiring, UI font size pass (CanvasLayer at window res), NPCHome world-accessible door.
+
+4. **Crop / farming system** — Growth stage sprites + animations now imported (`res://assets/nature/crops/`): corn sprout→full stalk, berry bush growth, weed variants, garden plots. Need: scene design for plantable soil patches, crop growth state machine, harvest mechanic. Orange bush needs PixelLab animation regen before placing.
+
+5. **New UI assets wiring** — `hotbar_7slot.png`, `fill_bar_new.png`, 3 panel variants all in `res://assets/ui/`. Decide: replace existing hotbar? Wire fill bar to water/stamina? Assign panels to crafting/inventory UI.
 
 ### Blocked / waiting on user
-*(none)*
+- **Orange-fruited mature bush animation** — static sprites ready, animation needs PixelLab regeneration (prompt: fruit-laden bush, idle sway or pick animation)
 
 ---
 
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-28 (Rock gathering, pickaxe, camera, door fixes)
-- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). Known warning: `world_drop_item.gd` unused `_area` (pre-approved).
+### Session end — 2026-05-29 (Full temp/ asset inspection + import)
+- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). Known warning: `world_drop_item.gd` unused `_area` (pre-approved). No gameplay changes this session.
 - **What changed this session:**
-  - ADR-106: Pickaxe added to starting inventory (hotbar slot 3, equippable via X key)
-  - ADR-107: Interior camera limits computed from `global_position` — PlayerHome north-wall clip fixed
-  - Grove door_close fixed — `animation_finished` one-shot returns StumpHome001 to idle
-  - ADR-108: Rock gathering overhauled — pickaxe required, PILE state, Space-to-gather, node removed on collect
-  - `tool_scythe.png` imported to `res://assets/props/items/` (not wired)
+  - Full visual inspection of all temp/ assets (every PNG opened individually per ASSET INSPECTION RULE)
+  - Renames in temp/: `animation-4105fc51` → `idle`, `unknown.png` → `hotbar_7slot.png` / `seed_packets.png` / `orange_fruited_mature_bush.png`
+  - Deleted 11 files: 9 misgenerated Fully_grown_bush frames (showed sprouts not bush) + 2 duplicate static PNGs
+  - Imported 31 Erik animation dirs to `res://assets/characters/erik/` — idle_animated, crafting, digging, eating, jumping, push, trade_item, pickaxe_strike, chop_axe (all directions)
+  - Imported 5 UI assets to `res://assets/ui/` — hotbar_7slot, fill_bar_new, panel_grey_metal, panel_dark_wood, panel_light_wood
+  - Imported crop growth assets to `res://assets/nature/crops/` — corn + berry bush growth anims, static stage sprites, garden plots
+  - Imported `seed_packets.png` to `res://assets/props/items/`
+  - Created `TODO.md` at project root — 20 wiring tasks (one per asset category)
 - **Open issues:**
-  - **Pickaxe strike animation not wired** — player plays `chop_*` on rock hit. Sheets at `player_alt/pickaxe/` are 354×49 (6 frames × 59×49). Need `pickaxe_side/down/up` added to `erik_sprites.tres` + `player_animation.gd` branch on `equipped_tool == "pickaxe"`. Roadmap #2.
+  - **Pickaxe strike animation not wired** — `pickaxe_strike_*` frames are in project but NOT in `erik_sprites.tres` or `player_animation.gd`. Player still plays `chop_*` on rock hit.
+  - **Orange-fruited mature bush has no animation** — misgenerated in PixelLab; needs regeneration. Static sprites ready at `res://assets/nature/crops/berry_bush/`.
   - **Craft UI font oversized** — CanvasLayer at window res, needs theme/font-size pass
   - **No world door to NPCHome** — interior only reachable via scene-change
   - **Hoe has no gameplay effect** — no tillable soil system
   - `RoundedPokyRock` scene exists but not placed in world
   - `tile_bit_tools` nested UID duplicates — ~34 editor warnings (pre-approved)
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — swap to bare `InventoryManager` after editor restart
-  - Nav mesh needs rebake if obstacles move
-- **Available but unwired:** `tool_scythe.png`, ingots ×19, wood piles ×14, currency ×5, stump_home_002–004, grove dwellings ×7, bushes ×14, player_alt, purple_jack, grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png, KnG_ShT diagonal run frames, Shovel sprite (Tool_Set)
-
-### OLD SESSION NOTES (superseded)
-
-- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines, no errors). Known warnings: `world_drop_item.gd` unused `_area` + MCP `_mcp_error` vars (all pre-approved).
-- **What changed this session:**
-  - **Pickaxe in starting inventory (ADR-106):** `tool_pickaxe.png` copied from Tool_Set, imported. One `add_item` line added after axe in `_grant_starting_items()`. Hotbar slot 3. Not yet equippable (no EQUIPPABLE_TOOLS entry).
-  - **Interior camera fixed (ADR-107):** Both `PlayerHome/interior.gd` and `NPCHome/interior.gd` now compute camera limits from `global_position` instead of hardcoded `(0,0,160,128)`. Fixes PlayerHome north-wall clip (root node at y=−39). Both interiors playtested, full room visible ✅.
-  - **Scythe asset imported:** `tool_scythe.png` at `res://assets/props/items/` — available only, not wired.
-- **Open issues:**
-    - **Craft UI font oversized** — CanvasLayer renders at 1280×720 (window res), not 320×180 (logical res). Needs theme/font-size pass before production.
-  - **No world door to NPCHome** — player can't enter GreyHoodie's house naturally. Interior only reachable via scene-change during dev.
-  - **Hoe has no gameplay effect** — sits in inventory, no tillable soil system.
-  - `RoundedPokyRock` removed from world — scene exists, ready to re-instance when position decided.
-  - `tile_bit_tools` nested UID duplicates — ~34 editor warnings (pre-approved).
-  - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — replace with bare `InventoryManager` after editor restart.
-  - `hobo_man_sprites.tres` unused — can be deleted later.
-  - Nav mesh is static — rebake if new StaticBody2D obstacle nodes added or moved.
-- **Available but unwired:** `tool_scythe.png` (asset only), ingots ×19, wood piles ×14, currency items ×5, stump_home_002–004, grove dwellings ×7, bushes (14 variants), player_alt, purple_jack + grey_hoodie/rotations, cannabis/herb plants, garden dirt patches, tree_oak_green.png, KnG_ShT diagonal run frames, Shovel sprite (in Tool_Set).
+- **New animation dirs (all need wiring to erik_sprites.tres):**
+  - `idle_animated_{south,east,north,west}/` — 6f animated idle (replaces single-frame idle_south etc.)
+  - `crafting_north/` — 9f back-facing crafting motion (north only)
+  - `digging_{east,south,west}/` — 16f shovel dig (no north dir)
+  - `eating_{south,east,north,west}/` — 16f red mushroom eat + sparks
+  - `jumping_{south,east,north,west}/` — 9f jump cycle
+  - `push_{south,east,north,west}/` — 6f push lean
+  - `trade_item_{south,east,north,west}/` — 6f new trading (different from existing trade_south/side/north)
+  - `pickaxe_strike_{south,east,north,west}/` — 9f pickaxe swing **← priority**
+  - `chop_axe_{south,north,east}/` — 16f axe chop (no west dir; mirror east)
+- **Available but unwired:** `tool_scythe.png`, ingots ×19, wood piles ×14, currency ×5, stump_home_002–004, grove dwellings ×7, bushes ×14, player_alt, purple_jack, grey_hoodie/rotations, cannabis/herb plants, tree_oak_green.png, KnG_ShT diagonal run frames, Shovel sprite (Tool_Set), all new crop/UI assets above
 
 ### Permissions Allowlist
 All Godot MCP, filesystem MCP, and PixelLab MCP tools are pre-approved in `.claude/settings.json` — no prompts expected for any of them.
