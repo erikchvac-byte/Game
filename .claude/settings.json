@@ -1,6 +1,7 @@
 {
-  "mcpServers": {
-    "godot-mcp-pro": {
+    "autoCompactEnabled": true,
+    "mcpServers": {
+      "godot-mcp-pro": {
       "command": "node",
       "args": ["C:/Users/erikc/Dev/Game/mcp-bridge/index.js"]
     }

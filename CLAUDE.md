@@ -218,6 +218,10 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
+### Session end — 2026-05-29 (settings: autoCompactEnabled + autoCompactWindow)
+- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). No game code changed.
+- **What changed this session:** `.claude/settings.json` (project) — added `autoCompactEnabled: true` and `autoCompactWindow: 120000`. No ADR needed.
+
 ### Session end — 2026-05-29 (ADR-109: SpriteFrames 21→45 animations wired)
 - **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines). Known warnings: `world_drop_item.gd` unused `_area` (pre-approved), `_mcp_error` in MCP-generated ephemeral scripts (pre-approved). All prior gameplay systems intact.
 - **What changed this session (ADR-109):**
