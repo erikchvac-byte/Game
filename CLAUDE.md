@@ -221,22 +221,22 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-30 (wall assets + scene placement lesson)
-- **Game state:** Runnable. Pre-flight ✅. Output log 5 lines (unused-var warning in world_drop_item.gd — not blocking).
+### Session end — 2026-05-30 (loop/regression audit — read-only)
+- **Game state:** Runnable. Pre-flight ✅. Output log 4 lines (unused-var warning in world_drop_item.gd — not blocking). **No game files changed this session.**
 - **What changed this session:**
-  - 3 wall PNGs inspected from `temp/Low_stone_wall_with_green_moss/`, split into 6 (brick/rubble × long/end/tall), saved to `res://assets/structures/walls/`
-  - 6 scene templates created at `res://scenes/structures/walls/` with `scale=Vector2(0.8,0.8)` baked in — always use these, not raw PNGs
-  - TSCN EDIT RULE expanded: never edit a .tscn on disk while it's open in the editor (Godot overwrites on save); use MCP tools or close the scene first
-  - Architectural lesson confirmed: **all game world objects go in `world.tscn`**, not `main.tscn`
-- **Wall status:** Assets ready, templates ready. Walls need to be placed in `world.tscn` + collision added to scene templates (Roadmap #6).
-- **Open issues:**
-  - **Orange-fruited mature bush** — no valid animation (misgenerated). Static sprites at `res://assets/nature/crops/berry_bush/`. Needs PixelLab regen.
+  - Pure read-only audit of 165 commits + full ADR history
+  - Created loop/regression reference doc at `C:\Users\erikc\.claude\plans\put-this-in-a-precious-cherny.md`
+  - Added reference entry to `MEMORY.md` — doc loads automatically when fixing a recurring bug or rebuilding an existing system
+- **Audit findings (summary):** 3 confirmed loops: (1) y_sort_offset spiral — 10 ADRs / 4 days before architectural fix; (2) tree system rebuilt twice in 6 days; (3) undetected regressions caught 1–3 sessions late. Fixes outnumber features 2:1 (57 vs 30 commits). Full doc at `C:\Users\erikc\.claude\plans\put-this-in-a-precious-cherny.md`.
+- **Open issues (carried from previous session):**
+  - **Orange-fruited mature bush** — no valid animation (misgenerated). Needs PixelLab regen.
   - **Digging north** — no north-facing source dir. Regen or accept 2-dir only.
   - **UI decisions pending** — fill bar, 3 panels. See `TODO.md` for questions.
   - **Craft UI font oversized** — CanvasLayer at window res, needs theme/font-size pass
   - **No world door to NPCHome** — interior only reachable via scene-change
   - **Hoe has no gameplay effect** — no tillable soil system
   - `RoundedPokyRock` scene exists but not placed in world
+  - **Two failed fixes still in files** — hotbar `custom_minimum_size` removal broke icon visibility; NPC walk-when-stationary fix didn't work (see memory: `project_failed_fixes_2026-05-30.md`)
   - `tile_bit_tools` nested UID duplicates — ~34 editor warnings (pre-approved)
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — swap to bare `InventoryManager` after editor restart
 - **Animation status (all in erik_sprites.tres — ADR-109):**
