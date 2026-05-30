@@ -18,7 +18,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-30):** Runnable, pre-flight ✅, output log 5 lines (1 unused-var warning in world_drop_item.gd — not blocking). All prior systems working (ADR-105–109 all live). Wall assets introduced (ADR-110): 6 PNGs at `res://assets/structures/walls/`, 6 scene templates at `res://scenes/structures/walls/` with 0.8 scale baked in. Walls not yet placed in world — need to go in `world.tscn`, not `main.tscn`. **OPEN:** Orange-fruited mature bush animation misgenerated — needs PixelLab regen. Digging north dir missing. New animations (crafting, digging, eating, jumping, push, trade_item, chop_axe) are in .tres but have no gameplay mechanic yet.
+- **Current state (2026-05-30):** Runnable, pre-flight ✅, output log 4 lines (1 unused-var warning in world_drop_item.gd — not blocking). All prior systems working (ADR-105–110 all live). Hotbar icon visibility fixed: slot Panels changed from `SIZE_SHRINK_BEGIN` to `SIZE_EXPAND_FILL` on both axes in `hud.gd`. **Note:** slot overlays still have `offset_left=91` which misaligns them with the hotbar_7slot.png visual cells — cosmetic, deferred. Wall assets (ADR-110): 6 scene templates at `res://scenes/structures/walls/` with 0.8 scale. Walls not yet placed in world. **OPEN:** Orange-fruited mature bush animation misgenerated — needs PixelLab regen. Digging north dir missing. New animations (crafting, digging, eating, jumping, push, trade_item, chop_axe) are in .tres but have no gameplay mechanic yet.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -221,14 +221,13 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-30 (loop/regression audit — read-only)
-- **Game state:** Runnable. Pre-flight ✅. Output log 4 lines (unused-var warning in world_drop_item.gd — not blocking). **No game files changed this session.**
+### Session end — 2026-05-30 (hotbar icon fix)
+- **Game state:** Runnable. Pre-flight ✅. Output log 4 lines (unused-var warning in world_drop_item.gd — not blocking).
 - **What changed this session:**
-  - Pure read-only audit of 165 commits + full ADR history
-  - Created loop/regression reference doc at `C:\Users\erikc\.claude\plans\put-this-in-a-precious-cherny.md`
-  - Added reference entry to `MEMORY.md` — doc loads automatically when fixing a recurring bug or rebuilding an existing system
-- **Audit findings (summary):** 3 confirmed loops: (1) y_sort_offset spiral — 10 ADRs / 4 days before architectural fix; (2) tree system rebuilt twice in 6 days; (3) undetected regressions caught 1–3 sessions late. Fixes outnumber features 2:1 (57 vs 30 commits). Full doc at `C:\Users\erikc\.claude\plans\put-this-in-a-precious-cherny.md`.
-- **Open issues (carried from previous session):**
+  - `game/UI/hud.gd`: slot Panels changed from `SIZE_SHRINK_BEGIN` (both axes) → `SIZE_EXPAND_FILL` (both axes). Icons now visible (~18×22px draw area per slot). Playtested ✅.
+- **Open issues:**
+  - **Hotbar alignment** — slot overlays are `offset_left=91` inside the bar, shifting them right of the hotbar_7slot.png visual cells. Cosmetic. Fixing requires also repositioning the SpacePrompt/TPrompt to avoid overlap with slot 0.
+  - **NPC walk-when-stationary** — failed fix still in `npc_grey_hoodie.gd`. Different strategy needed.
   - **Orange-fruited mature bush** — no valid animation (misgenerated). Needs PixelLab regen.
   - **Digging north** — no north-facing source dir. Regen or accept 2-dir only.
   - **UI decisions pending** — fill bar, 3 panels. See `TODO.md` for questions.
@@ -236,7 +235,6 @@
   - **No world door to NPCHome** — interior only reachable via scene-change
   - **Hoe has no gameplay effect** — no tillable soil system
   - `RoundedPokyRock` scene exists but not placed in world
-  - **Two failed fixes still in files** — hotbar `custom_minimum_size` removal broke icon visibility; NPC walk-when-stationary fix didn't work (see memory: `project_failed_fixes_2026-05-30.md`)
   - `tile_bit_tools` nested UID duplicates — ~34 editor warnings (pre-approved)
   - `_inv_mgr` in world.gd uses `get_node_or_null("/root/InventoryManager")` — swap to bare `InventoryManager` after editor restart
 - **Animation status (all in erik_sprites.tres — ADR-109):**

@@ -1,14 +1,15 @@
 extends CanvasLayer
 
-const SLOT_COUNT := 12
+const SLOT_COUNT := 7
 const TOP_BAR_H := 12.0
-const HOTBAR_H := 16.0
+const HOTBAR_H := 24.0
 
 var water: int = 0
 var water_max: int = 10
 var selected_slot: int = 0
 
-var _water_tp: TextureProgressBar
+var _water_fill: ColorRect
+var _water_fill_max_w := 44.0
 var _e_prompt: Panel
 var _t_prompt: Panel
 var _slots: Array = []
@@ -27,6 +28,7 @@ func _ready() -> void:
 	_build_top_bar()
 	_build_hotbar()
 	_build_toast()
+	_build_datetime_panel()
 	get_node("/root/InventoryManager").slot_changed.connect(_on_slot_changed)
 
 
@@ -59,21 +61,37 @@ func _build_top_bar() -> void:
 	w_gem.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	w_gem.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	w_sec.add_child(w_gem)
-	_water_tp = TextureProgressBar.new()
-	_water_tp.custom_minimum_size = Vector2(48.0, 8.0)
-	_water_tp.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
-	_water_tp.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	_water_tp.min_value = 0.0
-	_water_tp.max_value = 1.0
-	_water_tp.value = 1.0
-	_water_tp.fill_mode = TextureProgressBar.FILL_LEFT_TO_RIGHT
-	var _bar_tex: Texture2D = load("res://assets/ui/WaterMeterBar.png")
-	_water_tp.texture_under = _bar_tex
-	_water_tp.texture_progress = _bar_tex
-	_water_tp.tint_under = Color(0.08, 0.15, 0.30)
-	_water_tp.tint_progress = Color(0.24, 0.54, 1.0)
-	_water_tp.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	w_sec.add_child(_water_tp)
+	var fill_wrap := Control.new()
+	fill_wrap.name = "WaterFillWrap"
+	fill_wrap.custom_minimum_size = Vector2(52.0, TOP_BAR_H - 2.0)
+	fill_wrap.size_flags_horizontal = Control.SIZE_SHRINK_BEGIN
+	fill_wrap.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+	fill_wrap.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	w_sec.add_child(fill_wrap)
+
+	var fill_atlas := AtlasTexture.new()
+	fill_atlas.atlas = load("res://assets/ui/fill_bar_new.png")
+	fill_atlas.region = Rect2(0, 82, 200, 36)
+	var fill_bg := TextureRect.new()
+	fill_bg.texture = fill_atlas
+	fill_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	fill_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	fill_bg.stretch_mode = TextureRect.STRETCH_SCALE
+	fill_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fill_wrap.add_child(fill_bg)
+
+	_water_fill = ColorRect.new()
+	_water_fill.color = Color(0.24, 0.54, 1.0)
+	_water_fill.anchor_left = 0.0
+	_water_fill.anchor_top = 0.0
+	_water_fill.anchor_right = 0.0
+	_water_fill.anchor_bottom = 1.0
+	_water_fill.offset_left = 4.0
+	_water_fill.offset_right = 4.0 + _water_fill_max_w
+	_water_fill.offset_top = 3.0
+	_water_fill.offset_bottom = -3.0
+	_water_fill.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	fill_wrap.add_child(_water_fill)
 
 	_refresh_water_bar()
 
@@ -84,33 +102,35 @@ func _build_hotbar() -> void:
 	var bar := Panel.new()
 	bar.name = "Hotbar"
 	bar.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	bar.add_theme_stylebox_override("panel", _flat(Color(0.07, 0.07, 0.09, 0.90)))
+	bar.add_theme_stylebox_override("panel", _flat(Color(0, 0, 0, 0)))
 	bar.set_anchors_and_offsets_preset(Control.PRESET_BOTTOM_WIDE)
 	bar.offset_top = -HOTBAR_H
 	add_child(bar)
 
-	# Top-level HBox: [EPromptArea 20px] [HotbarSlots expand]
-	var main_hbox := HBoxContainer.new()
-	main_hbox.name = "HotbarLayout"
-	main_hbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	main_hbox.add_theme_constant_override("separation", 0)
-	bar.add_child(main_hbox)
-
-	# Dedicated space prompt zone — fixed 28px left column
-	var e_container := Control.new()
-	e_container.name = "EPromptArea"
-	e_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	e_container.custom_minimum_size = Vector2(28, 0)
-	e_container.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	main_hbox.add_child(e_container)
+	var hotbar_atlas := AtlasTexture.new()
+	hotbar_atlas.atlas = load("res://assets/ui/hotbar_7slot.png")
+	hotbar_atlas.region = Rect2(0, 82, 200, 36)
+	var hotbar_bg := TextureRect.new()
+	hotbar_bg.name = "HotbarBG"
+	hotbar_bg.texture = hotbar_atlas
+	hotbar_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	hotbar_bg.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	hotbar_bg.stretch_mode = TextureRect.STRETCH_SCALE
+	hotbar_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	bar.add_child(hotbar_bg)
 
 	_e_prompt = Panel.new()
 	_e_prompt.name = "SpacePrompt"
 	_e_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_e_prompt.visible = false
-	_e_prompt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_e_prompt.anchor_left = 0
+	_e_prompt.anchor_right = 0
+	_e_prompt.anchor_top = 0
+	_e_prompt.anchor_bottom = 1
 	_e_prompt.offset_left = 2.0
-	_e_prompt.offset_right = -2.0
+	_e_prompt.offset_right = 26.0
+	_e_prompt.offset_top = 1.0
+	_e_prompt.offset_bottom = -1.0
 	var spc_style := StyleBoxFlat.new()
 	spc_style.bg_color = Color(0.13, 0.13, 0.16, 0.95)
 	spc_style.border_width_left = 1
@@ -132,15 +152,20 @@ func _build_hotbar() -> void:
 	spc_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	spc_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_e_prompt.add_child(spc_label)
-	e_container.add_child(_e_prompt)
+	bar.add_child(_e_prompt)
 
 	_t_prompt = Panel.new()
 	_t_prompt.name = "TPrompt"
 	_t_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_t_prompt.visible = false
-	_t_prompt.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	_t_prompt.anchor_left = 0
+	_t_prompt.anchor_right = 0
+	_t_prompt.anchor_top = 0
+	_t_prompt.anchor_bottom = 1
 	_t_prompt.offset_left = 2.0
-	_t_prompt.offset_right = -2.0
+	_t_prompt.offset_right = 26.0
+	_t_prompt.offset_top = 1.0
+	_t_prompt.offset_bottom = -1.0
 	var t_style := StyleBoxFlat.new()
 	t_style.bg_color = Color(0.13, 0.13, 0.16, 0.95)
 	t_style.border_width_left = 1
@@ -162,15 +187,16 @@ func _build_hotbar() -> void:
 	t_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	t_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_t_prompt.add_child(t_label)
-	e_container.add_child(_t_prompt)
+	bar.add_child(_t_prompt)
 
 	var hbox := HBoxContainer.new()
 	hbox.name = "HotbarSlots"
-	hbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	hbox.size_flags_vertical = Control.SIZE_EXPAND_FILL
-	hbox.alignment = BoxContainer.ALIGNMENT_CENTER
-	hbox.add_theme_constant_override("separation", 1)
-	main_hbox.add_child(hbox)
+	hbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	hbox.offset_left = 91.0
+	hbox.offset_right = -33.0
+	hbox.alignment = BoxContainer.ALIGNMENT_BEGIN
+	hbox.add_theme_constant_override("separation", 7)
+	bar.add_child(hbox)
 
 	_bucket_tex_empty = load("res://assets/ui/bucket_empty.png")
 	_bucket_tex_full = load("res://assets/ui/bucket_full.png")
@@ -180,14 +206,18 @@ func _build_hotbar() -> void:
 		var slot := Panel.new()
 		slot.name = "Slot%d" % i
 		slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.custom_minimum_size = Vector2(24, 14)
-		slot.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		slot.size_flags_vertical = Control.SIZE_EXPAND_FILL
 		slot.add_theme_stylebox_override("panel", _slot_style(false, false))
 		hbox.add_child(slot)
 
 		var icon := TextureRect.new()
 		icon.name = "Icon"
 		icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+		icon.offset_left = 2.0
+		icon.offset_right = -2.0
+		icon.offset_top = 1.0
+		icon.offset_bottom = -1.0
 		icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -241,6 +271,26 @@ func _build_toast() -> void:
 	_toast_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	_toast_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_toast_panel.add_child(_toast_label)
+
+
+# ── Date/time panel ──────────────────────────────────────────────────────────
+
+func _build_datetime_panel() -> void:
+	var dt_atlas := AtlasTexture.new()
+	dt_atlas.atlas = load("res://assets/UI/datetime_panel.png")
+	dt_atlas.region = Rect2(0, 82, 200, 36)
+	var dt := TextureRect.new()
+	dt.name = "DateTimePanel"
+	dt.texture = dt_atlas
+	dt.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	dt.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	dt.stretch_mode = TextureRect.STRETCH_SCALE
+	dt.set_anchors_preset(Control.PRESET_TOP_RIGHT)
+	dt.offset_left = -70.0
+	dt.offset_top = 1.0
+	dt.offset_right = -3.0
+	dt.offset_bottom = TOP_BAR_H - 1.0
+	add_child(dt)
 
 
 # ── Input ─────────────────────────────────────────────────────────────────────
@@ -344,9 +394,10 @@ func _on_slot_changed(index: int, item: Variant) -> void:
 
 
 func _refresh_water_bar() -> void:
-	if not _water_tp:
+	if not _water_fill:
 		return
-	_water_tp.value = 0.0 if water_max == 0 else float(water) / float(water_max)
+	var ratio := 0.0 if water_max == 0 else float(water) / float(water_max)
+	_water_fill.offset_right = 4.0 + _water_fill_max_w * ratio
 
 
 
@@ -378,7 +429,7 @@ func _hbox(h_flags: int, align: int, sep: int) -> HBoxContainer:
 
 func _slot_style(selected: bool, equipped: bool) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
-	s.bg_color = Color(0.15, 0.15, 0.17, 0.90)
+	s.bg_color = Color(0, 0, 0, 0)
 	s.border_width_left = 1
 	s.border_width_right = 1
 	s.border_width_top = 1
@@ -391,5 +442,5 @@ func _slot_style(selected: bool, equipped: bool) -> StyleBoxFlat:
 	elif selected:
 		s.border_color = Color(0.85, 0.85, 0.90)
 	else:
-		s.border_color = Color(0.30, 0.30, 0.34)
+		s.border_color = Color(0, 0, 0, 0)
 	return s
