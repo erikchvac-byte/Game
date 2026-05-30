@@ -13,12 +13,12 @@
   3. **Game runability check** — call `play_scene` + `get_output_log` (brief run). If the output log contains `Parse Error`, `Script failed to load`, or `SCRIPT ERROR`, block with the log snippet. Stop the scene after checking.
   4. **No block if:** all checks pass, or the only errors are the pre-approved known warnings (`tile_bit_tools` nested UID duplicates, `hud.gd INT_AS_ENUM_WITHOUT_CAST`). Those are not blocking.
 - **SESSION-END RULE:** When the user says any of: "end session", "update docs", "session end", "wrap up", "close session", or similar finalization language — **first run SESSION-END PRE-FLIGHT**, then automatically perform all of the following: (1) update `ADR.md` with any architectural decisions made this session + append a change log row; (2) update CLAUDE.md "Where We Are" to reflect current state; (3) replace the Notes section with a fresh session-end entry covering: game state, open issues, pending tasks, and available-but-unwired assets; (4) **update the Roadmap section** — remove completed items, remove dropped items, add new priorities discovered this session, keep it accurate and current; (5) commit all doc changes. Do not create an ADR for minor fixes unless an actual architectural decision was made.
-- **TSCN EDIT RULE:** Never rewrite any `.tscn` file in full using the Write tool. Always use targeted Edit tool calls for specific node changes. Full rewrites silently drop inline node properties — this was the root cause of the recurring y_sort_offset loss (ADR-073→090).
+- **TSCN EDIT RULE:** Never rewrite any `.tscn` file in full using the Write tool. Always use targeted Edit tool calls for specific node changes. Full rewrites silently drop inline node properties — this was the root cause of the recurring y_sort_offset loss (ADR-073→090). **Never edit a `.tscn` file on disk while it is open in the Godot editor** — Godot holds the scene in memory and overwrites your disk edit on the next save, silently discarding all changes. To modify a scene: either (a) use MCP tools (`update_property`, `execute_editor_script`) which write directly into Godot's memory, or (b) open a different scene first via MCP `open_scene`, edit the file on disk, then reopen the original.
 - **TREE Y-SORT RULE (ADR-091 — canonical, permanent):** Tree node origin = trunk base (ground contact). TreeSprite child has `position = Vector2(0, -22)` (sprite draws upward). `y_sort_offset` stays at default 0 — never written to any tree .tscn, never stripped. Depth sort transition is at node Y (trunk base). To add a new tree species: set TreeSprite.position.y = -(half_tree_height_px), leave everything else at defaults. To move a tree in world.tscn: set instance position directly — no y_sort_offset override needed. TrunkCollider at origin (y=0). StumpCollider at origin. stump_y_offset export = 0.0 (stump appears at trunk base by default).
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-30):** Runnable, pre-flight ✅, output log clean (4 lines). All prior systems working (ADR-105–109 all live). Hotbar manually resized: `HOTBAR_H=24` (was 16), slot cell height=9 (was 14) in `hud.gd`. **OPEN:** Orange-fruited mature bush animation misgenerated — needs PixelLab regen. Digging north dir missing. New animations (crafting, digging, eating, jumping, push, trade_item, chop_axe) are in .tres but have no gameplay mechanic yet.
+- **Current state (2026-05-30):** Runnable, pre-flight ✅, output log 5 lines (1 unused-var warning in world_drop_item.gd — not blocking). All prior systems working (ADR-105–109 all live). Wall assets introduced (ADR-110): 6 PNGs at `res://assets/structures/walls/`, 6 scene templates at `res://scenes/structures/walls/` with 0.8 scale baked in. Walls not yet placed in world — need to go in `world.tscn`, not `main.tscn`. **OPEN:** Orange-fruited mature bush animation misgenerated — needs PixelLab regen. Digging north dir missing. New animations (crafting, digging, eating, jumping, push, trade_item, chop_axe) are in .tres but have no gameplay mechanic yet.
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -73,6 +73,7 @@
   - `houses/` — teal house animation: `house_grey_teal_animation.png`
   - `cave_entrance_arch_stone.png`
   - `stump_door_dwelling.png` — ancient stump with carved door (prop/structure)
+  - `walls/` — 6 wall PNGs (brick/rubble × long/end/tall, 128×64px each). Scene templates at `res://scenes/structures/walls/` with `scale=Vector2(0.8,0.8)` baked in. **Use scene templates, not raw PNGs.** No collision yet.
 - **Tree + stump assets** (NEW — 2026-05-19):
   - Static: `res://assets/nature/trees/tree_pine_3.png`, `tree_maple.png`, `tree_fir.png` (96×96 each)
   - Animations: `trees/pine_chop/`, `pine_fall/`, `maple_chop/`, `maple_fall/`, `maple_hit_fall/`, `fir_chop/`, `fir_fall/` — 9 frames each
@@ -208,6 +209,8 @@
 
 5. **Mechanic hooks for new animations** — crafting, digging, eating, jumping, push, trade_item all have animation frames ready. Need: player.gd flags + player_animation.gd branches + triggering systems.
 
+6. **Wall placement + collision** — 6 wall scene templates ready at `res://scenes/structures/walls/`. Next: place walls in `world.tscn` (NOT main.tscn), add `StaticBody2D` + `CollisionShape2D` to each scene template so player is blocked. Scale is already 0.8 in templates.
+
 ### Blocked / waiting on user
 - **Orange-fruited mature bush animation** — static sprites ready, animation needs PixelLab regeneration (prompt: fruit-laden bush, idle sway or pick animation)
 - **Digging north animation** — no north-facing dir in source assets; ask user if PixelLab regen needed
@@ -218,9 +221,14 @@
 ## Notes
 > Check this section at the start of every session. Add short-lived context here (things in progress, temp decisions, reminders). Remove entries once resolved.
 
-### Session end — 2026-05-30 (hotbar resize)
-- **Game state:** Runnable. Pre-flight ✅. Output log clean (4 lines).
-- **What changed this session:** User manually edited `game/UI/hud.gd` — `HOTBAR_H` 16→24 (taller bar box), slot `custom_minimum_size` height 14→9 (shorter slot cells). No ADR needed.
+### Session end — 2026-05-30 (wall assets + scene placement lesson)
+- **Game state:** Runnable. Pre-flight ✅. Output log 5 lines (unused-var warning in world_drop_item.gd — not blocking).
+- **What changed this session:**
+  - 3 wall PNGs inspected from `temp/Low_stone_wall_with_green_moss/`, split into 6 (brick/rubble × long/end/tall), saved to `res://assets/structures/walls/`
+  - 6 scene templates created at `res://scenes/structures/walls/` with `scale=Vector2(0.8,0.8)` baked in — always use these, not raw PNGs
+  - TSCN EDIT RULE expanded: never edit a .tscn on disk while it's open in the editor (Godot overwrites on save); use MCP tools or close the scene first
+  - Architectural lesson confirmed: **all game world objects go in `world.tscn`**, not `main.tscn`
+- **Wall status:** Assets ready, templates ready. Walls need to be placed in `world.tscn` + collision added to scene templates (Roadmap #6).
 - **Open issues:**
   - **Orange-fruited mature bush** — no valid animation (misgenerated). Static sprites at `res://assets/nature/crops/berry_bush/`. Needs PixelLab regen.
   - **Digging north** — no north-facing source dir. Regen or accept 2-dir only.

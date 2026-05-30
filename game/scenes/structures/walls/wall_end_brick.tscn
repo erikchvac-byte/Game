@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" uid="uid://brujofyexj3nj" path="res://assets/structures/walls/wall_end_brick.png" id="1"]
+
+[node name="WallEndBrick" type="Sprite2D"]
+scale = Vector2(0.8, 0.8)
+texture_filter = 1
+texture = ExtResource("1")

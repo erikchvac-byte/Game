@@ -1769,9 +1769,27 @@ cam.limit_bottom = int(origin.y) + 128
 
 ---
 
+## ADR-110: Wall Assets — Source Split, Scale Convention, and Scene Templates
+**Status:** Accepted
+**Date:** 2026-05-30
+**Context:** 3 wall PNGs arrived in `temp/Low_stone_wall_with_green_moss/` — each a 128×128 sprite sheet with a brick variant (top row) and rubble variant (bottom row). Needed to split them into individually usable assets and establish a reusable scale convention.
+**Decision:**
+1. **Asset split**: Each 128×128 PNG split at y=64 into two 128×64 PNGs (brick top, rubble bottom) using Python/Pillow. Background was already transparent (RGBA, alpha=0). 6 PNGs saved to `res://assets/structures/walls/`: `wall_long_brick/rubble`, `wall_end_brick/rubble`, `wall_tall_brick/rubble`.
+2. **Scale convention**: 128px wide at 1:1 is too large for the 320px logical viewport. 80% scale (0.8) established as the standard for all wall assets — visually validated in-game.
+3. **Scene templates**: 6 `.tscn` files created at `res://scenes/structures/walls/` with `scale=Vector2(0.8,0.8)` and `texture_filter=1` baked in. Users drag the scene, not the raw PNG — no need to remember the scale factor.
+4. **Placement rule confirmed**: All game world objects (walls, buildings, etc.) belong in `world.tscn`, not `main.tscn`. `main.tscn` is only for meta-nodes: Overhead layer, CanvasModulate, lights.
+**Rationale:** Scene templates are the standard Godot pattern for reusable props — properties baked into the scene travel with every instance. Raw PNG drag creates bare Sprite2D with default scale=1.0 and incorrect texture filter.
+**Consequences:**
+- Walls have no collision yet — scene templates are pure Sprite2D. Next step: add `StaticBody2D` + `CollisionShape2D` to each template.
+- Walls not yet placed in world — user removed initial placement from main.tscn.
+**Testing:** All 6 PNGs visually verified (opened individually per ASSET INSPECTION RULE). In-game screenshot confirmed 80% scale looked correct. Roadmap item #6 added for collision + placement.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-30 | ADR-110: Wall assets introduced. 3 source PNGs split into 6 (brick/rubble × long/end/tall, 128×64px). 80% scale convention established. 6 scene templates at res://scenes/structures/walls/ with scale baked in. Placement rule confirmed: world objects → world.tscn only. TSCN EDIT RULE updated with open-scene-in-editor pitfall. No collision yet. |
 | 2026-05-29 | ADR-109: SpriteFrames expanded 21→45 animations. pickaxe_strike_* wired + player_animation.gd updated. idle_animated_* wired as default idle. 8 new animation sets in .tres (crafting, digging, eating, jumping, push, trade_item, chop_axe). seed_packets added to starting inventory. BOM pitfall hit + fixed (WriteAllBytes required). Playtested ✅. |
 | 2026-05-29 | Assets: Full visual inspection of entire temp/ batch (all PNGs opened individually per ASSET INSPECTION RULE). Renamed: animation-4105fc51→idle (confirmed Erik idle, not orange bush), HotBar unknown→hotbar_7slot.png, Weed_plant unknown→seed_packets.png, Grows_a_new_single_l unknown→orange_fruited_mature_bush.png. Deleted 11 files: 9 misgenerated Fully_grown_bush frames (showed sprouts not fruit bush) + 2 duplicate This_plant_has_a_bun static PNGs. Imported to project: 31 new Erik animation dirs (idle_animated, crafting, digging, eating, jumping, push, trade_item, pickaxe_strike, chop_axe — all 4 dirs each where applicable), 5 UI assets (hotbar_7slot, fill_bar_new, 3 panel variants), crop growth assets (corn + berry bush growth anims + static stages), garden plot sprites, seed_packets. Created TODO.md at project root — 20 wiring tasks, one per asset category. No ADR — pure asset organization. No gameplay changes. Godot scan + .import verified ✅. |
 | 2026-05-26 | Fix: Player house door entry. DoorEntrance Area2D was 14×6 px centered at y=117 — partially embedded in wall collision (wall bottom y=117.5). Right-click nav stopped player at y≈126, capsule top at y=122, door trigger bottom at y=120 → no overlap → body_entered never fired. Fixed: enlarged trigger to 20×20, moved center to y=130 (fully below wall, overlaps player capsule reliably from both keyboard and nav). Also fixed player.gd `$NavAgent` → `get_node_or_null("NavAgent")` to silence runtime error when Player is in interior (no NavAgent child there). Playtested ✅. |

@@ -1,0 +1,8 @@
+[gd_scene format=3]
+
+[ext_resource type="Texture2D" uid="uid://d274fmpmgv3hv" path="res://assets/structures/walls/wall_tall_rubble.png" id="1"]
+
+[node name="WallTallRubble" type="Sprite2D"]
+scale = Vector2(0.8, 0.8)
+texture_filter = 1
+texture = ExtResource("1")
