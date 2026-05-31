@@ -1,5 +1,6 @@
 {
     "autoCompactEnabled": true,
+     "autoCompactWindow": 120000,
     "mcpServers": {
       "godot-mcp-pro": {
       "command": "node",

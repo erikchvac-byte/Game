@@ -39,8 +39,13 @@ func _build_overlay() -> void:
 	var panel := Panel.new()
 	panel.name = "InventoryPanel"
 	panel.custom_minimum_size = Vector2(panel_w, panel_h)
-	var ps := StyleBoxTexture.new()
-	ps.texture = load("res://assets/UI/inventory_panel.png")
+	var ps := StyleBoxFlat.new()
+	ps.bg_color = Color(0.09, 0.09, 0.11, 0.96)
+	ps.border_width_left = 1
+	ps.border_width_right = 1
+	ps.border_width_top = 1
+	ps.border_width_bottom = 1
+	ps.border_color = Color(0.38, 0.38, 0.48)
 	panel.add_theme_stylebox_override("panel", ps)
 	panel.set_anchors_preset(Control.PRESET_CENTER)
 	panel.offset_left = -panel_w * 0.5
@@ -67,6 +72,12 @@ func _build_overlay() -> void:
 	title.custom_minimum_size = Vector2(0.0, 13.0)
 	vbox.add_child(title)
 
+	# Divider
+	var div := ColorRect.new()
+	div.custom_minimum_size = Vector2(0.0, 1.0)
+	div.color = Color(0.35, 0.35, 0.45, 0.8)
+	vbox.add_child(div)
+
 	# Grid
 	var grid := GridContainer.new()
 	grid.columns = COLS
@@ -77,11 +88,12 @@ func _build_overlay() -> void:
 	vbox.add_child(grid)
 
 	var slot_style_normal := StyleBoxFlat.new()
-	slot_style_normal.bg_color = Color(0, 0, 0, 0)
-	slot_style_normal.border_width_left = 0
-	slot_style_normal.border_width_right = 0
-	slot_style_normal.border_width_top = 0
-	slot_style_normal.border_width_bottom = 0
+	slot_style_normal.bg_color = Color(0.15, 0.15, 0.17, 0.90)
+	slot_style_normal.border_width_left = 1
+	slot_style_normal.border_width_right = 1
+	slot_style_normal.border_width_top = 1
+	slot_style_normal.border_width_bottom = 1
+	slot_style_normal.border_color = Color(0.28, 0.28, 0.33)
 
 	_slot_panels = []
 	_slot_icons = []

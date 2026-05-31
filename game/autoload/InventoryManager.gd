@@ -1,6 +1,6 @@
 extends Node
 
-const HOTBAR_SLOTS := 12   # 0 = bucket (reserved), 1..11 = usable
+const HOTBAR_SLOTS := 7    # 0 = bucket (reserved), 1..6 = usable
 const GRID_SLOTS := 36
 const MAX_STACK := 16
 

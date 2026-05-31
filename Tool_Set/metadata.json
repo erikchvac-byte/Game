@@ -1,0 +1,152 @@
+{
+  "objects": [
+    {
+      "id": "4a5bccbe-b47e-428d-820b-c4748f22e376",
+      "name": null,
+      "prompt": "Watering can   - Shovel / trowel   - Scythe / shears   - Hoe   - Fertilizer applicator   - Bucket / jug   - Coin / currency icon   - Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "37387f1e-9574-49ff-a267-c0f51dfba18d",
+      "name": null,
+      "prompt": "Watering can   - Shovel / trowel   - Scythe / shears   - Hoe   - Fertilizer applicator   - Bucket / jug   - Coin / currency icon   - Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "64a9f30e-874d-44a7-89ab-d7aae9645c50",
+      "name": null,
+      "prompt": " Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    },
+    {
+      "id": "2a89e1ba-2ee4-4504-a943-104f88b1cd35",
+      "name": null,
+      "prompt": " Backpack / inventory icon",
+      "size": {
+        "width": 32,
+        "height": 32
+      },
+      "directions": 1,
+      "view": "low top-down",
+      "rotations": {
+        "unknown": "rotations/unknown.png"
+      },
+      "animations": {}
+    }
+  ],
+  "groups": [
+    {
+      "group_id": null,
+      "folder": "objects/Watering_can_-_Shovel_trow",
+      "objects": [
+        {
+          "id": "4a5bccbe-b47e-428d-820b-c4748f22e376",
+          "name": null,
+          "prompt": "Watering can   - Shovel / trowel   - Scythe / shears   - Hoe   - Fertilizer applicator   - Bucket / jug   - Coin / currency icon   - Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Watering_can_-_Shovel_trow_2",
+      "objects": [
+        {
+          "id": "37387f1e-9574-49ff-a267-c0f51dfba18d",
+          "name": null,
+          "prompt": "Watering can   - Shovel / trowel   - Scythe / shears   - Hoe   - Fertilizer applicator   - Bucket / jug   - Coin / currency icon   - Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Backpack_inventory_icon",
+      "objects": [
+        {
+          "id": "64a9f30e-874d-44a7-89ab-d7aae9645c50",
+          "name": null,
+          "prompt": " Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    },
+    {
+      "group_id": null,
+      "folder": "objects/Backpack_inventory_icon_2",
+      "objects": [
+        {
+          "id": "2a89e1ba-2ee4-4504-a943-104f88b1cd35",
+          "name": null,
+          "prompt": " Backpack / inventory icon",
+          "size": {
+            "width": 32,
+            "height": 32
+          },
+          "directions": 1,
+          "view": "low top-down",
+          "rotations": {
+            "unknown": "rotations/unknown.png"
+          },
+          "animations": {}
+        }
+      ]
+    }
+  ],
+  "export_version": "1.0",
+  "export_date": "2026-05-27T19:39:37.227562"
+}

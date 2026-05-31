@@ -1786,9 +1786,25 @@ cam.limit_bottom = int(origin.y) + 128
 
 ---
 
+## ADR-111: Hotbar Rework — Hole-Anchored Slots, Dark Backing, Prompt Removal
+**Status:** Accepted
+**Date:** 2026-05-31
+**Context:** New 1×7 hotbar art arrived in `temp/1x7_hotbar'/`. Its 7 slots are fully transparent cut-out holes (alpha=0), not the white/filled faces the prompt requested. The prior layout used an `HBoxContainer` with `SIZE_EXPAND_FILL` and `offset_left=91`, which never aligned to the PNG's visual cells (different start + pitch). The SPC/T interaction-prompt overlays also sat at the far left, overlapping slot 0.
+**Decision:**
+1. **Asset**: imported as `res://assets/ui/hotbar17.png` (200×200, art band y84–115 within the y82–118 atlas region). Replaced `hotbar_7slot.png` (deleted). Same `AtlasTexture region=Rect2(0,82,200,36)` crop.
+2. **Slots**: replaced the HBox with 7 `Panel`s **absolutely anchored to measured hole rects** — `HOLE_X` const (source-px ranges ÷ `REGION_W=200`), `HOLE_T=0.25`/`HOLE_B=0.7222` for the vertical band. Anchors are fractions of the bar, so alignment survives the non-uniform full-width stretch and any resolution.
+3. **Backing**: a dark `Panel` anchored to the hole band sits behind the wood frame (`HotbarBG`), showing through the transparent holes so empty slots are no longer see-through to the world.
+4. **Prompts**: the SPC/T prompt overlay system removed entirely — builders, `_e_prompt`/`_t_prompt` vars, `show_interact_prompt`/`show_trade_prompt` funcs, and all 4 call sites in `world.gd`/`plant.gd`.
+**Rationale:** Anchoring slots to art coordinates is the only robust way to keep icons inside the holes through the 1.6×/0.67× stretch — container math can't track baked-in art cells. A single backing panel solves hole transparency without per-slot fills.
+**Consequences:** Bar still stretches 200×36→320×24, so holes are slightly short (icon-scaling polish deferred). `_npc_trade_active` state retained (used elsewhere) even though its prompt is gone. `set_carrying_water` and badge/selection logic unchanged.
+**Testing:** Playtested ✅ — all 7 items centered in holes, dark backing visible, no prompts, clean output log. Editor errors = pre-existing `world_drop_item.gd` unused-var only.
+
+---
+
 ## Change Log
 | Date | Change |
 |------|--------|
+| 2026-05-31 | ADR-111: Hotbar rework. New `hotbar17.png` (transparent-hole art) replaces deleted `hotbar_7slot.png`. Slots re-anchored absolutely to measured PNG hole rects (HOLE_X const) — fixes the long-standing offset_left=91 misalignment. Dark backing panel added behind the frame (empty slots no longer see-through). SPC/T prompt overlay system fully removed (vars, builders, 2 funcs, 4 call sites). `temp/1x7_hotbar'` staging folder deleted. Playtested ✅. |
 | 2026-05-30 | Fix: Hotbar icon visibility. Root cause: slot Panels had `size_flags_horizontal = SIZE_SHRINK_BEGIN` with no `custom_minimum_size`. StyleBoxFlat borders give a ~2×2px minimum, so Icon offsets (2/-2/1/-1) computed to 0×0 effective area. Fixed by changing both axes to `SIZE_EXPAND_FILL` — slots now distribute the HBoxContainer's available width evenly (~22×24px each), giving 18×22px icon area. Playtested ✅. Note: slot panels are still offset_left=91 from hotbar left edge — visual alignment with hotbar_7slot.png background left for a future pass. |
 | 2026-05-30 | Meta: Read-only loop/regression audit. 165 commits reviewed. 3 loops identified: y_sort spiral (10 ADRs), tree rebuild (2×), undetected regressions. Reference doc saved at plans/put-this-in-a-precious-cherny.md + indexed in MEMORY.md. No game files changed. |
 | 2026-05-30 | ADR-110: Wall assets introduced. 3 source PNGs split into 6 (brick/rubble × long/end/tall, 128×64px). 80% scale convention established. 6 scene templates at res://scenes/structures/walls/ with scale baked in. Placement rule confirmed: world objects → world.tscn only. TSCN EDIT RULE updated with open-scene-in-editor pitfall. No collision yet. |

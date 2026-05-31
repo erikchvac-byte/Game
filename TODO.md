@@ -18,11 +18,11 @@
 
 ## UI
 
-- [ ] **Hotbar (7-slot)** — `res://assets/ui/hotbar_7slot.png` imported. **BLOCKED — user decision needed.** Current hotbar is 12-slot procedural (hud.gd). To use this PNG as-is: reduce SLOT_COUNT 12→7 and update inventory logic. Alternatively: use as background decoration behind existing slots. Cannot substitute art without explicit approval.
-- [ ] **Water/fill bar** — `res://assets/ui/fill_bar_new.png` imported. **BLOCKED — needs approval.** Candidate replacement for `WaterMeterBar.png` in `hud.gd:70-72` TextureProgressBar, or wire as a new stamina bar (stamina system doesn't exist yet). Per ASSET REPLACEMENT RULE, needs explicit user decision.
-- [ ] **UI panel — grey metallic** — `res://assets/ui/panel_grey_metal.png` imported. **BLOCKED — no target scene.** Possible use: crafting UI background, dialog frame. Tell me which scene/element.
-- [ ] **UI panel — dark wood** — `res://assets/ui/panel_dark_wood.png` imported. Same as above.
-- [ ] **UI panel — light wood** — `res://assets/ui/panel_light_wood.png` imported. Same as above.
+- [x] **Hotbar (7-slot)** — `hotbar_7slot.png` wired as hotbar background in `hud.gd`. SLOT_COUNT 12→7 across `hud.gd`, `world.gd` (_HOTBAR_SLOTS), `InventoryManager.gd` (HOTBAR_SLOTS), `UI/inventory.gd` + `Plants/inventory.gd` (hardcoded 12→7). Playtested ✅.
+- [x] **Water/fill bar** — `fill_bar_new.png` wired to HUD top bar. Replaced TextureProgressBar (couldn't use 200×200 PNG as TP texture — forces 200×200 minimum size) with Control wrapper + TextureRect(fill_bar_new.png, STRETCH_SCALE) + ColorRect(blue fill, width=ratio×44px). `_refresh_water_bar()` updated. WaterMeterBar.png no longer referenced. Playtested ✅.
+- [ ] **UI panel — grey metallic** — `res://assets/ui/panel_grey_metal.png` available. Wiring deferred — awaiting scene/element assignment.
+- [ ] **UI panel — dark wood** — `res://assets/ui/panel_dark_wood.png` available. Wiring deferred — awaiting scene/element assignment.
+- [ ] **UI panel — light wood** — `res://assets/ui/panel_light_wood.png` available. Wiring deferred — awaiting scene/element assignment.
 
 ## Crops / Plants
 

@@ -4,14 +4,21 @@ const SLOT_COUNT := 7
 const TOP_BAR_H := 12.0
 const HOTBAR_H := 24.0
 
+# Slot-hole geometry measured from hotbar17.png (source px). The 200×36 atlas
+# region stretches to fill the bottom bar, so anchors = src_px / region_size.
+const REGION_W := 200.0
+const HOLE_X := [[24, 40], [46, 63], [69, 86], [92, 108], [114, 131], [137, 154], [160, 176]]
+const HOLE_T := 0.25      # (91-82)/36
+const HOLE_B := 0.7222    # (108-82)/36
+const HOLE_BAND_L := 0.12 # 24/200  — left edge of hole band (backing)
+const HOLE_BAND_R := 0.88 # 176/200 — right edge of hole band (backing)
+
 var water: int = 0
 var water_max: int = 10
 var selected_slot: int = 0
 
 var _water_fill: ColorRect
 var _water_fill_max_w := 44.0
-var _e_prompt: Panel
-var _t_prompt: Panel
 var _slots: Array = []
 var _toast_panel: Panel
 var _toast_label: Label
@@ -107,8 +114,23 @@ func _build_hotbar() -> void:
 	bar.offset_top = -HOTBAR_H
 	add_child(bar)
 
+	# Dark backing behind the wood frame — shows through the transparent holes
+	var backing := Panel.new()
+	backing.name = "HotbarBacking"
+	backing.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	backing.anchor_left = HOLE_BAND_L
+	backing.anchor_right = HOLE_BAND_R
+	backing.anchor_top = HOLE_T
+	backing.anchor_bottom = HOLE_B
+	backing.offset_left = 0.0
+	backing.offset_right = 0.0
+	backing.offset_top = 0.0
+	backing.offset_bottom = 0.0
+	backing.add_theme_stylebox_override("panel", _flat(Color(0.09, 0.07, 0.05, 1.0)))
+	bar.add_child(backing)
+
 	var hotbar_atlas := AtlasTexture.new()
-	hotbar_atlas.atlas = load("res://assets/ui/hotbar_7slot.png")
+	hotbar_atlas.atlas = load("res://assets/ui/hotbar17.png")
 	hotbar_atlas.region = Rect2(0, 82, 200, 36)
 	var hotbar_bg := TextureRect.new()
 	hotbar_bg.name = "HotbarBG"
@@ -119,106 +141,34 @@ func _build_hotbar() -> void:
 	hotbar_bg.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	bar.add_child(hotbar_bg)
 
-	_e_prompt = Panel.new()
-	_e_prompt.name = "SpacePrompt"
-	_e_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_e_prompt.visible = false
-	_e_prompt.anchor_left = 0
-	_e_prompt.anchor_right = 0
-	_e_prompt.anchor_top = 0
-	_e_prompt.anchor_bottom = 1
-	_e_prompt.offset_left = 2.0
-	_e_prompt.offset_right = 26.0
-	_e_prompt.offset_top = 1.0
-	_e_prompt.offset_bottom = -1.0
-	var spc_style := StyleBoxFlat.new()
-	spc_style.bg_color = Color(0.13, 0.13, 0.16, 0.95)
-	spc_style.border_width_left = 1
-	spc_style.border_width_right = 1
-	spc_style.border_width_top = 1
-	spc_style.border_width_bottom = 1
-	spc_style.border_color = Color(0.60, 0.55, 0.35)
-	spc_style.corner_radius_top_left = 2
-	spc_style.corner_radius_top_right = 2
-	spc_style.corner_radius_bottom_left = 2
-	spc_style.corner_radius_bottom_right = 2
-	_e_prompt.add_theme_stylebox_override("panel", spc_style)
-	var spc_label := Label.new()
-	spc_label.text = "SPC"
-	spc_label.add_theme_font_size_override("font_size", 6)
-	spc_label.add_theme_color_override("font_color", Color(0.95, 0.88, 0.55))
-	spc_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	spc_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	spc_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	spc_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_e_prompt.add_child(spc_label)
-	bar.add_child(_e_prompt)
-
-	_t_prompt = Panel.new()
-	_t_prompt.name = "TPrompt"
-	_t_prompt.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_t_prompt.visible = false
-	_t_prompt.anchor_left = 0
-	_t_prompt.anchor_right = 0
-	_t_prompt.anchor_top = 0
-	_t_prompt.anchor_bottom = 1
-	_t_prompt.offset_left = 2.0
-	_t_prompt.offset_right = 26.0
-	_t_prompt.offset_top = 1.0
-	_t_prompt.offset_bottom = -1.0
-	var t_style := StyleBoxFlat.new()
-	t_style.bg_color = Color(0.13, 0.13, 0.16, 0.95)
-	t_style.border_width_left = 1
-	t_style.border_width_right = 1
-	t_style.border_width_top = 1
-	t_style.border_width_bottom = 1
-	t_style.border_color = Color(0.60, 0.55, 0.35)
-	t_style.corner_radius_top_left = 2
-	t_style.corner_radius_top_right = 2
-	t_style.corner_radius_bottom_left = 2
-	t_style.corner_radius_bottom_right = 2
-	_t_prompt.add_theme_stylebox_override("panel", t_style)
-	var t_label := Label.new()
-	t_label.text = "T"
-	t_label.add_theme_font_size_override("font_size", 7)
-	t_label.add_theme_color_override("font_color", Color(0.95, 0.88, 0.55))
-	t_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	t_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-	t_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	t_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	_t_prompt.add_child(t_label)
-	bar.add_child(_t_prompt)
-
-	var hbox := HBoxContainer.new()
-	hbox.name = "HotbarSlots"
-	hbox.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-	hbox.offset_left = 91.0
-	hbox.offset_right = -33.0
-	hbox.alignment = BoxContainer.ALIGNMENT_BEGIN
-	hbox.add_theme_constant_override("separation", 7)
-	bar.add_child(hbox)
-
 	_bucket_tex_empty = load("res://assets/ui/bucket_empty.png")
 	_bucket_tex_full = load("res://assets/ui/bucket_full.png")
 
+	# 7 slots absolutely anchored to the PNG hole rects (SPC/T prompts removed)
 	_slots = []
 	for i in range(SLOT_COUNT):
 		var slot := Panel.new()
 		slot.name = "Slot%d" % i
 		slot.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		slot.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-		slot.size_flags_vertical = Control.SIZE_EXPAND_FILL
+		slot.anchor_left = HOLE_X[i][0] / REGION_W
+		slot.anchor_right = HOLE_X[i][1] / REGION_W
+		slot.anchor_top = HOLE_T
+		slot.anchor_bottom = HOLE_B
+		slot.offset_left = 0.0
+		slot.offset_right = 0.0
+		slot.offset_top = 0.0
+		slot.offset_bottom = 0.0
 		slot.add_theme_stylebox_override("panel", _slot_style(false, false))
-		hbox.add_child(slot)
+		bar.add_child(slot)
 
 		var icon := TextureRect.new()
 		icon.name = "Icon"
 		icon.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-		icon.offset_left = 2.0
-		icon.offset_right = -2.0
-		icon.offset_top = 1.0
-		icon.offset_bottom = -1.0
-		icon.expand_mode = TextureRect.EXPAND_FIT_WIDTH_PROPORTIONAL
+		icon.offset_left = 1.0
+		icon.offset_right = -1.0
+		icon.offset_top = 0.0
+		icon.offset_bottom = 0.0
+		icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
 		icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
 		icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		slot.add_child(icon)
@@ -347,16 +297,6 @@ func set_slot_badge(slot: int, value: int) -> void:
 		badge.visible = value >= 0
 		if value >= 0:
 			badge.text = str(value)
-
-
-func show_interact_prompt(on: bool) -> void:
-	if _e_prompt:
-		_e_prompt.visible = on
-
-
-func show_trade_prompt(on: bool) -> void:
-	if _t_prompt:
-		_t_prompt.visible = on
 
 
 func set_carrying_water(carrying: bool) -> void:

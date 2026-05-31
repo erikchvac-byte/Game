@@ -45,8 +45,6 @@ func interact(player: CharacterBody2D) -> void:
 		$PurplePlant.frame = f
 	_growing = false
 	if _stage >= PLANT_STAGES.size() - 1:
-		if hud:
-			hud.show_interact_prompt(false)
 		plant_harvested.emit()
 		_stage = 0
 		$PurplePlant.stop()

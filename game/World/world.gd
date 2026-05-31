@@ -12,7 +12,7 @@ const EQUIPPABLE_TOOLS := {
 }
 
 # Hotbar slot count must match InventoryManager.HOTBAR_SLOTS.
-const _HOTBAR_SLOTS := 12
+const _HOTBAR_SLOTS := 7
 
 var _interactables: Array[Node] = []
 var _npc_trade_active := false
@@ -54,17 +54,18 @@ func _ready() -> void:
 
 
 func _grant_starting_items() -> void:
-	if Engine.has_meta("starting_items_granted"):
-		return
 	if not _inv_mgr:
 		return
+	# Skip if inventory already populated (returning from interior, or already granted)
+	for i in range(1, _HOTBAR_SLOTS):
+		if _inv_mgr.get_slot(i) != null:
+			return
 	_inv_mgr.add_item("axe", preload("res://assets/props/items/tool_axe.png"))
 	_inv_mgr.add_item("pickaxe", preload("res://assets/props/items/tool_pickaxe.png"))
 	_inv_mgr.add_item("stone_pile", preload("res://assets/props/items/stone_pile.png"))
 	_inv_mgr.add_item("bud", preload("res://assets/props/bud/dry_bud.png"))
 	_inv_mgr.add_item("wood", preload("res://assets/props/items/wood_pile.png"))
 	_inv_mgr.add_item("seed_packets", preload("res://assets/props/items/seed_packets.png"))
-	Engine.set_meta("starting_items_granted", true)
 
 
 func _process(delta: float) -> void:
@@ -88,8 +89,6 @@ func _update_npc_proximity() -> void:
 	if can_trade == _npc_trade_active:
 		return
 	_npc_trade_active = can_trade
-	if _hud:
-		_hud.show_trade_prompt(_npc_trade_active)
 
 
 func _input(event: InputEvent) -> void:
@@ -110,6 +109,9 @@ func _input(event: InputEvent) -> void:
 		_handle_drop_item()
 		return
 	if event.is_action_pressed("interact"):
+		if _npc_trade_active and _npc != null and _npc.is_interactable():
+			_handle_npc_trade()
+			return
 		var target := _get_nearest_interactable()
 		if target and target.has_method("interact"):
 			if target.has_method("can_interact") and not target.can_interact(_player):
@@ -258,10 +260,7 @@ func _update_mouse_navigation(delta: float) -> void:
 		_nav_target_pos = (_npc as Node2D).global_position
 		_player.nav_agent.set_target_position(_nav_target_pos)
 		if _player.global_position.distance_to(_nav_target_pos) <= NPC_TRADE_RADIUS:
-			var pending := _nav_pending_interact
 			_cancel_navigation()
-			if pending and _npc.is_interactable():
-				_handle_npc_trade()
 			return
 	if _nav_target_node != null and _interactables.has(_nav_target_node):
 		var pending := _nav_pending_interact
@@ -317,14 +316,10 @@ func _face_player_toward(target: Node2D) -> void:
 func _on_interactable_entered(node: Node) -> void:
 	if not _interactables.has(node):
 		_interactables.append(node)
-	if _hud:
-		_hud.show_interact_prompt(true)
 
 
 func _on_interactable_exited(node: Node) -> void:
 	_interactables.erase(node)
-	if _hud:
-		_hud.show_interact_prompt(_interactables.size() > 0)
 
 
 func _on_npc_door_entered(body: Node2D) -> void:

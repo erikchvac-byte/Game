@@ -35,6 +35,10 @@ func _physics_process(_delta: float) -> void:
 	if _inside_home or _idle_timer > 0.0 or _player_nearby or not _walking:
 		velocity = Vector2.ZERO
 		move_and_slide()
+		if not _entering_home:
+			var cur: String = $AnimatedSprite2D.animation
+			if cur == "walk_east" or cur == "walk_west":
+				$AnimatedSprite2D.play("idle_south")
 		return
 
 	if nav_agent.is_navigation_finished():
@@ -46,6 +50,14 @@ func _physics_process(_delta: float) -> void:
 	var dir := (next_pos - global_position).normalized()
 	velocity = dir * SPEED
 	move_and_slide()
+	_sync_animation()
+
+
+func _sync_animation() -> void:
+	var cur: String = $AnimatedSprite2D.animation
+	var want := "walk_east" if velocity.x >= 0.0 else "walk_west"
+	if cur != want:
+		$AnimatedSprite2D.play(want)
 
 
 func _process(delta: float) -> void:
@@ -145,7 +157,7 @@ func is_interactable() -> bool:
 func attempt_trade() -> bool:
 	if _is_trading or _trade_completed:
 		return false
-	var inv := get_node_or_null("/root/Inventory")
+	var inv := get_node_or_null("/root/InventoryManager")
 	if not inv or not inv.has_method("has_item") or not inv.has_item("bud"):
 		return false
 	inv.remove_item("bud")
