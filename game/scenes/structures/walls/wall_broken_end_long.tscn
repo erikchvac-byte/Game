@@ -3,17 +3,17 @@
 [ext_resource type="Texture2D" uid="uid://6r1w6d7w77ue" path="res://assets/structures/walls/wall_broken_end_long.png" id="1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(29.11, 6.0)
+size = Vector2(62.08, 6.0)
 
 [node name="WallBrokenEndLong" type="StaticBody2D"]
 y_sort_offset = 7.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
-position = Vector2(0.24, -6.36)
-scale = Vector2(0.2446, 0.2446)
+position = Vector2(0.52, -13.56)
+scale = Vector2(0.5217, 0.5217)
 texture = ExtResource("1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, -2.5)
+position = Vector2(0, -3)
 shape = SubResource("RectangleShape2D_1")
