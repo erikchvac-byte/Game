@@ -2,7 +2,18 @@
 
 [ext_resource type="Texture2D" uid="uid://cw5ppl4wkk183" path="res://assets/structures/walls/wall_end_rubble.png" id="1"]
 
-[node name="WallEndRubble" type="Sprite2D"]
-scale = Vector2(0.8, 0.8)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(19.63, 5.0)
+
+[node name="WallEndRubble" type="StaticBody2D"]
+y_sort_offset = 0.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
+position = Vector2(0.08, -4.09)
+scale = Vector2(0.1636, 0.1636)
 texture = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -2)
+shape = SubResource("RectangleShape2D_1")

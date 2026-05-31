@@ -1,17 +1,17 @@
 [gd_scene format=3]
 
-[ext_resource type="Texture2D" uid="uid://bjq1nq0hutov5" path="res://assets/structures/walls/wall_long_brick.png" id="1"]
+[ext_resource type="Texture2D" uid="uid://6r1w6d7w77ue" path="res://assets/structures/walls/wall_broken_end_long.png" id="1"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(17.64, 5.0)
+size = Vector2(23.29, 5.0)
 
-[node name="WallLongBrick" type="StaticBody2D"]
+[node name="WallBrokenEndLong" type="StaticBody2D"]
 y_sort_offset = 0.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
-position = Vector2(0.09, -4.32)
-scale = Vector2(0.18, 0.18)
+position = Vector2(0.2, -5.09)
+scale = Vector2(0.1957, 0.1957)
 texture = ExtResource("1")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]

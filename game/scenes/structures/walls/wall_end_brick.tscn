@@ -2,7 +2,18 @@
 
 [ext_resource type="Texture2D" uid="uid://brujofyexj3nj" path="res://assets/structures/walls/wall_end_brick.png" id="1"]
 
-[node name="WallEndBrick" type="Sprite2D"]
-scale = Vector2(0.8, 0.8)
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(19.87, 5.0)
+
+[node name="WallEndBrick" type="StaticBody2D"]
+y_sort_offset = 0.0
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
 texture_filter = 1
+position = Vector2(0.17, -4.25)
+scale = Vector2(0.1698, 0.1698)
 texture = ExtResource("1")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(0, -2)
+shape = SubResource("RectangleShape2D_1")
