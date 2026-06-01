@@ -31,7 +31,7 @@ func _process(_delta: float) -> void:
 		elif player.carrying_water:
 			anim = "idle_" + dir + "_bucket"
 		else:
-			anim = "idle_animated_" + dir
+			anim = "idle_" + dir
 
 	flip_h = (player.facing == player.Facing.SIDE and player.facing_left)
 
