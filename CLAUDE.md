@@ -23,7 +23,7 @@
 - **CONFLICT CHECK RULE:** Before implementing any major decision or change, check for conflicts with existing architecture, active systems, asset dependencies, ADR decisions, or anything else that could break or contradict what's already in place. If a potential problem is found, stop and discuss it with the user — do not proceed and self-fix silently.
 
 ## Where We Are
-- **Current state (2026-05-31):** Runnable, pre-flight ✅, output log 4 lines (1 unused-var warning in world_drop_item.gd — not blocking). All prior systems working (ADR-105–112 all live). **Walls rigged (ADR-112, 2026-05-31):** 2 new wall PNGs split/added (`wall_broken_end_long/short.png`, `wall_mid_collapsed.png`). All 9 wall templates at `res://scenes/structures/walls/` restructured `Sprite2D`→`StaticBody2D` root (origin at base, tree convention): per-wall uniform scale normalizes the wall's **tallest part to 24px** (per user 2026-05-31; was 11.25px — NOT yet re-tested in-engine at 24px), base `RectangleShape2D` collider (default layer 1), **`y_sort_offset=7`** (offset 0 could never occlude a low wall — player sort point is 7px below feet, so transition needs to sit at the base). **Verified in running engine:** Erik sorts behind a placed wall with head over the top, and `move_and_collide` confirmed the collider blocks him (test fixture removed after). See VERIFICATION HONESTY RULE. **Hotbar rework (ADR-111, 2026-05-31):** new `res://assets/ui/hotbar17.png` (transparent-hole art) replaces deleted `hotbar_7slot.png`; 7 slots now **absolutely anchored to measured PNG hole rects** (`HOLE_X` const in `hud.gd`) — the old `offset_left=91` misalignment is gone; dark backing panel behind the frame fills the holes (empty slots no longer see-through); **SPC/T prompt overlay system fully removed** (vars, builders, 2 funcs, 4 call sites in world.gd/plant.gd). Playtested ✅. `temp/1x7_hotbar'` staging folder deleted. **Deferred:** bar still stretches 200×36→320×24 so holes are slightly short (icon-scaling polish). **Asset cleanup (2026-05-30):** removed 70 unreferenced PNGs + sidecars — `_archived/{tilemaplayer_icon,town-grass-tile}.png` + 7 erik `_west/` frame dirs (flip_h supersedes left-facing; erik_sprites.tres has 0 west refs). 351 other unreferenced PNGs intentionally KEPT as staged Roadmap content; `willow_idle.png` kept (still referenced). Wall assets: now 9 rigged templates at `res://scenes/structures/walls/` (ADR-112 superseded ADR-110's 0.8-scale Sprite2D format). Walls not yet placed in world. **OPEN:** Orange-fruited mature bush animation misgenerated — needs PixelLab regen. Digging north dir missing. New animations (crafting, digging, eating, jumping, push, trade_item, chop_axe) are in .tres but have no gameplay mechanic yet.
+- **Current state (2026-05-31):** Runnable, pre-flight ✅, output log 4 lines (1 unused-var warning in world_drop_item.gd — not blocking). All prior systems working (ADR-105–112 all live). **Walls rigged (ADR-112, 2026-05-31):** 2 new wall PNGs split/added (`wall_broken_end_long/short.png`, `wall_mid_collapsed.png`). All 9 wall templates at `res://scenes/structures/walls/` restructured `Sprite2D`→`StaticBody2D` root (origin at base, tree convention): per-wall uniform scale normalizes the wall's **tallest part to 24px** (per user 2026-05-31; was 11.25px — NOT yet re-tested in-engine at 24px), base `RectangleShape2D` collider (default layer 1), **`y_sort_offset=7`** (offset 0 could never occlude a low wall — player sort point is 7px below feet, so transition needs to sit at the base). **Verified in running engine:** Erik sorts behind a placed wall with head over the top, and `move_and_collide` confirmed the collider blocks him (test fixture removed after). See VERIFICATION HONESTY RULE. **Hotbar rework (ADR-111, 2026-05-31):** new `res://assets/ui/hotbar17.png` (transparent-hole art) replaces deleted `hotbar_7slot.png`; 7 slots now **absolutely anchored to measured PNG hole rects** (`HOLE_X` const in `hud.gd`) — the old `offset_left=91` misalignment is gone; dark backing panel behind the frame fills the holes (empty slots no longer see-through); **SPC/T prompt overlay system fully removed** (vars, builders, 2 funcs, 4 call sites in world.gd/plant.gd). Playtested ✅. `temp/1x7_hotbar'` staging folder deleted. **Deferred:** bar still stretches 200×36→320×24 so holes are slightly short (icon-scaling polish). **Asset cleanup (2026-05-30):** removed 70 unreferenced PNGs + sidecars — `_archived/{tilemaplayer_icon,town-grass-tile}.png` + 7 erik `_west/` frame dirs (flip_h supersedes left-facing; erik_sprites.tres has 0 west refs). 351 other unreferenced PNGs intentionally KEPT as staged Roadmap content; `willow_idle.png` kept (still referenced). Wall assets: now 9 rigged templates at `res://scenes/structures/walls/` (ADR-112 superseded ADR-110's 0.8-scale Sprite2D format). Walls placed in `World/world.tscn` (10 instances: 8 unique + 2 duplicates). **OPEN:** Orange-fruited mature bush animation misgenerated — needs PixelLab regen. Digging north dir missing. New animations (crafting, digging, eating, jumping, push, trade_item, chop_axe) are in .tres but have no gameplay mechanic yet. **Walk-anim fix (2026-05-31):** `player.gd` `is_moving` now derives from actual post-collision movement (`get_real_velocity()`) instead of intended velocity — walk animation no longer cycles in place when blocked by a wall/collider; facing still updates from input intent. Verified live (blocked→idle, free move→walk).
 - **Key gotchas:** `simulate_key` via MCP does NOT trigger `_input()` — use `execute_game_script` to call handlers directly. `await` crashes in `execute_game_script` — split async ops into two calls. NPC waypoints in World-local coords → convert to global via `get_parent().to_global()`.
 - **Input actions:** Space=`interact`, T=`npc_trade`, C=`equip_toggle` — named InputMap actions, no hardcoded keycodes.
 - **Interactable system:** `world.gd` uses `_interactables: Array[Node]`; `_get_nearest_interactable()` by distance_squared.
@@ -69,8 +69,8 @@
 - `y_sort_offset` does NOT exist as a runtime GDScript property in Godot 4.6.2 — it is only a `.tscn` serialization field. Setting it via `execute_editor_script` (even via `set()`) will error. Sorting is purely by `position.y`; use `position.y` placement to control sort order.
 
 ## Asset Layout
-- **Staging / incoming assets**: `C:\Users\erikc\Dev\Game\temp\` — user drops new animation sets and sprites here. Always check this folder before reporting a missing asset. Subfolders are PixelLab export bundles (hash-named dirs with `animations/` containing direction subdirs of frame_NNN.png).
-- Source assets: `C:/Users/erikc/Dev/Game/GameAssets/` (~800 PNGs + newly organized subdirs: bushes/, crafting_tools/, trees/, drying_rack_alt/, weed_plants/, objects_misc/)
+- **Staging / incoming assets**: `C:\Users\erikc\Dev\Game\temp\` — user drops new animation sets and sprites here. Always check this folder before reporting a missing asset. Subfolders vary — PixelLab export bundles (hash-named dirs with `animations/` containing direction subdirs of frame_NNN.png) or named staging folders; currently holds `RockWallBrockenMidEnd/`.
+- Source assets: `C:/Users/erikc/Dev/Game/GameAssets/` (~800 PNGs + organized subdirs incl. bushes/, drying_rack_alt/, weed_plants/, objects_misc/). Tool art (hoe, scythe) lives in-project at `res://assets/props/items/` — NOT under GameAssets/ and there is no `crafting_tools/` folder.
 - In-project assets (VERIFIED_USED): `res://assets/` + `res://resources/` (reorganized 2026-05-17, ADR-062)
 - In-project legacy DELETED: `res://GameAssets/` — removed 2026-05-19 (985 files, zero active refs, ADR-071)
 - **Active building assets**: `res://assets/structures/`
@@ -78,13 +78,11 @@
   - `houses/` — teal house animation: `house_grey_teal_animation.png`
   - `cave_entrance_arch_stone.png`
   - `stump_door_dwelling.png` — ancient stump with carved door (prop/structure)
-  - `walls/` — 6 wall PNGs (brick/rubble × long/end/tall, 128×64px each). Scene templates at `res://scenes/structures/walls/` with `scale=Vector2(0.8,0.8)` baked in. **Use scene templates, not raw PNGs.** No collision yet.
-- **Tree + stump assets** (NEW — 2026-05-19):
-  - Static: `res://assets/nature/trees/tree_pine_3.png`, `tree_maple.png`, `tree_fir.png` (96×96 each)
-  - Animations: `trees/pine_chop/`, `pine_fall/`, `maple_chop/`, `maple_fall/`, `maple_hit_fall/`, `fir_chop/`, `fir_fall/` — 9 frames each
-  - Stump static: `res://assets/nature/stumps/stump_round.png` (96×96)
-  - Stump dissolve: `res://assets/nature/stumps/stump_round_dissolve/` — 16 frames
-  - All auto-imported; not yet wired to ChoppableTree scenes
+  - `walls/` — 9 wall PNGs (brick/rubble × long/end/tall + broken_end_long/short + mid_collapsed). Scene templates at `res://scenes/structures/walls/` are `StaticBody2D` root (origin at base, tree convention): per-wall uniform scale normalizes tallest part to 24px, base `RectangleShape2D` collider, `y_sort_offset=7` (ADR-112). **Use scene templates, not raw PNGs.** Placed in `World/world.tscn` (10 instances).
+- **Tree + stump assets** (per-species subdirs):
+  - Trees under `res://assets/nature/trees/`: `pine/` (`pine_idle.png` + `pine_chop/`, `pine_fall/`), `maple/` (`maple_idle.png` + `maple_chop/`, `maple_fall/`, `maple_hit_fall/`), `fir/` (`fir_idle.png` + `fir_chop/`, `fir_fall/`), `willow/` (`willow_f0`–`willow_f8.png`, 9 frames). Plus `tree_oak_green.png` (static, unwired).
+  - Stumps under `res://assets/nature/stumps/`: `stump_idle.png`, `BigMushroomStump.png`, `log_fallen_brown.png`, `stump_dissolve/` (32 frames)
+  - All auto-imported. Willow (`TreeWillowWeeping`) + `BigMushroomStump` are placed in world.tscn; pine/maple/fir not yet wired to ChoppableTree scenes.
 - **Erik player sprites**: `res://assets/characters/erik/` — **56×56 px** (ADR-013 claimed 64×64 — incorrect)
   - Idle: `idle_south/north/east.png` (1 frame each); bucket variants same pattern
   - Walk: `walk_south/north/east_{0-5}.png` (6 frames each)
@@ -182,7 +180,7 @@
 - **Critical z-order fix**: `z_as_relative = false`, `z_index = 0` — grandchild z=-1 relative = global z=-1 = invisible below terrain
 - `_dnc` looked up lazily in `_process()` NOT `_ready()` — world subtree initializes before DayNight registers its group
 - Exports: `ground_offset: Vector2`, `shadow_size: Vector2(w, h)`, `cast_length: float`
-- All 5 objects in world.tscn have Shadow Node2D children (PlayerHome, Well, Plant, DryingRack, Rock)
+- 8 objects in world.tscn have Shadow Node2D children (PlayerHome, Well, Plant, DryingRack, Big Rock, TreeWillowWeeping, HouseTwostoryTeal, BigMushroomStump)
 
 ## Drying Rack (ADR-025)
 - Script: `res://Interactables/drying_rack.gd` — Sprite2D with 4-state machine: `EMPTY → FILLING → DRYING → READY → EMPTY`
@@ -205,8 +203,8 @@
 
 2. **Crop / farming system** — All animation assets imported (`res://assets/nature/crops/`): corn growth (Group 1: 17f, Group 2: 16f), berry bush growth (Group 3: 17f), static stage sprites, garden plots. Need: PlantableSoil scene, CropGrowth state machine, harvest mechanic. Orange bush blocked (PixelLab regen needed). Full session to implement.
 
-3. **UI design decisions** — 3 assets imported but blocked on user decisions. See `TODO.md` for exact questions:
-   - `hotbar_7slot.png` — replace 12-slot with 7-slot OR use as decoration?
+3. **UI design decisions** — assets imported but blocked on user decisions. See `TODO.md` for exact questions:
+   - ~~`hotbar_7slot.png`~~ — RESOLVED (ADR-111): replaced by `hotbar17.png`, 7-slot hotbar live.
    - `fill_bar_new.png` — replace `WaterMeterBar.png` OR new stamina bar?
    - `panel_grey_metal/dark_wood/light_wood` — which scene/element should each back?
 
