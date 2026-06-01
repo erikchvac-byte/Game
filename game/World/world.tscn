@@ -5,11 +5,11 @@
 [ext_resource type="PackedScene" uid="uid://dyesovrngsuel" path="res://Player/player.tscn" id="8_player"]
 [ext_resource type="Texture2D" uid="uid://587lmkrd0dfs" path="res://assets/ui/key_e.png" id="41_s5cut"]
 [ext_resource type="Texture2D" uid="uid://c1kj7cpn6wu31" path="res://assets/nature/rocks/rock_grey_cluster.png" id="45_8kjm2"]
-[ext_resource type="SpriteFrames" uid="uid://bdowx3l78eemq" path="res://resources/structures/house_grey_teal_frames.tres" id="45_h4hkh"]
 [ext_resource type="Script" uid="uid://c2rgwc7pyf36p" path="res://NPCs/npc_grey_hoodie.gd" id="46_xu702"]
 [ext_resource type="SpriteFrames" uid="uid://b0rvlem6tvcb3" path="res://resources/characters/grey_hoodie_sprites.tres" id="47_i363k"]
 [ext_resource type="Texture2D" uid="uid://cvef32hudv7jo" path="res://assets/structures/cave_entrance_arch_stone.png" id="48_dlis5"]
 [ext_resource type="Texture2D" uid="uid://n6fr5m4wldrm" path="res://assets/nature/stumps/BigMushroomStump.png" id="49_h4hkh"]
+[ext_resource type="SpriteFrames" uid="uid://b8gh002frames2" path="res://resources/structures/house_grey_hoodie_002_frames.tres" id="55_h4nnu"]
 [ext_resource type="PackedScene" uid="uid://bjbusnrbyh8x1" path="res://scenes/interactables/trees/pine_tree.tscn" id="62_5aim4"]
 [ext_resource type="SpriteFrames" uid="uid://boeery8s56gy3" path="res://resources/structures/stump_home_001_frames.tres" id="64_32rkg"]
 [ext_resource type="PackedScene" uid="uid://dqypn0h7hldo2" path="res://scenes/interactables/trees/maple_tree.tscn" id="66_2j1j3"]
@@ -17,10 +17,10 @@
 [ext_resource type="PackedScene" uid="uid://bmdshivd0nhab" path="res://scenes/interactables/trees/fir_tree.tscn" id="68_xmbla"]
 [ext_resource type="Script" uid="uid://cp78hu25e8wku" path="res://World/StumpShrine/stump_shrine.gd" id="69_h4nnu"]
 [ext_resource type="PackedScene" uid="uid://csh5fr4mkn7b2" path="res://World/ForestCreature/forest_creature.tscn" id="70_houwb"]
-[ext_resource type="Texture2D" uid="uid://fw7boobaagag" path="res://assets/structures/walls/wall_long_rubble.png" id="71_2j1j3"]
 [ext_resource type="Texture2D" uid="uid://cwyeihiapb88t" path="res://assets/nature/bushes/bush_dense_flat.png" id="71_houwb"]
 [ext_resource type="PackedScene" uid="uid://cyk2wa6ttvhtk" path="res://scenes/interactables/rocks/tower_rock.tscn" id="72_rock_t"]
 [ext_resource type="PackedScene" uid="uid://c8b062qpcmo7c" path="res://scenes/interactables/rocks/square_rock.tscn" id="73_rock_s"]
+[ext_resource type="PackedScene" path="res://scenes/structures/walls/wall_mid_collapsed.tscn" id="76_sw2vp"]
 [ext_resource type="Texture2D" uid="uid://b6gp3wtyvi25x" path="res://assets/structures/shops/shop_bakery_open.png" id="bakery_open"]
 [ext_resource type="Texture2D" uid="uid://dcplhewp24tmq" path="res://assets/props/drying_rack/rack_new_empty.png" id="drack1_tex"]
 [ext_resource type="Script" uid="uid://23aaem0eoxrt" path="res://Interactables/drying_rack.gd" id="drack_script"]
@@ -582,7 +582,7 @@ shape = SubResource("CircleShape2D_h4hkh")
 texture_filter = 1
 position = Vector2(534, 75)
 scale = Vector2(0.6, 0.6)
-sprite_frames = ExtResource("45_h4hkh")
+sprite_frames = ExtResource("55_h4nnu")
 animation = &"idle"
 autoplay = "idle"
 
@@ -799,6 +799,5 @@ position = Vector2(171, 213)
 [node name="SquareRock1" parent="." unique_id=730000001 instance=ExtResource("73_rock_s")]
 position = Vector2(210, 201)
 
-[node name="WallLongRubble" type="Sprite2D" parent="." unique_id=956641030]
-position = Vector2(615, 228)
-texture = ExtResource("71_2j1j3")
+[node name="WallMidCollapsed" parent="." unique_id=694565214 instance=ExtResource("76_sw2vp")]
+position = Vector2(482, 235)
