@@ -42,12 +42,18 @@ func _physics_process(_delta: float) -> void:
 		is_running = Input.is_action_pressed("run")
 
 	velocity = dir * (RUN_SPEED if is_running else WALK_SPEED)
-	is_moving = velocity.length_squared() > 0.0
 
-	if is_moving:
+	# Update facing from input intent (so the player turns to face a wall
+	# he's pushing against, even though he won't actually move).
+	if dir != Vector2.ZERO:
 		_update_facing(dir)
 
 	move_and_slide()
+
+	# is_moving reflects ACTUAL movement (post-collision), not intended
+	# velocity — so the walk animation stops when blocked by a wall/collider
+	# instead of cycling in place. (length 5 px/s threshold; walk speed is 60.)
+	is_moving = get_real_velocity().length_squared() > 25.0
 
 func _update_facing(dir: Vector2) -> void:
 	if abs(dir.y) >= abs(dir.x):
