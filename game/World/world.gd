@@ -40,9 +40,10 @@ func _ready() -> void:
 	get_tree().create_timer(0.5).timeout.connect(func(): $NPCHomeDoor.body_entered.connect(_on_npc_door_entered))
 	$Well.connect("interactable_entered", _on_interactable_entered)
 	$Well.connect("interactable_exited", _on_interactable_exited)
-	$Plant.connect("interactable_entered", _on_interactable_entered)
-	$Plant.connect("interactable_exited", _on_interactable_exited)
-	$Plant.plant_harvested.connect($DryingRack.add_plant)
+	for p in get_tree().get_nodes_in_group("garden_plants"):
+		p.connect("interactable_entered", _on_interactable_entered)
+		p.connect("interactable_exited", _on_interactable_exited)
+		p.plant_harvested.connect($DryingRack.add_plant)
 	for tree in get_tree().get_nodes_in_group("choppable_trees"):
 		tree.connect("interactable_entered", _on_interactable_entered)
 		tree.connect("interactable_exited", _on_interactable_exited)

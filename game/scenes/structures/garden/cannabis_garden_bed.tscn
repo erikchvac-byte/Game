@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://bs7y4sq1ofwea"]
+
+[ext_resource type="Texture2D" uid="uid://c7gdx8fhawdok" path="res://assets/props/garden/dirt_patch_long_horizontal.png" id="1_bed"]
+[ext_resource type="PackedScene" path="res://scenes/interactables/garden/cannabis_plant.tscn" id="2_slot"]
+
+[node name="CannabisGardenBed" type="Node2D" unique_id=1371339894]
+y_sort_enabled = true
+
+[node name="Bed" type="Sprite2D" parent="." unique_id=1654817329]
+position = Vector2(0, -8)
+scale = Vector2(0.5, 0.5)
+texture = ExtResource("1_bed")
+
+[node name="Slot1" parent="." unique_id=1986514811 instance=ExtResource("2_slot")]
+position = Vector2(-16, 0)
+
+[node name="Slot2" parent="." unique_id=1325330771 instance=ExtResource("2_slot")]
+
+[node name="Slot3" parent="." unique_id=1524833103 instance=ExtResource("2_slot")]
+position = Vector2(16.115, 0)

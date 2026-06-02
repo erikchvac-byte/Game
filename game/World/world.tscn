@@ -9,7 +9,7 @@
 [ext_resource type="SpriteFrames" uid="uid://b0rvlem6tvcb3" path="res://resources/characters/grey_hoodie_sprites.tres" id="47_i363k"]
 [ext_resource type="Texture2D" uid="uid://cvef32hudv7jo" path="res://assets/structures/cave_entrance_arch_stone.png" id="48_dlis5"]
 [ext_resource type="Texture2D" uid="uid://n6fr5m4wldrm" path="res://assets/nature/stumps/BigMushroomStump.png" id="49_h4hkh"]
-[ext_resource type="SpriteFrames" uid="uid://b8gh002frames2" path="res://resources/structures/house_grey_hoodie_002_frames.tres" id="55_h4nnu"]
+[ext_resource type="SpriteFrames" uid="uid://bqj7y3shn6iw2" path="res://resources/structures/house_grey_hoodie_002_frames.tres" id="55_h4nnu"]
 [ext_resource type="PackedScene" uid="uid://bjbusnrbyh8x1" path="res://scenes/interactables/trees/pine_tree.tscn" id="62_5aim4"]
 [ext_resource type="SpriteFrames" uid="uid://boeery8s56gy3" path="res://resources/structures/stump_home_001_frames.tres" id="64_32rkg"]
 [ext_resource type="PackedScene" uid="uid://dqypn0h7hldo2" path="res://scenes/interactables/trees/maple_tree.tscn" id="66_2j1j3"]
@@ -17,6 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://bmdshivd0nhab" path="res://scenes/interactables/trees/fir_tree.tscn" id="68_xmbla"]
 [ext_resource type="Script" uid="uid://cp78hu25e8wku" path="res://World/StumpShrine/stump_shrine.gd" id="69_h4nnu"]
 [ext_resource type="PackedScene" uid="uid://csh5fr4mkn7b2" path="res://World/ForestCreature/forest_creature.tscn" id="70_houwb"]
+[ext_resource type="PackedScene" path="res://scenes/structures/garden/cannabis_garden_bed.tscn" id="71_12w7i"]
 [ext_resource type="Texture2D" uid="uid://cwyeihiapb88t" path="res://assets/nature/bushes/bush_dense_flat.png" id="71_houwb"]
 [ext_resource type="PackedScene" uid="uid://cyk2wa6ttvhtk" path="res://scenes/interactables/rocks/tower_rock.tscn" id="72_rock_t"]
 [ext_resource type="PackedScene" uid="uid://c8b062qpcmo7c" path="res://scenes/interactables/rocks/square_rock.tscn" id="73_rock_s"]
@@ -801,3 +802,6 @@ position = Vector2(210, 201)
 
 [node name="WallMidCollapsed" parent="." unique_id=694565214 instance=ExtResource("76_sw2vp")]
 position = Vector2(482, 235)
+
+[node name="CannabisGardenBed" parent="." unique_id=309021819 instance=ExtResource("71_12w7i")]
+position = Vector2(264, 129)
