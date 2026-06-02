@@ -1,4 +1,4 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene format=3 uid="uid://d4aunauw5hv7v"]
 
 [ext_resource type="Script" uid="uid://d3eolnn1pp185" path="res://Plants/plant.gd" id="1_plant"]
 [ext_resource type="SpriteFrames" uid="uid://c7836o5n7ds3y" path="res://resources/plants/cannabis_garden_frames.tres" id="2_frames"]
@@ -7,23 +7,22 @@
 [sub_resource type="CircleShape2D" id="InteractShape"]
 radius = 22.0
 
-[node name="CannabisPlant" type="Node2D"]
+[node name="CannabisPlant" type="Node2D" unique_id=1502509490]
 script = ExtResource("1_plant")
 plant_stages = Array[int]([0, 1, 2, 3])
 
-[node name="PurplePlant" type="AnimatedSprite2D" parent="."]
-position = Vector2(0, -9)
+[node name="PurplePlant" type="AnimatedSprite2D" parent="." unique_id=1316929316]
+position = Vector2(0, 9)
 scale = Vector2(0.3, 0.3)
 sprite_frames = ExtResource("2_frames")
-animation = &"default"
 
-[node name="PlantArea" type="Area2D" parent="."]
+[node name="PlantArea" type="Area2D" parent="." unique_id=78668865]
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PlantArea"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlantArea" unique_id=848234960]
 shape = SubResource("InteractShape")
 
-[node name="Shadow" type="Node2D" parent="."]
+[node name="Shadow" type="Node2D" parent="." unique_id=2115646851]
+position = Vector2(0, 8.61)
 script = ExtResource("3_shadow")
-ground_offset = Vector2(0, 0)
 shadow_size = Vector2(10, 3)
 cast_length = 6.0
