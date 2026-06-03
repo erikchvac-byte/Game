@@ -221,6 +221,7 @@ func _try_plant_seed() -> bool:
 		return false  # bed full → fall through so existing plants can be watered
 	_inv_mgr.remove_item(SEED_KEY)
 	_plant_sprout(slot)
+	_player.is_planting = true  # one-shot bend-over anim; cleared on animation_finished
 	if _hud:
 		_hud.show_toast("Planted a seed", 1.2)
 	return true

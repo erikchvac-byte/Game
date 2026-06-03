@@ -9,6 +9,7 @@ func _on_animation_finished() -> void:
 	var player := get_parent()
 	player.is_chopping = false
 	player.is_trading = false
+	player.is_planting = false
 	_current_anim = ""
 
 func _process(_delta: float) -> void:
@@ -24,6 +25,8 @@ func _process(_delta: float) -> void:
 			anim = "chop_" + dir
 	elif player.is_trading:
 		anim = "trade_" + dir
+	elif player.is_planting:
+		anim = "planting_" + dir
 	else:
 		if player.is_moving:
 			var suffix := "_bucket" if player.carrying_water else ""

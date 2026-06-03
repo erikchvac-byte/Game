@@ -14,6 +14,7 @@ var equipped_tool: String = ""
 var auto_walk := Vector2.ZERO
 var is_chopping := false
 var is_trading := false
+var is_planting := false
 
 var nav_agent: NavigationAgent2D
 

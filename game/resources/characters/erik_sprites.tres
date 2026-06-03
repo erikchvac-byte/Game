@@ -384,6 +384,33 @@
 [ext_resource type="Texture2D" uid="uid://yg6l7b28lowd" path="res://assets/characters/erik/chop_axe_north/frame_013.png" id="ca_n13"]
 [ext_resource type="Texture2D" uid="uid://dpaljw7g0j711" path="res://assets/characters/erik/chop_axe_north/frame_014.png" id="ca_n14"]
 [ext_resource type="Texture2D" uid="uid://ddcbp843y0c4w" path="res://assets/characters/erik/chop_axe_north/frame_015.png" id="ca_n15"]
+[ext_resource type="Texture2D" uid="uid://bo6yupfwu00l2" path="res://assets/characters/erik/planting_south/frame_000.png" id="ps_000"]
+[ext_resource type="Texture2D" uid="uid://dbrbngcdyqfch" path="res://assets/characters/erik/planting_south/frame_001.png" id="ps_001"]
+[ext_resource type="Texture2D" uid="uid://dje7sculxt4mi" path="res://assets/characters/erik/planting_south/frame_002.png" id="ps_002"]
+[ext_resource type="Texture2D" uid="uid://cjjvmbpp25efo" path="res://assets/characters/erik/planting_south/frame_003.png" id="ps_003"]
+[ext_resource type="Texture2D" uid="uid://xe0titntdwca" path="res://assets/characters/erik/planting_south/frame_004.png" id="ps_004"]
+[ext_resource type="Texture2D" uid="uid://bpvexakv67q1a" path="res://assets/characters/erik/planting_south/frame_005.png" id="ps_005"]
+[ext_resource type="Texture2D" uid="uid://b5omnj55m0vg5" path="res://assets/characters/erik/planting_south/frame_006.png" id="ps_006"]
+[ext_resource type="Texture2D" uid="uid://djdp8cev01lv5" path="res://assets/characters/erik/planting_south/frame_007.png" id="ps_007"]
+[ext_resource type="Texture2D" uid="uid://barm6yr8n86mb" path="res://assets/characters/erik/planting_south/frame_008.png" id="ps_008"]
+[ext_resource type="Texture2D" uid="uid://1h2nb4hg7xqd" path="res://assets/characters/erik/planting_side/frame_000.png" id="pe_000"]
+[ext_resource type="Texture2D" uid="uid://d4jafocxvmpu4" path="res://assets/characters/erik/planting_side/frame_001.png" id="pe_001"]
+[ext_resource type="Texture2D" uid="uid://bxbw5djs1gnx8" path="res://assets/characters/erik/planting_side/frame_002.png" id="pe_002"]
+[ext_resource type="Texture2D" uid="uid://c3xh448bxjtgi" path="res://assets/characters/erik/planting_side/frame_003.png" id="pe_003"]
+[ext_resource type="Texture2D" uid="uid://nr432i1qvb2x" path="res://assets/characters/erik/planting_side/frame_004.png" id="pe_004"]
+[ext_resource type="Texture2D" uid="uid://dt6v4e0jj0rh0" path="res://assets/characters/erik/planting_side/frame_005.png" id="pe_005"]
+[ext_resource type="Texture2D" uid="uid://bftwggppe2u00" path="res://assets/characters/erik/planting_side/frame_006.png" id="pe_006"]
+[ext_resource type="Texture2D" uid="uid://dftujbpi6lko2" path="res://assets/characters/erik/planting_side/frame_007.png" id="pe_007"]
+[ext_resource type="Texture2D" uid="uid://0ru0c8nh8lmd" path="res://assets/characters/erik/planting_side/frame_008.png" id="pe_008"]
+[ext_resource type="Texture2D" uid="uid://c5h7lbsxrjjpx" path="res://assets/characters/erik/planting_north/frame_000.png" id="pn_000"]
+[ext_resource type="Texture2D" uid="uid://cxtmupow4llpr" path="res://assets/characters/erik/planting_north/frame_001.png" id="pn_001"]
+[ext_resource type="Texture2D" uid="uid://cpytdkmik7l65" path="res://assets/characters/erik/planting_north/frame_002.png" id="pn_002"]
+[ext_resource type="Texture2D" uid="uid://dodopm2cfn13a" path="res://assets/characters/erik/planting_north/frame_003.png" id="pn_003"]
+[ext_resource type="Texture2D" uid="uid://csuw2n15ly46o" path="res://assets/characters/erik/planting_north/frame_004.png" id="pn_004"]
+[ext_resource type="Texture2D" uid="uid://hbyu3mioyxgj" path="res://assets/characters/erik/planting_north/frame_005.png" id="pn_005"]
+[ext_resource type="Texture2D" uid="uid://c1ermrbubjqfo" path="res://assets/characters/erik/planting_north/frame_006.png" id="pn_006"]
+[ext_resource type="Texture2D" uid="uid://bxipxwu5hfump" path="res://assets/characters/erik/planting_north/frame_007.png" id="pn_007"]
+[ext_resource type="Texture2D" uid="uid://n6ybrtlydug6" path="res://assets/characters/erik/planting_north/frame_008.png" id="pn_008"]
 
 [resource]
 animations = [{
@@ -1760,5 +1787,101 @@ animations = [{
 "loop": false,
 "name": &"chop_axe_up",
 "speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("ps_000")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ps_001")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ps_002")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ps_003")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ps_004")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ps_005")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ps_006")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ps_007")
+}, {
+"duration": 1.0,
+"texture": ExtResource("ps_008")
+}],
+"loop": false,
+"name": &"planting_down",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("pe_000")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pe_001")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pe_002")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pe_003")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pe_004")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pe_005")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pe_006")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pe_007")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pe_008")
+}],
+"loop": false,
+"name": &"planting_side",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("pn_000")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pn_001")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pn_002")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pn_003")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pn_004")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pn_005")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pn_006")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pn_007")
+}, {
+"duration": 1.0,
+"texture": ExtResource("pn_008")
+}],
+"loop": false,
+"name": &"planting_up",
+"speed": 8.0
 }
 ]
