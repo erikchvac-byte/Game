@@ -17,8 +17,7 @@
 [ext_resource type="PackedScene" uid="uid://bmdshivd0nhab" path="res://scenes/interactables/trees/fir_tree.tscn" id="68_xmbla"]
 [ext_resource type="Script" uid="uid://cp78hu25e8wku" path="res://World/StumpShrine/stump_shrine.gd" id="69_h4nnu"]
 [ext_resource type="PackedScene" uid="uid://csh5fr4mkn7b2" path="res://World/ForestCreature/forest_creature.tscn" id="70_houwb"]
-[ext_resource type="PackedScene" path="res://scenes/structures/garden/cannabis_garden_bed.tscn" id="71_12w7i"]
-[ext_resource type="PackedScene" path="res://scenes/interactables/garden/cannabis_plant.tscn" id="77_plant"]
+[ext_resource type="PackedScene" uid="uid://bs7y4sq1ofwea" path="res://scenes/structures/garden/cannabis_garden_bed.tscn" id="71_12w7i"]
 [ext_resource type="Texture2D" uid="uid://cwyeihiapb88t" path="res://assets/nature/bushes/bush_dense_flat.png" id="71_houwb"]
 [ext_resource type="PackedScene" uid="uid://cyk2wa6ttvhtk" path="res://scenes/interactables/rocks/tower_rock.tscn" id="72_rock_t"]
 [ext_resource type="PackedScene" uid="uid://c8b062qpcmo7c" path="res://scenes/interactables/rocks/square_rock.tscn" id="73_rock_s"]
@@ -806,12 +805,3 @@ position = Vector2(482, 235)
 
 [node name="CannabisGardenBed" parent="." unique_id=309021819 instance=ExtResource("71_12w7i")]
 position = Vector2(264, 90)
-
-[node name="CannabisPlant1" parent="." instance=ExtResource("77_plant")]
-position = Vector2(248, 115)
-
-[node name="CannabisPlant2" parent="." instance=ExtResource("77_plant")]
-position = Vector2(264, 115)
-
-[node name="CannabisPlant3" parent="." instance=ExtResource("77_plant")]
-position = Vector2(281.715, 115)

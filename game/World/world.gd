@@ -14,12 +14,25 @@ const EQUIPPABLE_TOOLS := {
 # Hotbar slot count must match InventoryManager.HOTBAR_SLOTS.
 const _HOTBAR_SLOTS := 7
 
+# Seed planting (ADR-115). Player presses interact while standing on the dirt bed
+# with this item selected to plant a sprout into the nearest open slot.
+const SEED_KEY := "seed_packets"
+const _PLANT_SCENE := preload("res://scenes/interactables/garden/cannabis_plant.tscn")
+# World-local positions of the 3 planting slots over the dirt bed
+# (reproduces the original ADR-114 plant layout: bed at (264,90), plants at y=115).
+const _GARDEN_SLOTS := [Vector2(248, 115), Vector2(264, 115), Vector2(281.715, 115)]
+# Player must be within this distance of the bed centre to plant.
+const _BED_PLANT_RADIUS := 40.0
+
 var _interactables: Array[Node] = []
 var _npc_trade_active := false
 var _inv_mgr: Node
 var _hud: Node
 var _player: CharacterBody2D
 var _npc: Node
+var _garden_bed: Node2D
+# Tracks the plant node in each planting slot (null = open).
+var _bed_slots: Array = [null, null, null]
 
 var _nav_active := false
 var _nav_target_pos := Vector2.ZERO
@@ -34,6 +47,7 @@ func _ready() -> void:
 	_hud = get_node_or_null("/root/HUD")
 	_player = get_node_or_null("Player") as CharacterBody2D
 	_npc = get_node_or_null("GreyHoodie")
+	_garden_bed = get_node_or_null("CannabisGardenBed") as Node2D
 	if _hud:
 		_hud.slot_selected.connect(_on_hud_slot_selected)
 	$DoorEntrance.body_entered.connect(_on_door_entered)
@@ -66,7 +80,9 @@ func _grant_starting_items() -> void:
 	_inv_mgr.add_item("stone_pile", preload("res://assets/props/items/stone_pile.png"))
 	_inv_mgr.add_item("bud", preload("res://assets/props/bud/dry_bud.png"))
 	_inv_mgr.add_item("wood", preload("res://assets/props/items/wood_pile.png"))
-	_inv_mgr.add_item("seed_packets", preload("res://assets/props/items/seed_packets.png"))
+	# 3 seeds stack into a single hotbar slot (HUD shows a count badge of 3).
+	for _i in range(3):
+		_inv_mgr.add_item(SEED_KEY, preload("res://assets/props/items/seed_packets.png"))
 
 
 func _process(delta: float) -> void:
@@ -110,6 +126,9 @@ func _input(event: InputEvent) -> void:
 		_handle_drop_item()
 		return
 	if event.is_action_pressed("interact"):
+		# Seed planting takes priority while standing on the bed with a seed selected.
+		if _try_plant_seed():
+			return
 		if _npc_trade_active and _npc != null and _npc.is_interactable():
 			_handle_npc_trade()
 			return
@@ -184,6 +203,52 @@ func _handle_drop_item() -> void:
 	drop.set_meta("item_tex", item.tex)
 	drop.position = _player.position + Vector2(0, 8)
 	add_child(drop)
+
+
+# Returns true if the press was consumed as a plant action. Returns false when no
+# seed is selected or the player isn't on the bed, so normal interact can proceed.
+func _try_plant_seed() -> bool:
+	if not _inv_mgr or not _player or not _hud or not _garden_bed:
+		return false
+	var item = _inv_mgr.get_slot(_hud.selected_slot)
+	if item == null or item.key != SEED_KEY:
+		return false
+	var bed_centre: Vector2 = _garden_bed.position + Vector2(0, 25)
+	if _player.position.distance_to(bed_centre) > _BED_PLANT_RADIUS:
+		return false  # not on the bed → let normal interact handle the press
+	var slot := _nearest_open_slot(_player.position)
+	if slot < 0:
+		return false  # bed full → fall through so existing plants can be watered
+	_inv_mgr.remove_item(SEED_KEY)
+	_plant_sprout(slot)
+	if _hud:
+		_hud.show_toast("Planted a seed", 1.2)
+	return true
+
+
+func _nearest_open_slot(from: Vector2) -> int:
+	var best := -1
+	var best_d := INF
+	for i in range(_GARDEN_SLOTS.size()):
+		if _bed_slots[i] != null and is_instance_valid(_bed_slots[i]):
+			continue
+		var d: float = from.distance_squared_to(_GARDEN_SLOTS[i])
+		if d < best_d:
+			best_d = d
+			best = i
+	return best
+
+
+func _plant_sprout(slot: int) -> void:
+	var plant := _PLANT_SCENE.instantiate() as Node2D
+	plant.name = "CannabisPlant%d" % (slot + 1)
+	plant.position = _GARDEN_SLOTS[slot]
+	add_child(plant)
+	_bed_slots[slot] = plant
+	# Wire the new plant into the same systems the pre-placed plants used.
+	plant.connect("interactable_entered", _on_interactable_entered)
+	plant.connect("interactable_exited", _on_interactable_exited)
+	plant.plant_harvested.connect($DryingRack.add_plant)
 
 
 func _get_nearest_interactable() -> Node:
