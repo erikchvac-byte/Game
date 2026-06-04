@@ -9,6 +9,10 @@ var _nav_best_dist: float = INF
 var _nav_stuck_time: float = 0.0
 var _player: CharacterBody2D
 
+# Interactables in range of the player (matches world.gd's pattern). The
+# AnimatedDoor on the north wall emits enter/exit and exposes interact().
+var _interactables: Array[Node] = []
+
 
 func _ready() -> void:
 	_player = $Player as CharacterBody2D
@@ -16,21 +20,52 @@ func _ready() -> void:
 	var origin := global_position
 	cam.limit_left = int(origin.x)
 	cam.limit_top = int(origin.y)
-	cam.limit_right = int(origin.x) + 160
-	cam.limit_bottom = int(origin.y) + 128
+	cam.limit_right = int(origin.x) + 224
+	cam.limit_bottom = int(origin.y) + 150
 	_player.facing = _player.Facing.UP
 	TransitionManager.fade_from_black(0.4)
+	var door := $AnimatedDoor
+	door.interactable_entered.connect(_on_interactable_entered)
+	door.interactable_exited.connect(_on_interactable_exited)
 	await get_tree().create_timer(0.5).timeout
 	$ExitDoor.body_entered.connect(_on_exit_entered)
 
 
 func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("interact"):
+		var target := _get_nearest_interactable()
+		if target and target.has_method("interact"):
+			target.interact(_player)
+			get_viewport().set_input_as_handled()
+		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_nav_active = true
 		_nav_target_pos = get_global_mouse_position()
 		_nav_best_dist = INF
 		_nav_stuck_time = 0.0
 		get_viewport().set_input_as_handled()
+
+
+func _on_interactable_entered(node: Node) -> void:
+	if not _interactables.has(node):
+		_interactables.append(node)
+
+
+func _on_interactable_exited(node: Node) -> void:
+	_interactables.erase(node)
+
+
+func _get_nearest_interactable() -> Node:
+	var nearest: Node = null
+	var best := INF
+	for node in _interactables:
+		if not is_instance_valid(node):
+			continue
+		var d: float = _player.global_position.distance_squared_to((node as Node2D).global_position)
+		if d < best:
+			best = d
+			nearest = node
+	return nearest
 
 
 func _process(delta: float) -> void:

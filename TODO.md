@@ -37,6 +37,20 @@
 - [ ] **Weed sprites** — needs world/tile placement decision.
 - [ ] **Garden plot sprites** — 2-stage garden sprites — needs farming scene integration.
 
+## Code Review — Deferred Findings (animated door + interior expansion, 2026-06-03)
+
+> From adversarial code review (Blind Hunter + Edge Case Hunter). 1 patch already fixed & verified (camera limits in `interior.gd`). The 9 below were deferred — pre-existing pattern, cosmetic, or need a user decision. 4 findings were dismissed as verified-OK noise.
+
+- [ ] **Orphan `house_grey_hoodie_door_frames.tres`** — new SpriteFrames referenced only in `.godot` cache (unused). Likely intended for a future *exterior* animated door. **Decide: delete or wire.** Deletion needs explicit approval (Safety Rule).
+- [ ] **Possible rock overlap** — `world.tscn`: TowerRock1 (230,142) / SquareRock1 (245,149) repositioned this session, ~7–15px apart at scale 0.5. **Needs a visual playtest** — may be fine or may be a visible overlap.
+- [ ] **Hand-crafted UID `uid://b8doorspritescab`** — `door_sprites.tres` uses a non-random vanity UID (collision-prone vs Godot's generator). Works now; regenerate to a random UID when convenient.
+- [ ] **`_get_nearest_interactable` has no max-range cull** — `interior.gd:58`. Matches `world.gd`'s existing pattern; not a regression. Consider a distance cap if interactables grow.
+- [ ] **Hardcoded `"Player"` node-name match** — `door.gd:43,47`. Verified working today (node is named Player); matches codebase convention. Fragile if renamed.
+- [ ] **Wall-collider asymmetry / SouthRight overhang** — `interior.tscn`: opposing walls 140 vs 143; SouthRight overhangs east wall ~7px. Eyeballed geometry, cosmetic (behind walls).
+- [ ] **Inconsistent input-consumption on interact-miss** — `interior.gd:34-40`: input only marked handled when a target exists. Minor.
+- [ ] **Door rest-frame relies on `loop=false`** — `door.gd`: settles on frame 0 via `animation_finished`. Defensive nit; frames correct today.
+- [ ] **Door has no facing/`can_interact` gate; interact doesn't cancel active mouse-nav** — `door.gd` / `interior.gd`. Design choice consistent with the door being decorative.
+
 ## Items / Pickups
 
 - [x] **Seed packets** — `res://assets/props/items/seed_packets.png` wired as starting inventory item `"seed_packets"` in `world.gd`. Visible in hotbar slot ✅. Acquisition method (shop/chest) TBD.

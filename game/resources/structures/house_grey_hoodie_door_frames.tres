@@ -1,0 +1,74 @@
+[gd_resource type="SpriteFrames" format=3 uid="uid://dcnt7qebb1tc7"]
+
+[ext_resource type="Texture2D" path="res://assets/structures/houses/house_grey_hoodie_door.png" id="1_ghd"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghd0"]
+atlas = ExtResource("1_ghd")
+region = Rect2(0, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghd1"]
+atlas = ExtResource("1_ghd")
+region = Rect2(256, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghd2"]
+atlas = ExtResource("1_ghd")
+region = Rect2(512, 0, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghd3"]
+atlas = ExtResource("1_ghd")
+region = Rect2(0, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghd4"]
+atlas = ExtResource("1_ghd")
+region = Rect2(256, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghd5"]
+atlas = ExtResource("1_ghd")
+region = Rect2(512, 256, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghd6"]
+atlas = ExtResource("1_ghd")
+region = Rect2(0, 512, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghd7"]
+atlas = ExtResource("1_ghd")
+region = Rect2(256, 512, 256, 256)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ghd8"]
+atlas = ExtResource("1_ghd")
+region = Rect2(512, 512, 256, 256)
+
+[resource]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghd0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghd1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghd2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghd3")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghd4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghd5")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghd6")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghd7")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ghd8")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 6.0
+}]

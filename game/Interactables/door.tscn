@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://u22gcftx5ace"]
+
+[ext_resource type="Script" uid="uid://0dqv04fjwsjt" path="res://Interactables/door.gd" id="1_door"]
+[ext_resource type="SpriteFrames" uid="uid://b8doorspritescab" path="res://resources/structures/door_sprites.tres" id="2_frames"]
+
+[sub_resource type="CircleShape2D" id="DoorAreaShape"]
+radius = 26.0
+
+[node name="AnimatedDoor" type="Node2D"]
+script = ExtResource("1_door")
+
+[node name="DoorSprite" type="AnimatedSprite2D" parent="."]
+position = Vector2(0, -6)
+scale = Vector2(0.33, 0.33)
+sprite_frames = ExtResource("2_frames")
+animation = &"open"
+
+[node name="DoorArea" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="DoorArea"]
+position = Vector2(0, 18)
+shape = SubResource("DoorAreaShape")

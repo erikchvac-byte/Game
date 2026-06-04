@@ -795,10 +795,12 @@ visible = false
 navigation_polygon = SubResource("NavigationPolygon_houwb")
 
 [node name="TowerRock1" parent="." unique_id=720000001 instance=ExtResource("72_rock_t")]
-position = Vector2(171, 213)
+position = Vector2(230, 142)
+scale = Vector2(0.5, 0.5)
 
 [node name="SquareRock1" parent="." unique_id=730000001 instance=ExtResource("73_rock_s")]
-position = Vector2(210, 201)
+position = Vector2(245, 149)
+scale = Vector2(0.5, 0.5)
 
 [node name="WallMidCollapsed" parent="." unique_id=694565214 instance=ExtResource("76_sw2vp")]
 position = Vector2(482, 235)
