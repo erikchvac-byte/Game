@@ -17,6 +17,11 @@ var _interactables: Array[Node] = []
 func _ready() -> void:
 	_player = $Player as CharacterBody2D
 	var cam := _player.get_node("Camera2D") as Camera2D
+	# Zoom out for the interior: the enlarged room is taller than the 16:9
+	# viewport allows at the exterior's 0.87 zoom, so its top/bottom edges
+	# tuck under the HUD bars. 0.7 frames the whole room with margin. This
+	# only affects the interior's own Player instance (ADR-117).
+	cam.zoom = Vector2(0.7, 0.7)
 	var origin := global_position
 	cam.limit_left = int(origin.x)
 	cam.limit_top = int(origin.y)
