@@ -1,4 +1,4 @@
-[gd_resource type="SpriteFrames" format=3 uid="uid://b8doorspritescab"]
+[gd_resource type="SpriteFrames" format=3 uid="uid://c7mw3xmc0ldaf"]
 
 [ext_resource type="Texture2D" uid="uid://c3tgc0mq6rlpg" path="res://assets/structures/door/frame_000.png" id="0"]
 [ext_resource type="Texture2D" uid="uid://bhd578e3oikah" path="res://assets/structures/door/frame_001.png" id="1"]
@@ -22,13 +22,13 @@ animations = [{
 "duration": 1.0,
 "texture": ExtResource("2")
 }, {
-"duration": 1.0,
+"duration": 1.5,
 "texture": ExtResource("3")
 }, {
-"duration": 1.0,
+"duration": 6.0,
 "texture": ExtResource("4")
 }, {
-"duration": 1.0,
+"duration": 1.5,
 "texture": ExtResource("5")
 }, {
 "duration": 1.0,
@@ -42,5 +42,5 @@ animations = [{
 }],
 "loop": false,
 "name": &"open",
-"speed": 10.0
+"speed": 8.0
 }]
