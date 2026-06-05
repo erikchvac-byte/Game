@@ -2,6 +2,12 @@ extends Node2D
 
 const ARRIVE_DIST := 5.0
 const NAV_STUCK_MAX := 1.0
+# Max-range cull for _get_nearest_interactable. Area enter/exit already gates
+# membership; this is a defensive cap against stale entries (e.g. a missed
+# body_exited). Generous on purpose — larger than the farthest a player can be
+# from a registered interactable's origin while still overlapping its area, so
+# it never rejects a valid interaction (64^2).
+const INTERACT_RANGE_SQ := 64.0 * 64.0
 
 var _nav_active := false
 var _nav_target_pos := Vector2.ZERO
@@ -38,10 +44,14 @@ func _ready() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
+		# Pressing interact always stops an active mouse-nav and always consumes
+		# the action (whether or not something was in range), so the press never
+		# leaks through to other handlers on a miss.
+		_cancel_navigation()
 		var target := _get_nearest_interactable()
 		if target and target.has_method("interact"):
 			target.interact(_player)
-			get_viewport().set_input_as_handled()
+		get_viewport().set_input_as_handled()
 		return
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
 		_nav_active = true
@@ -67,6 +77,8 @@ func _get_nearest_interactable() -> Node:
 		if not is_instance_valid(node):
 			continue
 		var d: float = _player.global_position.distance_squared_to((node as Node2D).global_position)
+		if d > INTERACT_RANGE_SQ:
+			continue
 		if d < best:
 			best = d
 			nearest = node

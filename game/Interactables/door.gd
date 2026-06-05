@@ -20,6 +20,12 @@ func _ready() -> void:
 	$DoorArea.body_entered.connect(_on_area_entered)
 	$DoorArea.body_exited.connect(_on_area_exited)
 	$DoorSprite.animation_finished.connect(_on_animation_finished)
+	# Defensive: the one-shot rest-on-closed behaviour relies on animation_finished
+	# firing, which only happens when "open" is non-looping. Force it off here so a
+	# stray loop=true in the .tres can never leave the door spinning open forever.
+	var frames := $DoorSprite.sprite_frames as SpriteFrames
+	if frames and frames.has_animation("open"):
+		frames.set_animation_loop("open", false)
 	# Rest on the closed door. The "open" animation's frame 0 (frame_000) is the
 	# fully-closed state.
 	$DoorSprite.animation = "open"
@@ -40,11 +46,11 @@ func _on_animation_finished() -> void:
 	$DoorSprite.stop()
 
 func _on_area_entered(body: Node2D) -> void:
-	if body.name != "Player":
+	if not body.is_in_group("player"):
 		return
 	interactable_entered.emit(self)
 
 func _on_area_exited(body: Node2D) -> void:
-	if body.name != "Player":
+	if not body.is_in_group("player"):
 		return
 	interactable_exited.emit(self)

@@ -20,6 +20,9 @@ var nav_agent: NavigationAgent2D
 
 func _ready() -> void:
 	nav_agent = get_node_or_null("NavAgent")
+	# Group membership lets interactables identify the player without depending
+	# on the node being named "Player" (rename-proof). See door.gd.
+	add_to_group("player")
 
 func facing_name() -> String:
 	match facing:
